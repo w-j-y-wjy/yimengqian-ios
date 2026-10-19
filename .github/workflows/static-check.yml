@@ -1,0 +1,36 @@
+# 结构检查（不编译 · 免费的 ubuntu runner）
+#
+# 目的：把「结构类错误」在几分钟内、零 macOS 分钟地拦下来。典型场景：
+#   · 新增 AI/*.swift 忘了加进 pbxproj 的 Sources 阶段 → 编译时符号找不到
+#   · 屏配置引用了不存在的设计稿 → 运行时出现「图片缺失」
+#   · 跳转 target 写了不存在的 route → 点了没反应
+# 本地等价命令：node scripts/static-check.mjs（Windows 上也能跑）
+
+name: 结构检查
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: static-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: 静态一致性
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出
+        uses: actions/checkout@v4
+
+      - name: 准备 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 运行检查
+        run: node scripts/static-check.mjs

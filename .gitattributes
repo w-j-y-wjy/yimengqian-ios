@@ -1,0 +1,15 @@
+# 统一换行，避免 Windows 上编辑后把 shell 脚本改成 CRLF 导致 CI 报 bad interpreter
+* text=auto
+*.sh   text eol=lf
+*.mjs  text eol=lf
+*.swift text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.plist text eol=lf
+*.pbxproj text eol=lf
+*.xcscheme text eol=lf
+*.md text eol=lf
+
+# 设计稿与图标是二进制，禁止行尾转换与 diff
+*.png binary
+*.jpg binary

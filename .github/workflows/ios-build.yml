@@ -1,0 +1,113 @@
+# iOS 编译验证（模拟器 · 免签名 · 产物截图）
+#
+# 为什么在云端编译：本地只有 macOS Monterey + Xcode 14.2，且 Xcode 14.2 已不在
+# GitHub Actions 的 runner 镜像里（现役 macOS 15 → Xcode 16.x）。所以：
+#   · 这里是「主证据」：每次推送都编译一次，红了就是真的编译不过；
+#   · 老 Mac 上的 Xcode 14.2 只在关键节点做「第二意见」（见 docs/项目结构与构建.md）。
+# 成本：公开仓库免费；私有仓库 macOS 按 Linux 的 ~10 倍计分钟，故只在相关路径变更时触发。
+
+name: iOS Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Yimengqian/**'
+      - 'scripts/**'
+      - '.github/workflows/ios-build.yml'
+  pull_request:
+    paths:
+      - 'Yimengqian/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJECT: Yimengqian/Yimengqian.xcodeproj
+  SCHEME: Yimengqian
+  BUNDLE_ID: com.yimeng.qiannian
+
+jobs:
+  simulate:
+    name: 编译 + 模拟器冒烟
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: 检出
+        uses: actions/checkout@v4
+
+      - name: 工具链信息
+        run: |
+          xcodebuild -version
+          echo "--- 可用模拟器（前 15 行）---"
+          xcrun simctl list devices available | head -15
+
+      - name: 选择模拟器
+        id: sim
+        run: |
+          set -euo pipefail
+          UDID=$(xcrun simctl list devices available \
+            | grep -m1 -E '^[[:space:]]+iPhone' \
+            | grep -oE '[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}')
+          if [ -z "${UDID:-}" ]; then
+            echo "::error::没能从 simctl 列表里解析出 iPhone 模拟器 UDID"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "使用模拟器：$UDID"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: 编译（模拟器 · 免签名）
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee build.log
+          echo "--- 统计 ---"
+          echo "warning 行数: $(grep -c 'warning:' build.log || true)"
+          echo "error   行数: $(grep -c 'error:' build.log || true)"
+          echo "### 编译通过（$(xcodebuild -version | head -1)）" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "(warning|error):" build.log | head -30 >> "$GITHUB_STEP_SUMMARY" || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 模拟器冒烟（安装 → 启动 → 截图 → 查崩溃）
+        run: |
+          set -euo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          APP="build/DerivedData/Build/Products/Debug-iphonesimulator/$SCHEME.app"
+          test -d "$APP" || { echo "::error::找不到 .app 产物：$APP"; exit 1; }
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" "$BUNDLE_ID"
+          sleep 8
+          xcrun simctl io "$UDID" screenshot splash.png
+          ls -l splash.png
+          if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
+            echo "::error::启动后产生了崩溃日志"
+            ls -l ~/Library/Logs/DiagnosticReports/ | tail -20
+            exit 1
+          fi
+          echo "### 冒烟通过：应用能安装、启动、无崩溃" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 上传证据（截图 + 编译日志）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-evidence-${{ github.run_number }}
+          path: |
+            splash.png
+            build.log
+          retention-days: 7
+          if-no-files-found: warn

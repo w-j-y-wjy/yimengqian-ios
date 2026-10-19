@@ -1,0 +1,426 @@
+// 一梦千年 iOS —— Xcode 工程文件生成器
+// 扫描 Yimengqian/Yimengqian 下的 .swift 文件与固定资源，生成 project.pbxproj（objectVersion 56，Xcode 14+ 兼容）
+// 用法：node tools/generate_pbxproj.mjs
+import { readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = fileURLToPath(new URL('..', import.meta.url)); // ios/
+const PROJ_DIR = path.join(ROOT, 'Yimengqian');
+const APP_DIR = path.join(PROJ_DIR, 'Yimengqian');
+const OUT = path.join(PROJ_DIR, 'Yimengqian.xcodeproj', 'project.pbxproj');
+
+const id = (seed) => createHash('md5').update(seed).digest('hex').substring(0, 24).toUpperCase();
+
+// —— 收集 Swift 文件（按目录分组，保持稳定排序）——
+function collectSwiftFiles(dir) {
+  const out = [];
+  for (const name of readdirSync(dir).sort()) {
+    const full = path.join(dir, name);
+    if (statSync(full).isDirectory()) {
+      out.push(...collectSwiftFiles(full));
+    } else if (name.endsWith('.swift')) {
+      out.push(full);
+    }
+  }
+  return out;
+}
+const swiftFiles = collectSwiftFiles(APP_DIR);
+if (!swiftFiles.length) throw new Error('未找到任何 Swift 文件');
+
+// —— 固定文件引用 ——
+const hasAssets = existsSync(path.join(APP_DIR, 'Assets.xcassets'));
+const hasInfoPlist = existsSync(path.join(APP_DIR, 'Info.plist'));
+const hasResources = existsSync(path.join(APP_DIR, 'Resources'));
+
+const FR = (p) => `FR-${p}`;
+const BF = (p) => `BF-${p}`;
+const fileRefId = (p) => id(FR(p));
+const buildFileId = (p) => id(BF(p));
+
+// 目录分组：相对 APP_DIR 的一级目录名 → 组名；其余文件放根组
+const dirs = [...new Set(swiftFiles.map((f) => path.relative(APP_DIR, path.dirname(f))))];
+const groupOf = {};
+for (const d of dirs) {
+  groupOf[d] = id(`G-${d}`);
+}
+const rootGroupId = id('G-ROOT');
+const productsGroupId = id('G-PRODUCTS');
+const targetId = id('T-Yimengqian');
+const projectId = id('P-Yimengqian');
+const sourcesPhaseId = id('PH-SOURCES');
+const frameworksPhaseId = id('PH-FRAMEWORKS');
+const resourcesPhaseId = id('PH-RESOURCES');
+const projectConfigListId = id('CL-PROJECT');
+const targetConfigListId = id('CL-TARGET');
+const projDebugId = id('BC-PROJ-DEBUG');
+const projReleaseId = id('BC-PROJ-RELEASE');
+const tgtDebugId = id('BC-TGT-DEBUG');
+const tgtReleaseId = id('BC-TGT-RELEASE');
+const appProductRefId = id('PRD-Yimengqian.app');
+
+// —— 组 ——
+const groupSections = [];
+const rootChildren = [];
+const rootChildIds = [];
+for (const d of dirs) {
+  const files = swiftFiles.filter((f) => path.relative(APP_DIR, path.dirname(f)) === d).sort();
+  const childIds = files.map((f) => fileRefId(path.relative(APP_DIR, f)));
+  const gid = groupOf[d];
+  groupSections.push(`\t\t${gid} /* ${d} */ = {\n\t\t\tisa = PBXGroup;\n\t\t\tchildren = (\n${childIds.map((c) => `\t\t\t\t${c} /* ${path.basename(files[childIds.indexOf(c)])} */,`).join('\n')}\n\t\t\t);\n\t\t\tpath = ${d};\n\t\t\tsourceTree = "<group>";\n\t\t};`);
+  rootChildren.push(...files.map((f) => ({ id: fileRefId(path.relative(APP_DIR, f)), name: path.basename(f), gid })));
+  rootChildIds.push(gid);
+}
+// 固定项
+const fixedRefs = [];
+if (hasAssets) { fixedRefs.push({ id: fileRefId('Assets.xcassets'), name: 'Assets.xcassets', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Assets.xcassets')); }
+if (hasInfoPlist) { fixedRefs.push({ id: fileRefId('Info.plist'), name: 'Info.plist', fileRef: `{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Info.plist')); }
+if (hasResources) { fixedRefs.push({ id: fileRefId('Resources'), name: 'Resources', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Resources')); }
+
+// —— 文件引用段 ——
+const fileRefLines = [];
+for (const f of swiftFiles) {
+  const rel = path.relative(APP_DIR, f);
+  fileRefLines.push(`\t\t${fileRefId(rel)} /* ${path.basename(f)} */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ${path.basename(f)}; sourceTree = "<group>"; };`);
+}
+for (const fr of fixedRefs) fileRefLines.push(`\t\t${fr.id} /* ${fr.name} */ = ${fr.fileRef}`);
+fileRefLines.push(`\t\t${appProductRefId} /* Yimengqian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yimengqian.app; sourceTree = BUILT_PRODUCTS_DIR; };`);
+
+// —— 构建文件段（Sources 全部 swift；Resources = Assets + Resources 文件夹）——
+const buildFileLines = [];
+const sourceBuildIds = [];
+for (const f of swiftFiles) {
+  const rel = path.relative(APP_DIR, f);
+  const bid = buildFileId(rel);
+  buildFileLines.push(`\t\t${bid} /* ${path.basename(f)} in Sources */ = {isa = PBXBuildFile; fileRef = ${fileRefId(rel)} /* ${path.basename(f)} */; };`);
+  sourceBuildIds.push(bid);
+}
+const resourceBuildIds = [];
+if (hasAssets) {
+  const bid = buildFileId('Assets.xcassets');
+  buildFileLines.push(`\t\t${bid} /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Assets.xcassets')} /* Assets.xcassets */; };`);
+  resourceBuildIds.push(bid);
+}
+if (hasResources) {
+  const bid = buildFileId('Resources');
+  buildFileLines.push(`\t\t${bid} /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Resources')} /* Resources */; };`);
+  resourceBuildIds.push(bid);
+}
+
+// —— 组装 ——
+const pbx = `// !$*UTF8*$!
+{
+\tarchiveVersion = 1;
+\tclasses = {
+\t};
+\tobjectVersion = 56;
+\tobjects = {
+
+/* Begin PBXBuildFile section */
+${buildFileLines.join('\n')}
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+${fileRefLines.join('\n')}
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+\t\t${frameworksPhaseId} /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tbuildActionMask = 2147483647;
+\t\t\tfiles = (
+\t\t\t);
+\t\t\trunOnlyForDeploymentPostprocessing = 0;
+\t\t};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+\t\t${rootGroupId} = {
+\t\t\tisa = PBXGroup;
+\t\t\tchildren = (
+${rootChildIds.map((c) => `\t\t\t\t${c},`).join('\n')}
+\t\t\t);
+\t\t\tpath = Yimengqian;
+\t\t\tsourceTree = "<group>";
+\t\t};
+${groupSections.join('\n')}
+\t\t${productsGroupId} /* Products */ = {
+\t\t\tisa = PBXGroup;
+\t\t\tchildren = (
+\t\t\t\t${appProductRefId} /* Yimengqian.app */,
+\t\t\t);
+\t\t\tname = Products;
+\t\t\tsourceTree = "<group>";
+\t\t};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+\t\t${targetId} /* Yimengqian */ = {
+\t\t\tisa = PBXNativeTarget;
+\t\t\tbuildConfigurationList = ${targetConfigListId} /* Build configuration list for PBXNativeTarget "Yimengqian" */;
+\t\t\tbuildPhases = (
+\t\t\t\t${sourcesPhaseId} /* Sources */,
+\t\t\t\t${frameworksPhaseId} /* Frameworks */,
+\t\t\t\t${resourcesPhaseId} /* Resources */,
+\t\t\t);
+\t\t\tbuildRules = (
+\t\t\t);
+\t\t\tdependencies = (
+\t\t\t);
+\t\t\tname = Yimengqian;
+\t\t\tproductName = Yimengqian;
+\t\t\tproductReference = ${appProductRefId} /* Yimengqian.app */;
+\t\t\tproductType = "com.apple.product-type.application";
+\t\t};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+\t\t${projectId} /* Project object */ = {
+\t\t\tisa = PBXProject;
+\t\t\tattributes = {
+\t\t\t\tBuildIndependentTargetsInParallel = 1;
+\t\t\t\tLastSwiftUpdateCheck = 1500;
+\t\t\t\tLastUpgradeCheck = 1500;
+\t\t\t\tTargetAttributes = {
+\t\t\t\t\t${targetId} = {
+\t\t\t\t\t\tCreatedOnToolsVersion = 15.0;
+\t\t\t\t\t};
+\t\t\t\t};
+\t\t\t};
+\t\t\tbuildConfigurationList = ${projectConfigListId} /* Build configuration list for PBXProject "Yimengqian" */;
+\t\t\tcompatibilityVersion = "Xcode 14.0";
+\t\t\tdevelopmentRegion = "zh-Hans";
+\t\t\thasScannedForEncodings = 0;
+\t\t\tknownRegions = (
+\t\t\t\ten,
+\t\t\t\tBase,
+\t\t\t\t"zh-Hans",
+\t\t\t);
+\t\t\tmainGroup = ${rootGroupId};
+\t\t\tproductRefGroup = ${productsGroupId} /* Products */;
+\t\t\tprojectDirPath = "";
+\t\t\tprojectRoot = "";
+\t\t\ttargets = (
+\t\t\t\t${targetId} /* Yimengqian */,
+\t\t\t);
+\t\t};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+\t\t${resourcesPhaseId} /* Resources */ = {
+\t\t\tisa = PBXResourcesBuildPhase;
+\t\t\tbuildActionMask = 2147483647;
+\t\t\tfiles = (
+${resourceBuildIds.map((b) => `\t\t\t\t${b},`).join('\n')}
+\t\t\t);
+\t\t\trunOnlyForDeploymentPostprocessing = 0;
+\t\t};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+\t\t${sourcesPhaseId} /* Sources */ = {
+\t\t\tisa = PBXSourcesBuildPhase;
+\t\t\tbuildActionMask = 2147483647;
+\t\t\tfiles = (
+${sourceBuildIds.map((b) => `\t\t\t\t${b} /* in Sources */,`).join('\n')}
+\t\t\t);
+\t\t\trunOnlyForDeploymentPostprocessing = 0;
+\t\t};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+\t\t${projDebugId} /* Debug */ = {
+\t\t\tisa = XCBuildConfiguration;
+\t\t\tbuildSettings = {
+\t\t\t\tALWAYS_SEARCH_USER_PATHS = NO;
+\t\t\t\tCLANG_ANALYZER_NONNULL = YES;
+\t\t\t\tCLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+\t\t\t\tCLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+\t\t\t\tCLANG_ENABLE_MODULES = YES;
+\t\t\t\tCLANG_ENABLE_OBJC_ARC = YES;
+\t\t\t\tCLANG_ENABLE_OBJC_WEAK = YES;
+\t\t\t\tCLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+\t\t\t\tCLANG_WARN_BOOL_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_COMMA = YES;
+\t\t\t\tCLANG_WARN_CONSTANT_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+\t\t\t\tCLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+\t\t\t\tCLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+\t\t\t\tCLANG_WARN_EMPTY_BODY = YES;
+\t\t\t\tCLANG_WARN_ENUM_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_INFINITE_RECURSION = YES;
+\t\t\t\tCLANG_WARN_INT_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+\t\t\t\tCLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+\t\t\t\tCLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+\t\t\t\tCLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+\t\t\t\tCLANG_WARN_STRICT_PROTOTYPES = YES;
+\t\t\t\tCLANG_WARN_SUSPICIOUS_MOVE = YES;
+\t\t\t\tCLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+\t\t\t\tCLANG_WARN_UNREACHABLE_CODE = YES;
+\t\t\t\tCLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+\t\t\t\tCOPY_PHASE_STRIP = NO;
+\t\t\t\tDEBUG_INFORMATION_FORMAT = dwarf;
+\t\t\t\tENABLE_STRICT_OBJC_MSGSEND = YES;
+\t\t\t\tENABLE_TESTABILITY = YES;
+\t\t\t\tGCC_C_LANGUAGE_STANDARD = gnu11;
+\t\t\t\tGCC_DYNAMIC_NO_PIC = NO;
+\t\t\t\tGCC_NO_COMMON_BLOCKS = YES;
+\t\t\t\tGCC_OPTIMIZATION_LEVEL = 0;
+\t\t\t\tGCC_PREPROCESSOR_DEFINITIONS = (
+\t\t\t\t\t"DEBUG=1",
+\t\t\t\t\t"$(inherited)",
+\t\t\t\t);
+\t\t\t\tGCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+\t\t\t\tGCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+\t\t\t\tGCC_WARN_UNDECLARED_SELECTOR = YES;
+\t\t\t\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+\t\t\t\tGCC_WARN_UNUSED_FUNCTION = YES;
+\t\t\t\tGCC_WARN_UNUSED_VARIABLE = YES;
+\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 15.0;
+\t\t\t\tMTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+\t\t\t\tMTL_FAST_MATH = YES;
+\t\t\t\tONLY_ACTIVE_ARCH = YES;
+\t\t\t\tSDKROOT = iphoneos;
+\t\t\t\tSWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+\t\t\t\tSWIFT_OPTIMIZATION_LEVEL = "-Onone";
+\t\t\t};
+\t\t\tname = Debug;
+\t\t};
+\t\t${projReleaseId} /* Release */ = {
+\t\t\tisa = XCBuildConfiguration;
+\t\t\tbuildSettings = {
+\t\t\t\tALWAYS_SEARCH_USER_PATHS = NO;
+\t\t\t\tCLANG_ANALYZER_NONNULL = YES;
+\t\t\t\tCLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+\t\t\t\tCLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+\t\t\t\tCLANG_ENABLE_MODULES = YES;
+\t\t\t\tCLANG_ENABLE_OBJC_ARC = YES;
+\t\t\t\tCLANG_ENABLE_OBJC_WEAK = YES;
+\t\t\t\tCLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+\t\t\t\tCLANG_WARN_BOOL_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_COMMA = YES;
+\t\t\t\tCLANG_WARN_CONSTANT_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+\t\t\t\tCLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+\t\t\t\tCLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+\t\t\t\tCLANG_WARN_EMPTY_BODY = YES;
+\t\t\t\tCLANG_WARN_ENUM_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_INFINITE_RECURSION = YES;
+\t\t\t\tCLANG_WARN_INT_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+\t\t\t\tCLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+\t\t\t\tCLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+\t\t\t\tCLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+\t\t\t\tCLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+\t\t\t\tCLANG_WARN_STRICT_PROTOTYPES = YES;
+\t\t\t\tCLANG_WARN_SUSPICIOUS_MOVE = YES;
+\t\t\t\tCLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+\t\t\t\tCLANG_WARN_UNREACHABLE_CODE = YES;
+\t\t\t\tCLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+\t\t\t\tCOPY_PHASE_STRIP = NO;
+\t\t\t\tDEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+\t\t\t\tENABLE_NS_ASSERTIONS = NO;
+\t\t\t\tENABLE_STRICT_OBJC_MSGSEND = YES;
+\t\t\t\tGCC_C_LANGUAGE_STANDARD = gnu11;
+\t\t\t\tGCC_NO_COMMON_BLOCKS = YES;
+\t\t\t\tGCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+\t\t\t\tGCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+\t\t\t\tGCC_WARN_UNDECLARED_SELECTOR = YES;
+\t\t\t\tGCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+\t\t\t\tGCC_WARN_UNUSED_FUNCTION = YES;
+\t\t\t\tGCC_WARN_UNUSED_VARIABLE = YES;
+\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 15.0;
+\t\t\t\tMTL_ENABLE_DEBUG_INFO = NO;
+\t\t\t\tMTL_FAST_MATH = YES;
+\t\t\t\tSDKROOT = iphoneos;
+\t\t\t\tSWIFT_COMPILATION_MODE = wholemodule;
+\t\t\t\tSWIFT_OPTIMIZATION_LEVEL = "-O";
+\t\t\t\tVALIDATE_PRODUCT = YES;
+\t\t\t};
+\t\t\tname = Release;
+\t\t};
+\t\t${tgtDebugId} /* Debug */ = {
+\t\t\tisa = XCBuildConfiguration;
+\t\t\tbuildSettings = {
+\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+\t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+\t\t\t\tCODE_SIGN_STYLE = Automatic;
+\t\t\t\tCURRENT_PROJECT_VERSION = 1;
+\t\t\t\tDEVELOPMENT_TEAM = "";
+\t\t\t\tENABLE_PREVIEWS = YES;
+\t\t\t\tGENERATE_INFOPLIST_FILE = NO;
+\t\t\t\tINFOPLIST_FILE = Yimengqian/Info.plist;
+\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 15.0;
+\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (
+\t\t\t\t\t"$(inherited)",
+\t\t\t\t\t"@executable_path/Frameworks",
+\t\t\t\t);
+\t\t\t\tMARKETING_VERSION = 1.0;
+\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.yimeng.qiannian;
+\t\t\t\tPRODUCT_NAME = "$(TARGET_NAME)";
+\t\t\t\tSWIFT_EMIT_LOC_STRINGS = YES;
+\t\t\t\tSWIFT_VERSION = 5.0;
+\t\t\t\tTARGETED_DEVICE_FAMILY = 1;
+\t\t\t};
+\t\t\tname = Debug;
+\t\t};
+\t\t${tgtReleaseId} /* Release */ = {
+\t\t\tisa = XCBuildConfiguration;
+\t\t\tbuildSettings = {
+\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+\t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+\t\t\t\tCODE_SIGN_STYLE = Automatic;
+\t\t\t\tCURRENT_PROJECT_VERSION = 1;
+\t\t\t\tDEVELOPMENT_TEAM = "";
+\t\t\t\tENABLE_PREVIEWS = YES;
+\t\t\t\tGENERATE_INFOPLIST_FILE = NO;
+\t\t\t\tINFOPLIST_FILE = Yimengqian/Info.plist;
+\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 15.0;
+\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (
+\t\t\t\t\t"$(inherited)",
+\t\t\t\t\t"@executable_path/Frameworks",
+\t\t\t\t);
+\t\t\t\tMARKETING_VERSION = 1.0;
+\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.yimeng.qiannian;
+\t\t\t\tPRODUCT_NAME = "$(TARGET_NAME)";
+\t\t\t\tSWIFT_EMIT_LOC_STRINGS = YES;
+\t\t\t\tSWIFT_VERSION = 5.0;
+\t\t\t\tTARGETED_DEVICE_FAMILY = 1;
+\t\t\t};
+\t\t\tname = Release;
+\t\t};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+\t\t${projectConfigListId} /* Build configuration list for PBXProject "Yimengqian" */ = {
+\t\t\tisa = XCConfigurationList;
+\t\t\tbuildConfigurations = (
+\t\t\t\t${projDebugId} /* Debug */,
+\t\t\t\t${projReleaseId} /* Release */,
+\t\t\t);
+\t\t\tdefaultConfigurationIsVisible = 0;
+\t\t\tdefaultConfigurationName = Release;
+\t\t};
+\t\t${targetConfigListId} /* Build configuration list for PBXNativeTarget "Yimengqian" */ = {
+\t\t\tisa = XCConfigurationList;
+\t\t\tbuildConfigurations = (
+\t\t\t\t${tgtDebugId} /* Debug */,
+\t\t\t\t${tgtReleaseId} /* Release */,
+\t\t\t);
+\t\t\tdefaultConfigurationIsVisible = 0;
+\t\t\tdefaultConfigurationName = Release;
+\t\t};
+/* End XCConfigurationList section */
+\t};
+\trootObject = ${projectId} /* Project object */;
+}
+`;
+
+writeFileSync(OUT, pbx, 'utf8');
+console.log(`[pbxproj] 已生成 ${OUT}`);
+console.log(`[pbxproj] Swift 文件 ${swiftFiles.length} 个；资源：Assets=${hasAssets} Info.plist=${hasInfoPlist} Resources=${hasResources}`);

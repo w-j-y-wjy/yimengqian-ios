@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Xcode 构建产物 / 派生数据（build.sh 的默认输出目录）
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# 注意：不要忽略 ExportOptions.plist —— 它是 build.sh archive 分支需要的构建配置，
+# 将来补上后应当入库（见 docs/项目结构与构建.md）。
+
+# 日志与临时产物
+*.log
+scripts/out/

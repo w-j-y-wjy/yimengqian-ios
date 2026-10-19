@@ -1,0 +1,204 @@
+// 一梦千年 iOS —— 热区配置生成器
+// 输入：安卓工程 screens.ts + hotspot-overrides.json
+// 输出：Yimengqian/Yimengqian/Config/ScreensConfig.swift
+// 用法：node tools/generate_screens_swift.mjs
+import { readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const ROOT = fileURLToPath(new URL('..', import.meta.url)); // ios/
+const ANDROID = 'D:/wij/桌面/移动应用比赛/安卓/一梦千年-App';
+const SCREENS_TS = `${ANDROID}/app-project/src/config/screens.ts`;
+const OVERRIDES_JSON = `${ANDROID}/app-project/src/config/hotspot-overrides.json`;
+const OUT = path.join(ROOT, 'Yimengqian', 'Yimengqian', 'Config', 'ScreensConfig.swift');
+
+// —— 1. 通过 Node 23 type-stripping 直接导入 TS 源文件 ——
+const tsUrl = new URL(`file:///${SCREENS_TS.replace(/\\/g, '/')}`);
+const { screens } = await import(tsUrl.href);
+console.log(`[cfg] 从 screens.ts 读取 ${screens.length} 个屏幕`);
+
+// —— 2. 读取覆盖并合并 ——
+const overrides = JSON.parse(readFileSync(OVERRIDES_JSON, 'utf8'));
+const merged = screens.map((s) => {
+  const ov = overrides[s.id];
+  if (!ov) return s;
+  return {
+    ...s,
+    hotspots: s.hotspots.map((h) => {
+      const o = ov[h.id];
+      if (!o) return h;
+      return { ...h, x: o.x, y: o.y, width: o.width, height: o.height };
+    }),
+  };
+});
+const overriddenCount = Object.keys(overrides).length;
+console.log(`[cfg] 合并 ${overriddenCount} 个屏幕的坐标覆盖`);
+
+// —— 3. 工具函数 ——
+const swStr = (s) => JSON.stringify(String(s)); // JSON 转义 ≈ Swift 字符串转义
+const swNum = (n) => {
+  if (typeof n !== 'number') return '0';
+  return Number(n).toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: 10 });
+};
+
+// 图片路径映射：/screens/x.png -> Screens/x.png ; /assets/reference/x.png -> Reference/x.png
+const mapImage = (p) => {
+  if (p.startsWith('/screens/')) return `Screens/${p.slice('/screens/'.length)}`;
+  if (p.startsWith('/assets/reference/')) return `Reference/${p.slice('/assets/reference/'.length)}`;
+  return p.replace(/^\//, '');
+};
+
+const actionCases = [
+  'navigate', 'back', 'toast', 'storage', 'storageAndToast', 'conditionalNavigate',
+  'setStorageAndToast', 'toggleStorage', 'storageAndNavigate', 'conditionalStorageNavigate',
+  'incrementOnce', 'delayedNavigate', 'conditionalJump', 'setDefaultsAndNavigate', 'checkAnswer',
+];
+const isCase = (t) => actionCases.includes(t);
+
+function emitAction(a) {
+  if (!a || typeof a !== 'object') return 'HotspotAction(type: .toast)';
+  const type = a.type;
+  const parts = [];
+  if (isCase(type)) parts.push(`type: .${type}`);
+  else parts.push(`type: .toast`); // 防御：未知类型退化为 toast
+  if (a.target != null) parts.push(`target: ${swStr(a.target)}`);
+  if (a.message != null) parts.push(`message: ${swStr(a.message)}`);
+  if (a.storageKey != null) parts.push(`storageKey: ${swStr(a.storageKey)}`);
+  if (a.storageValue != null) parts.push(`storageValue: ${swStr(a.storageValue)}`);
+  if (a.onMessage != null) parts.push(`onMessage: ${swStr(a.onMessage)}`);
+  if (a.offMessage != null) parts.push(`offMessage: ${swStr(a.offMessage)}`);
+  if (a.flagKey != null) parts.push(`flagKey: ${swStr(a.flagKey)}`);
+  if (a.defaultValue != null) parts.push(`defaultValue: ${swStr(a.defaultValue)}`);
+  if (a.delay != null) parts.push(`delay: ${swNum(a.delay)}`);
+  if (a.correctAnswer != null) parts.push(`correctAnswer: ${swStr(a.correctAnswer)}`);
+  if (Array.isArray(a.storage) && a.storage.length) {
+    parts.push(`storage: [${a.storage.map((kv) => `KV(key: ${swStr(kv.key)}, value: ${swStr(kv.value)})`).join(', ')}]`);
+  }
+  if (Array.isArray(a.defaults) && a.defaults.length) {
+    parts.push(`defaults: [${a.defaults.map((kv) => `KV(key: ${swStr(kv.key)}, value: ${swStr(kv.value)})`).join(', ')}]`);
+  }
+  if (Array.isArray(a.storageFlags) && a.storageFlags.length) {
+    parts.push(`storageFlags: [${a.storageFlags.map((kv) => `KV(key: ${swStr(kv.key)}, value: ${swStr(kv.value)})`).join(', ')}]`);
+  }
+  return `HotspotAction(${parts.join(', ')})`;
+}
+
+function emitScreen(s) {
+  const hotspots = s.hotspots
+    .map((h) => `Hotspot(id: ${swStr(h.id)}, label: ${swStr(h.label)}, x: ${swNum(h.x)}, y: ${swNum(h.y)}, width: ${swNum(h.width)}, height: ${swNum(h.height)}, action: ${emitAction(h.action)})`)
+    .join(',\n                ');
+  return `ScreenConfig(id: ${swStr(s.id)}, route: ${swStr(s.route)}, image: ${swStr(mapImage(s.image))}, hotspots: [\n                ${hotspots}\n            ])`;
+}
+
+// —— 4. 组装 Swift 源码 ——
+const header = `// 本文件由 tools/generate_screens_swift.mjs 自动生成 —— 请勿手动编辑。
+// Generated from app-project/src/config/screens.ts + hotspot-overrides.json
+// 共 ${merged.length} 个屏幕；合并了 ${overriddenCount} 个屏幕的坐标覆盖。
+import Foundation
+
+// MARK: - 键值对（storage / defaults / storageFlags 通用）
+struct KV: Codable, Equatable {
+    var key: String
+    var value: String
+}
+
+// MARK: - 热区动作
+struct HotspotAction: Codable, Equatable {
+    enum Kind: String, Codable, Equatable, CaseIterable {
+        case navigate
+        case back
+        case toast
+        case storage
+        case storageAndToast
+        case conditionalNavigate
+        case setStorageAndToast
+        case toggleStorage
+        case storageAndNavigate
+        case conditionalStorageNavigate
+        case incrementOnce
+        case delayedNavigate
+        case conditionalJump
+        case setDefaultsAndNavigate
+        case checkAnswer
+    }
+    var type: Kind
+    var target: String?
+    var message: String?
+    var storage: [KV]?
+    var storageKey: String?
+    var storageValue: String?
+    var onMessage: String?
+    var offMessage: String?
+    var flagKey: String?
+    var defaultValue: String?
+    var delay: Double?
+    var defaults: [KV]?
+    var correctAnswer: String?
+    var storageFlags: [KV]?
+
+    init(type: Kind, target: String? = nil, message: String? = nil, storage: [KV]? = nil,
+         storageKey: String? = nil, storageValue: String? = nil, onMessage: String? = nil,
+         offMessage: String? = nil, flagKey: String? = nil, defaultValue: String? = nil,
+         delay: Double? = nil, defaults: [KV]? = nil, correctAnswer: String? = nil,
+         storageFlags: [KV]? = nil) {
+        self.type = type
+        self.target = target
+        self.message = message
+        self.storage = storage
+        self.storageKey = storageKey
+        self.storageValue = storageValue
+        self.onMessage = onMessage
+        self.offMessage = offMessage
+        self.flagKey = flagKey
+        self.defaultValue = defaultValue
+        self.delay = delay
+        self.defaults = defaults
+        self.correctAnswer = correctAnswer
+        self.storageFlags = storageFlags
+    }
+}
+
+// MARK: - 热区
+struct Hotspot: Codable, Identifiable, Equatable {
+    var id: String
+    var label: String
+    var x: Double
+    var y: Double
+    var width: Double
+    var height: Double
+    var action: HotspotAction
+}
+
+// MARK: - 屏幕配置
+struct ScreenConfig: Codable, Identifiable, Equatable {
+    var id: String
+    var route: String
+    var image: String
+    var hotspots: [Hotspot]
+}
+
+// MARK: - 屏幕目录
+enum ScreenCatalog {
+    static let all: [ScreenConfig] = [
+`;
+
+const body = merged.map((s, i) => {
+  const comma = i < merged.length - 1 ? ',' : '';
+  return `        ${emitScreen(s)}${comma}`;
+}).join('\n');
+
+const footer = `
+    ]
+
+    static func screen(id: String) -> ScreenConfig? {
+        all.first { $0.id == id }
+    }
+
+    static func screen(route: String) -> ScreenConfig? {
+        all.first { $0.route == route }
+    }
+}
+`;
+
+writeFileSync(OUT, header + body + footer, 'utf8');
+console.log(`[cfg] 已生成 ${OUT}`);
