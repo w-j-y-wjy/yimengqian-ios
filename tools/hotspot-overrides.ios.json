@@ -1,0 +1,221 @@
+{
+  "poetry-home": {
+    "daily-card": {
+      "x": 3.873,
+      "y": 12.189,
+      "width": 92.254,
+      "height": 22.644
+    }
+  },
+  "jiangxue-scene": {
+    "analysis-card": {
+      "x": 3.873,
+      "y": 63.164,
+      "width": 44.366,
+      "height": 16.901
+    },
+    "imagery-card": {
+      "x": 51.408,
+      "y": 63.164,
+      "width": 44.718,
+      "height": 16.901
+    },
+    "back": {
+      "x": 0.78,
+      "y": 5.305,
+      "width": 12,
+      "height": 5
+    },
+    "poetry-lib": {
+      "x": 83.181,
+      "y": 5.664,
+      "width": 12,
+      "height": 5
+    }
+  },
+  "jiangxue-imagery": {
+    "poem-line-1": {
+      "x": 6.455,
+      "y": 75.027,
+      "width": 42.254,
+      "height": 2.546
+    },
+    "poem-line-2": {
+      "x": 6.455,
+      "y": 77.573,
+      "width": 42.254,
+      "height": 2.546
+    }
+  },
+  "dynasties": {
+    "bottom-home": {
+      "x": 0,
+      "y": 91.206,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-city": {
+      "x": 20.26,
+      "y": 91.087,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-activity": {
+      "x": 40.78,
+      "y": 90.967,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-favorites": {
+      "x": 61.299,
+      "y": 90.847,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-profile": {
+      "x": 80,
+      "y": 90.728,
+      "width": 20,
+      "height": 7
+    }
+  },
+  "bianjing": {
+    "bottom-home": {
+      "x": 0,
+      "y": 90.01,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-city": {
+      "x": 20,
+      "y": 90.13,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-experience": {
+      "x": 40.26,
+      "y": 90.13,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-favorites": {
+      "x": 60.52,
+      "y": 90.13,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-profile": {
+      "x": 80,
+      "y": 89.891,
+      "width": 20,
+      "height": 7
+    }
+  },
+  "teahouse": {
+    "bottom-home": {
+      "x": 0,
+      "y": 90.847,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-city": {
+      "x": 20,
+      "y": 90.608,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-activity": {
+      "x": 40.78,
+      "y": 90.369,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-favorites": {
+      "x": 60,
+      "y": 90.25,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-profile": {
+      "x": 80,
+      "y": 90.25,
+      "width": 20,
+      "height": 7
+    }
+  },
+  "sushi": {
+    "bottom-home": {
+      "x": 0,
+      "y": 90.847,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-city": {
+      "x": 20,
+      "y": 90.847,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-character": {
+      "x": 40.518,
+      "y": 90.847,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-favorites": {
+      "x": 60,
+      "y": 90.848,
+      "width": 20,
+      "height": 7
+    },
+    "bottom-profile": {
+      "x": 80,
+      "y": 90.847,
+      "width": 20,
+      "height": 7
+    }
+  },
+  "teahouse-dialogue": {},
+  "artifact-home": {
+    "guide": {
+      "x": 78.701,
+      "y": 5.664,
+      "width": 18,
+      "height": 5
+    }
+  },
+  "feihualing-challenge": {
+    "back": {
+      "x": 0,
+      "y": 4.468,
+      "width": 12,
+      "height": 5
+    },
+    "rules-info": {
+      "x": 28.222,
+      "y": 5.425,
+      "width": 35,
+      "height": 5
+    },
+    "rules-detail": {
+      "x": 65,
+      "y": 5.186,
+      "width": 35,
+      "height": 5
+    }
+  },
+  "stamp-reward": {
+    "back": {
+      "x": 0.26,
+      "y": 5.305,
+      "width": 12,
+      "height": 5
+    },
+    "share": {
+      "x": 86.559,
+      "y": 5.066,
+      "width": 12,
+      "height": 5
+    }
+  }
+}

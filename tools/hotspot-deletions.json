@@ -1,0 +1,19 @@
+{
+  "task-reward": [
+    "bottom-home",
+    "bottom-city",
+    "bottom-activity",
+    "bottom-favorites",
+    "bottom-profile"
+  ],
+  "artifact-result": [
+    "favorite-btn"
+  ],
+  "teahouse-dialogue": [
+    "bottom-home",
+    "bottom-city",
+    "bottom-activity",
+    "bottom-favorites",
+    "bottom-profile"
+  ]
+}

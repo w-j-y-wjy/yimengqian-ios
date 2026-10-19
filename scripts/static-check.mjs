@@ -169,6 +169,44 @@ const navIds = [...new Set([...cfg.matchAll(/Hotspot\(id:\s*"(bottom-[a-z-]+)"/g
 const navDup = navIds.filter((id) => id === 'bottom-activity' || id === 'bottom-activities')
 if (navDup.length > 1) push('P2-5', `底栏 id 命名冲突：${navDup.join(' / ')} 并存`)
 
+// ── iOS 侧修正层的一致性 ──────────────────────────────────────────────────
+// tools/hotspot-overrides.ios.json 与 hotspot-deletions.json 是按「屏 id / 热区 id」
+// 引用的。若 screens.ts 改了 id（或热区被删），这两份文件会变成悬空引用 ——
+// 生成器不会报错，只是那条修正静默失效。这里提前拦掉。
+const OV_IOS = join(ROOT, 'tools', 'hotspot-overrides.ios.json')
+const DEL_IOS = join(ROOT, 'tools', 'hotspot-deletions.json')
+if (existsSync(OV_IOS) || existsSync(DEL_IOS)) {
+  const readJson = (p) => (existsSync(p) ? JSON.parse(read(p)) : {})
+  const screenIds = new Set(screens.map((s) => s.id))
+  const hsIdsBy = new Map()
+  for (const m of cfg.matchAll(/ScreenConfig\(id:\s*"([^"]+)"[\s\S]*?hotspots:\s*\[([\s\S]*?)\n            \]\)/g)) {
+    hsIdsBy.set(m[1], new Set([...m[2].matchAll(/Hotspot\(id:\s*"([^"]+)"/g)].map((x) => x[1])))
+  }
+  const danglingO = []
+  const danglingD = []
+  let nO = 0
+  let nD = 0
+  try {
+    for (const [sid, hs] of Object.entries(readJson(OV_IOS))) {
+      if (!screenIds.has(sid)) { danglingO.push(`屏 ${sid} 不存在`); continue }
+      for (const hid of Object.keys(hs)) {
+        nO++
+        if (!hsIdsBy.get(sid)?.has(hid)) danglingO.push(`${sid}/${hid}`)
+      }
+    }
+    for (const [sid, ids] of Object.entries(readJson(DEL_IOS))) {
+      // 删除清单本就引用「已被删掉」的热区，所以只校验屏 id，不校验热区 id（保证可重复执行）
+      if (!screenIds.has(sid)) { danglingD.push(`屏 ${sid} 不存在`); continue }
+      for (const hid of ids) nD++
+    }
+  } catch (e) {
+    bad('hotspot.ios', `iOS 侧修正文件无法解析：${e.message}`)
+  }
+  if (danglingO.length) bad('hotspot.ios', `hotspot-overrides.ios.json 引用了不存在的热区：${danglingO.join(', ')}`)
+  else if (danglingD.length) bad('hotspot.ios', `hotspot-deletions.json 引用了不存在的热区：${danglingD.join(', ')}`)
+  else ok('hotspot.ios', `iOS 侧修正 ${nO} 条坐标 / ${nD} 条删除，引用全部有效`)
+}
+
 if (KNOWN.length) {
   for (const k of KNOWN) (STRICT ? bad : warn)(`known.${k.id}`, k.msg)
 } else {

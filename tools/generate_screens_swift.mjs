@@ -15,7 +15,16 @@ const ANDROID = process.env.YIMENG_ANDROID
   : path.resolve(ROOT, '..', '安卓', '一梦千年-App');
 const SCREENS_TS = path.join(ANDROID, 'app-project', 'src', 'config', 'screens.ts');
 const OVERRIDES_JSON = path.join(ANDROID, 'app-project', 'src', 'config', 'hotspot-overrides.json');
-const OUT = path.join(ROOT, 'Yimengqian', 'Yimengqian', 'Config', 'ScreensConfig.swift');
+// iOS 侧修正（本仓库内，随 iOS 工程一起版本化）：
+//   坐标覆盖优先级 安卓 hotspot-overrides.json < tools/hotspot-overrides.ios.json
+//   删除清单只在本仓库内生效，不改动安卓源工程。
+// 为什么要有它们：Phase 1 修的热区如果只落在生成物 ScreensConfig.swift 里，
+// 一旦重跑生成器就会静默回退。把修正回写到源头，重跑才是幂等的。
+const IOS_OVERRIDES = path.join(ROOT, 'tools', 'hotspot-overrides.ios.json');
+const IOS_DELETIONS = path.join(ROOT, 'tools', 'hotspot-deletions.json');
+const OUT_DEFAULT = path.join(ROOT, 'Yimengqian', 'Yimengqian', 'Config', 'ScreensConfig.swift');
+const outArg = process.argv.slice(2).find((a) => a.startsWith('--out='));
+const OUT = outArg ? path.resolve(ROOT, outArg.slice('--out='.length)) : OUT_DEFAULT;
 
 if (!existsSync(SCREENS_TS)) {
   throw new Error(
@@ -31,21 +40,34 @@ const { screens } = await import(tsUrl.href);
 console.log(`[cfg] 从 screens.ts 读取 ${screens.length} 个屏幕`);
 
 // —— 2. 读取覆盖并合并 ——
+const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : fallback);
 const overrides = JSON.parse(readFileSync(OVERRIDES_JSON, 'utf8'));
+const iosOverrides = readJson(IOS_OVERRIDES, {});
+const deletions = readJson(IOS_DELETIONS, {});
+
+let deletedCount = 0;
+let iosOverrideCount = 0;
 const merged = screens.map((s) => {
-  const ov = overrides[s.id];
-  if (!ov) return s;
+  const ovA = overrides[s.id] || {};
+  const ovI = iosOverrides[s.id] || {};
+  const del = new Set(deletions[s.id] || []);
+  if (del.size) deletedCount += s.hotspots.filter((h) => del.has(h.id)).length;
+  if (Object.keys(ovI).length) iosOverrideCount += Object.keys(ovI).length;
   return {
     ...s,
-    hotspots: s.hotspots.map((h) => {
-      const o = ov[h.id];
-      if (!o) return h;
-      return { ...h, x: o.x, y: o.y, width: o.width, height: o.height };
-    }),
+    hotspots: s.hotspots
+      .filter((h) => !del.has(h.id))
+      .map((h) => {
+        const o = ovI[h.id] || ovA[h.id];   // iOS 侧优先
+        if (!o) return h;
+        return { ...h, x: o.x, y: o.y, width: o.width, height: o.height };
+      }),
   };
 });
 const overriddenCount = Object.keys(overrides).length;
-console.log(`[cfg] 合并 ${overriddenCount} 个屏幕的坐标覆盖`);
+console.log(`[cfg] 合并 ${overriddenCount} 个屏幕的安卓坐标覆盖`);
+if (iosOverrideCount) console.log(`[cfg] 叠加 ${iosOverrideCount} 条 iOS 侧坐标修正`);
+if (deletedCount) console.log(`[cfg] 按删除清单剔除 ${deletedCount} 个热区`);
 
 // —— 3. 工具函数 ——
 const swStr = (s) => JSON.stringify(String(s)); // JSON 转义 ≈ Swift 字符串转义
@@ -59,6 +81,16 @@ const mapImage = (p) => {
   if (p.startsWith('/screens/')) return `Screens/${p.slice('/screens/'.length)}`;
   if (p.startsWith('/assets/reference/')) return `Reference/${p.slice('/assets/reference/'.length)}`;
   return p.replace(/^\//, '');
+};
+
+// iOS 侧的设计稿是按「屏 id」命名的（Content/Screens/<id>.png），
+// 而安卓源里用的是中文文件名（如 一梦千年首页.png）。两边对不上时以 iOS 资源为准，
+// 否则重新生成会把 25 条 image 全部改错 → App 整屏白屏。存在性判断即映射规则。
+const IOS_SHOTS = path.join(ROOT, 'Yimengqian', 'Yimengqian', 'Content', 'Screens');
+const mapImageForIos = (s) => {
+  const guess = `${s.id}.png`;
+  if (existsSync(path.join(IOS_SHOTS, guess))) return `Screens/${guess}`;
+  return mapImage(s.image);
 };
 
 const actionCases = [
@@ -100,12 +132,13 @@ function emitScreen(s) {
   const hotspots = s.hotspots
     .map((h) => `Hotspot(id: ${swStr(h.id)}, label: ${swStr(h.label)}, x: ${swNum(h.x)}, y: ${swNum(h.y)}, width: ${swNum(h.width)}, height: ${swNum(h.height)}, action: ${emitAction(h.action)})`)
     .join(',\n                ');
-  return `ScreenConfig(id: ${swStr(s.id)}, route: ${swStr(s.route)}, image: ${swStr(mapImage(s.image))}, hotspots: [\n                ${hotspots}\n            ])`;
+  return `ScreenConfig(id: ${swStr(s.id)}, route: ${swStr(s.route)}, image: ${swStr(mapImageForIos(s))}, hotspots: [\n                ${hotspots}\n            ])`;
 }
 
 // —— 4. 组装 Swift 源码 ——
 const header = `// 本文件由 tools/generate_screens_swift.mjs 自动生成 —— 请勿手动编辑。
 // Generated from app-project/src/config/screens.ts + hotspot-overrides.json
+//        + tools/hotspot-overrides.ios.json（iOS 侧坐标修正）+ tools/hotspot-deletions.json（删除清单）
 // 共 ${merged.length} 个屏幕；合并了 ${overriddenCount} 个屏幕的坐标覆盖。
 import Foundation
 
