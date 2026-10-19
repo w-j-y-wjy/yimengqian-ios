@@ -81,6 +81,44 @@ jobs:
           grep -E "(warning|error):" build.log | head -30 >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: 资源打包断言（设计稿 25 张 / 不夹带 Reference / 体积）
+        run: |
+          set -euo pipefail
+          APP="build/DerivedData/Build/Products/Debug-iphonesimulator/$SCHEME.app"
+          # 设计稿目录：文件夹引用可能落在 App 根下的 Screens/ 或 Content/Screens/，两种都认
+          RES=""
+          for cand in "$APP/Screens" "$APP/Content/Screens"; do
+            [ -d "$cand" ] && RES="$cand" && break
+          done
+          if [ -z "$RES" ]; then
+            echo "::error::App 里找不到设计稿目录（Screens/ 或 Content/Screens/）"
+            ls -R "$APP" | head -40
+            exit 1
+          fi
+          COUNT=$(find "$RES" -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')
+          echo "设计稿目录：$RES"
+          echo "设计稿数量：$COUNT"
+          [ "$COUNT" -eq 25 ] || { echo "::error::设计稿应为 25 张，实际 $COUNT"; exit 1; }
+
+          # 死资源守卫：Content/Reference 有 55.7 MB，且 24/25 张文件名与内容错配，绝不能进包
+          if find "$APP" -maxdepth 3 -type d -name 'Reference' | grep -q .; then
+            echo "::error::Reference 目录仍被打包进 App（应为 0，否则白占 55.7 MB）"
+            find "$APP" -maxdepth 3 -type d -name 'Reference'
+            exit 1
+          fi
+
+          SIZE_MB=$(du -sm "$APP" | cut -f1)
+          echo "App 体积：${SIZE_MB} MB（基线 113 MB，去掉 Reference 后应约 58 MB）"
+          {
+            echo "### 资源打包断言通过"
+            echo ""
+            echo "| 项 | 值 |"
+            echo "|---|---|"
+            echo "| 设计稿数量 | $COUNT / 25 |"
+            echo "| Reference 进包 | 否 |"
+            echo "| App 体积 | ${SIZE_MB} MB |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: 模拟器冒烟（安装 → 启动 → 截图 → 查崩溃）
         run: |
           set -euo pipefail
