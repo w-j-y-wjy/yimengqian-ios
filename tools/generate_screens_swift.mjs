@@ -2,15 +2,28 @@
 // 输入：安卓工程 screens.ts + hotspot-overrides.json
 // 输出：Yimengqian/Yimengqian/Config/ScreensConfig.swift
 // 用法：node tools/generate_screens_swift.mjs
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url)); // ios/
-const ANDROID = 'D:/wij/桌面/移动应用比赛/安卓/一梦千年-App';
-const SCREENS_TS = `${ANDROID}/app-project/src/config/screens.ts`;
-const OVERRIDES_JSON = `${ANDROID}/app-project/src/config/hotspot-overrides.json`;
+// 安卓工程位置：默认取与本仓库同级的 ../安卓/一梦千年-App；
+// 可用环境变量 YIMENG_ANDROID 覆盖。
+// 原实现硬编码 'D:/wij/桌面/...'，在 macOS 上必然找不到 → 脚本不可移植。
+const ANDROID = process.env.YIMENG_ANDROID
+  ? path.resolve(process.env.YIMENG_ANDROID)
+  : path.resolve(ROOT, '..', '安卓', '一梦千年-App');
+const SCREENS_TS = path.join(ANDROID, 'app-project', 'src', 'config', 'screens.ts');
+const OVERRIDES_JSON = path.join(ANDROID, 'app-project', 'src', 'config', 'hotspot-overrides.json');
 const OUT = path.join(ROOT, 'Yimengqian', 'Yimengqian', 'Config', 'ScreensConfig.swift');
+
+if (!existsSync(SCREENS_TS)) {
+  throw new Error(
+    `找不到安卓源配置：${SCREENS_TS}\n` +
+    `这个脚本只在「改了安卓 screens.ts、需要重新生成 ScreensConfig.swift」时才要跑。\n` +
+    `请把安卓工程放到 ../安卓/一梦千年-App，或设置环境变量 YIMENG_ANDROID 指向它。`
+  );
+}
 
 // —— 1. 通过 Node 23 type-stripping 直接导入 TS 源文件 ——
 const tsUrl = new URL(`file:///${SCREENS_TS.replace(/\\/g, '/')}`);

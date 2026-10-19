@@ -12,6 +12,8 @@ struct RootView: View {
     @EnvironmentObject private var store: AppStore
 
     @State private var resetTapCount = 0
+    @State private var resetTapAt: Date?
+    @State private var showResetConfirm = false
 
     var body: some View {
         ZStack {
@@ -34,6 +36,12 @@ struct RootView: View {
                     .padding(.bottom, 90)
             }
         }
+        .alert("重置全部旅程数据？", isPresented: $showResetConfirm) {
+            Button("取消", role: .cancel) { }
+            Button("重置", role: .destructive) { performReset() }
+        } message: {
+            Text("将清空偏好、收藏、印章与全部进度。此操作不可撤销。")
+        }
         .statusBarHidden(true)
         .preferredColorScheme(.light)
         .environmentObject(store)
@@ -41,12 +49,30 @@ struct RootView: View {
         .environmentObject(toast)
     }
 
-    /// 启动页五连击重置（对应 Web ?reset=1）
+    /// 启动页五连击重置（对应 Web ?reset=1）。
+    /// 破坏性操作必须二次确认：旧实现静默清空数据，界面毫无变化，属隐藏的数据丢失路径。
+    /// 五连击同样加 3 秒时间窗，避免跨屏、跨时长累计误触发。
     private func handleSplashTap() {
-        resetTapCount += 1
-        if resetTapCount >= 5 {
-            resetTapCount = 0
-            store.resetAll()
+        let now = Date()
+        if let last = resetTapAt, now.timeIntervalSince(last) <= 3.0 {
+            resetTapCount += 1
+        } else {
+            resetTapCount = 1
         }
+        resetTapAt = now
+
+        guard resetTapCount >= 5 else { return }
+        resetTapCount = 0
+        resetTapAt = nil
+        showResetConfirm = true
+    }
+
+    private func performReset() {
+        store.resetAll()
+        // 清空路由栈回到启动页，避免"数据已清空但仍停留在内页"的错乱状态
+        if let splash = ScreenCatalog.screen(id: "splash") {
+            router.jump(to: splash)
+        }
+        toast.show("已重置全部旅程数据")
     }
 }

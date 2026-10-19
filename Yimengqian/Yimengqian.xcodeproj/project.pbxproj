@@ -23,7 +23,8 @@
 		73C42F9D322E438A950B715A /* SpecialScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B490F81411D5AD0A3F4E3AE /* SpecialScreens.swift */; };
 		70A1697176DE87FEFA129EE2 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49424CD0300232B0F95F5F5F /* ToastView.swift */; };
 		6172BEBBFD7F65BF0F626778 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F81D2758F77BE9993C164720 /* Assets.xcassets */; };
-		F679BAA6C5CDBEB39975636B /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = 588180E1D9E17057EF8F11EF /* Resources */; };
+		8F2A1B3C4D5E6F708192A3B4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7E1F0A2B3C4D5E6F708192A3 /* PrivacyInfo.xcprivacy */; };
+		F679BAA6C5CDBEB39975636B /* Screens in Resources */ = {isa = PBXBuildFile; fileRef = 588180E1D9E17057EF8F11EF /* Screens */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,7 +45,8 @@
 		49424CD0300232B0F95F5F5F /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		F81D2758F77BE9993C164720 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3EB4B42563E1790C617AFAF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		588180E1D9E17057EF8F11EF /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Content; sourceTree = "<group>"; };
+		7E1F0A2B3C4D5E6F708192A3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		588180E1D9E17057EF8F11EF /* Screens */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Content/Screens"; sourceTree = "<group>"; };
 		BD59F53A36A713D1EC01EDD7 /* Yimengqian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yimengqian.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,6 +73,7 @@
 				40AE021F9E73B3D30B302C12,
 				F81D2758F77BE9993C164720,
 				3EB4B42563E1790C617AFAF0,
+				7E1F0A2B3C4D5E6F708192A3,
 				588180E1D9E17057EF8F11EF,
 			);
 			path = Yimengqian;
@@ -208,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6172BEBBFD7F65BF0F626778,
+				8F2A1B3C4D5E6F708192A3B4,
 				F679BAA6C5CDBEB39975636B,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

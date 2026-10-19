@@ -37,6 +37,8 @@ function walk(dir, out = []) {
 }
 const rel = (p) => relative(ROOT, p).split(sep).join('/')
 const read = (p) => readFileSync(p, 'utf8')
+// 去掉行注释再做"代码级"断言：否则修完 bug 后，注释里留下的旧值/旧路径会被误判成仍未修
+const stripComments = (src) => src.replace(/\/\/[^\n]*/g, '')
 
 // ── 1. .swift 双射：磁盘上的源码 ⇄ pbxproj 里参与编译的文件 ────────────────
 // 这是最容易踩的坑：新增 AI/*.swift 却没加进 Sources 阶段 → 本地"看起来在"，
@@ -65,6 +67,37 @@ if (!existsSync(PBX)) {
 
   if (existsSync(SCHEME)) ok('scheme', '共享 scheme 存在')
   else bad('scheme', '缺少 xcshareddata/xcschemes/Yimengqian.xcscheme（CI 无法 xcodebuild）')
+
+  // ── pbxproj 引用完整性 ──
+  // 手改 pbxproj（新增文件 / 调整资源）最容易出的错是：ID 拼错、或加了 buildFile
+  // 却忘了在 fileRef 里定义。这类错在 Xcode 里表现为莫名其妙的「找不到文件」。
+  const fileRefIds = new Set(
+    [...pbx.matchAll(/^\t\t([0-9A-F]{24}) \/\*[^*]*\*\/ = \{isa = PBXFileReference;/gm)].map((m) => m[1])
+  )
+  const buildFileIds = new Set(
+    [...pbx.matchAll(/^\t\t([0-9A-F]{24}) \/\*[^*]*\*\/ = \{isa = PBXBuildFile;/gm)].map((m) => m[1])
+  )
+  const fileRefTargets = [...pbx.matchAll(/isa = PBXBuildFile;[^}]*?fileRef = ([0-9A-F]{24})/g)].map((m) => m[1])
+  const danglingRefs = fileRefTargets.filter((r) => !fileRefIds.has(r))
+
+  const phaseRefs = []
+  for (const m of pbx.matchAll(/isa = PBX(Sources|Resources|Frameworks)BuildPhase;[\s\S]*?files = \(([\s\S]*?)\);/g)) {
+    for (const idm of m[2].matchAll(/([0-9A-F]{24})/g)) phaseRefs.push({ id: idm[0], phase: m[1] })
+  }
+  const danglingPhase = phaseRefs.filter((p) => !buildFileIds.has(p.id)).map((p) => `${p.phase}:${p.id}`)
+
+  if (danglingRefs.length) bad('pbxproj.refs', `PBXBuildFile 指向了未定义的 fileRef：${danglingRefs.join(', ')}`)
+  else if (danglingPhase.length) bad('pbxproj.refs', `构建阶段引用了未定义的 buildFile：${danglingPhase.join(', ')}`)
+  else ok('pbxproj.refs', `引用完整：${buildFileIds.size} 个 buildFile / ${fileRefIds.size} 个 fileRef，无悬空 ID`)
+
+  // 资源：真正进包的应该只有 Screens 文件夹（Reference 是死资源，不应打包）
+  const folderRefs = [...pbx.matchAll(/isa = PBXFileReference; lastKnownFileType = folder;[^}]*?path = "?([^";]+)"?;/g)].map((m) => m[1])
+  if (folderRefs.some((p) => p === 'Content')) bad('pbxproj.bundle', '仍以 Content/ 整目录打包（会把 Reference 的 55.7 MB 带进 App）')
+  else if (folderRefs.some((p) => p.includes('Screens'))) ok('pbxproj.bundle', `设计稿以文件夹引用打包：${folderRefs.join(', ')}`)
+  else bad('pbxproj.bundle', '没有找到 Screens 文件夹引用，App 会缺全部设计稿')
+
+  if (!/PrivacyInfo\.xcprivacy/.test(pbx)) warn('pbxproj.privacy', 'PrivacyInfo.xcprivacy 未加入工程')
+  else ok('pbxproj.privacy', 'PrivacyInfo.xcprivacy 已加入 Resources 阶段')
 }
 
 // ── 2. 25 屏配置：图片引用 / 路由闭合 / 热区坐标 ────────────────────────────
@@ -116,15 +149,15 @@ else {
 const KNOWN = []
 const push = (id, msg) => KNOWN.push({ id, msg })
 
-const hotspotView = read(join(SRC, 'Views', 'HotspotScreenView.swift'))
-if (hotspotView.includes('0.4617')) push('P1-1', '回退常数 0.4617 写反（应 2.1667）')
+const hotspotView = stripComments(read(join(SRC, 'Views', 'HotspotScreenView.swift')))
+if (/return\s+0\.4617/.test(hotspotView)) push('P1-1', '回退常数 0.4617 写反（应 2.1667 或 1846.0/852.0）')
 const x100 = [...cfg.matchAll(/Hotspot\(id:\s*"([^"]+)"[^)]*x:\s*100(\.0*)?,/g)].map((m) => m[1])
 if (x100.length) push('P1-2', `${x100.length} 个热区 x=100 整体越界不可点：${x100.join(', ')}`)
 
 const swiftFiles = walk(SRC).filter((p) => p.endsWith('.swift'))
 const refHits = []
 for (const f of swiftFiles) {
-  const n = (read(f).match(/Reference\//g) || []).length
+  const n = (stripComments(read(f)).match(/Reference\//g) || []).length
   if (n) refHits.push(`${rel(f)}×${n}`)
 }
 if (refHits.length) push('P1-3', `ContentData 仍引用错配的 Reference/ 资源：${refHits.join(', ')}`)

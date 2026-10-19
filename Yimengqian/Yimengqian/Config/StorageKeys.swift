@@ -18,6 +18,9 @@ enum StorageKeys {
     static let cultureValue = "cultureValue"
     static let stampDongpo = "stampDongpo"
     static let sushiLetter = "sushiLetter"
+    /// 苏轼页「语音」热区会写入该键。补登记原因：旧版本只在 ScreensConfig 里写、
+    /// 没在 StorageKeys 声明，导致它不在 `all` 数组里 → resetAll 清不掉。
+    static let sushiVoicePlaying = "sushiVoicePlaying"
     static let bianjingProgress = "bianjingProgress"
     // Poetry
     static let jiangxuePlaying = "jiangxuePlaying"
@@ -67,6 +70,7 @@ enum StorageKeys {
         cultureValue,
         stampDongpo,
         sushiLetter,
+        sushiVoicePlaying,
         bianjingProgress,
         // Poetry
         jiangxuePlaying,

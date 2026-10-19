@@ -32,7 +32,19 @@ if (!swiftFiles.length) throw new Error('未找到任何 Swift 文件');
 // —— 固定文件引用 ——
 const hasAssets = existsSync(path.join(APP_DIR, 'Assets.xcassets'));
 const hasInfoPlist = existsSync(path.join(APP_DIR, 'Info.plist'));
-const hasResources = existsSync(path.join(APP_DIR, 'Resources'));
+const hasPrivacy = existsSync(path.join(APP_DIR, 'PrivacyInfo.xcprivacy'));
+
+// 资源目录探测（2026-10-19 修正）
+// 历史：目录曾叫 Resources，后来改名 Content；真正要打包进 App 的只有 Content/Screens 下的 25 张设计稿。
+// 旧脚本只认 Resources，于是重跑会生成一个「不含任何资源目录」的工程 → 25 屏全部缺图。
+// 另外 Content/Reference 是死资源（无视图渲染、且文件名与内容错配），不参与打包。
+const SCREENS_REL = 'Content/Screens';
+const screensRel = existsSync(path.join(APP_DIR, SCREENS_REL))
+  ? SCREENS_REL
+  : (existsSync(path.join(APP_DIR, 'Resources')) ? 'Resources' : null);
+if (!screensRel) {
+  throw new Error('未找到资源目录（Content/Screens 与 Resources 都不存在）。拒绝生成不含资源的工程——请先确认设计稿在磁盘上。');
+}
 
 const FR = (p) => `FR-${p}`;
 const BF = (p) => `BF-${p}`;
@@ -76,7 +88,8 @@ for (const d of dirs) {
 const fixedRefs = [];
 if (hasAssets) { fixedRefs.push({ id: fileRefId('Assets.xcassets'), name: 'Assets.xcassets', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Assets.xcassets')); }
 if (hasInfoPlist) { fixedRefs.push({ id: fileRefId('Info.plist'), name: 'Info.plist', fileRef: `{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Info.plist')); }
-if (hasResources) { fixedRefs.push({ id: fileRefId('Resources'), name: 'Resources', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Resources')); }
+fixedRefs.push({ id: fileRefId('Screens'), name: 'Screens', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder; path = "${screensRel}"; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Screens'));
+if (hasPrivacy) { fixedRefs.push({ id: fileRefId('PrivacyInfo.xcprivacy'), name: 'PrivacyInfo.xcprivacy', fileRef: `{isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('PrivacyInfo.xcprivacy')); }
 
 // —— 文件引用段 ——
 const fileRefLines = [];
@@ -102,9 +115,14 @@ if (hasAssets) {
   buildFileLines.push(`\t\t${bid} /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Assets.xcassets')} /* Assets.xcassets */; };`);
   resourceBuildIds.push(bid);
 }
-if (hasResources) {
-  const bid = buildFileId('Resources');
-  buildFileLines.push(`\t\t${bid} /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Resources')} /* Resources */; };`);
+{
+  const bid = buildFileId('Screens');
+  buildFileLines.push(`\t\t${bid} /* Screens in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Screens')} /* Screens */; };`);
+  resourceBuildIds.push(bid);
+}
+if (hasPrivacy) {
+  const bid = buildFileId('PrivacyInfo.xcprivacy');
+  buildFileLines.push(`\t\t${bid} /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('PrivacyInfo.xcprivacy')} /* PrivacyInfo.xcprivacy */; };`);
   resourceBuildIds.push(bid);
 }
 
@@ -423,4 +441,4 @@ ${sourceBuildIds.map((b) => `\t\t\t\t${b} /* in Sources */,`).join('\n')}
 
 writeFileSync(OUT, pbx, 'utf8');
 console.log(`[pbxproj] 已生成 ${OUT}`);
-console.log(`[pbxproj] Swift 文件 ${swiftFiles.length} 个；资源：Assets=${hasAssets} Info.plist=${hasInfoPlist} Resources=${hasResources}`);
+console.log(`[pbxproj] Swift 文件 ${swiftFiles.length} 个；资源：Assets=${hasAssets} Info.plist=${hasInfoPlist} 设计稿目录=${screensRel} PrivacyInfo=${hasPrivacy}`);

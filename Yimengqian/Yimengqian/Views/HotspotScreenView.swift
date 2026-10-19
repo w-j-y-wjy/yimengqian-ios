@@ -28,6 +28,8 @@ struct HotspotScreenView: View {
     @State private var debug = false
     @State private var hasRunInit = false
     @State private var tapCount = 0
+    /// 三连击的时间窗锚点（见 onTapGesture 注释）
+    @State private var lastTapAt: Date?
 
     var body: some View {
         GeometryReader { geo in
@@ -41,9 +43,19 @@ struct HotspotScreenView: View {
                 .frame(width: w, height: h)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    tapCount += 1
+                    // 三连击进入/退出热区调试框。
+                    // 必须带时间窗：旧实现只在命中 3 次时才把计数归零，
+                    // 于是"很久以前点过 2 次 + 今天再点 1 次"也会进调试模式。
+                    let now = Date()
+                    if let last = lastTapAt, now.timeIntervalSince(last) <= 3.0 {
+                        tapCount += 1
+                    } else {
+                        tapCount = 1
+                    }
+                    lastTapAt = now
                     if tapCount >= 3 {
                         tapCount = 0
+                        lastTapAt = nil
                         debug.toggle()
                     }
                     onExtraTap?()
@@ -61,9 +73,12 @@ struct HotspotScreenView: View {
         }
     }
 
-    /// 图片纵横比（加载失败时回退 852:1846 ≈ 0.4617，即设计稿默认比例）
+    /// 图片纵横比（高 / 宽）。
+    /// 加载失败时回退到设计稿比例 1846:852 ≈ 2.1667，与正常路径**同量纲**。
+    /// 旧实现误写成 852/1846 ≈ 0.4617（宽/高），差 4.69 倍，一旦缺图
+    /// 热区会全部塌缩到屏幕顶部 21% 的高度里。
     private var imageAspect: CGFloat {
-        guard let img = AssetLoader.image(screen.image) else { return 0.4617 }
+        guard let img = AssetLoader.image(screen.image) else { return 1846.0 / 852.0 }
         return img.size.height / img.size.width
     }
 
