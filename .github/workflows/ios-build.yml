@@ -139,6 +139,34 @@ jobs:
           fi
           echo "### 冒烟通过：应用能安装、启动、无崩溃" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: 叠层验证截图（偏好测试 / 飞花令）
+        run: |
+          set -euo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          # 用启动参数直接进到目标屏并预置选择（iOS 会把 -key value 注入 UserDefaults）
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen preference-test \
+            -preferenceScene landscape \
+            -preferenceDynasty northernSong
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-preference-test.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen feihualing-challenge \
+            -feihualingAnswer B
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-feihualing.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          ls -l overlay-*.png
+          if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
+            echo "::error::叠层截图阶段产生了崩溃日志"
+            exit 1
+          fi
+          echo "### 叠层截图已生成（偏好测试 / 飞花令）" >> "$GITHUB_STEP_SUMMARY"
+
       - name: 上传证据（截图 + 编译日志）
         if: always()
         uses: actions/upload-artifact@v4
@@ -146,6 +174,7 @@ jobs:
           name: build-evidence-${{ github.run_number }}
           path: |
             splash.png
+            overlay-*.png
             build.log
           retention-days: 7
           if-no-files-found: warn

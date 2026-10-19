@@ -123,7 +123,14 @@ final class ActionExecutor {
             }
 
         case .setDefaultsAndNavigate:
-            action.defaults?.forEach { kv in store.setIfAbsent(kv.key, kv.value) }
+            // setIfAbsent：只在缺失时补默认值。镜像时必须读**实际存下来的值**，
+            // 否则"没选任何项直接点生成"会出现：存储里已有默认值、叠层却显示全未选。
+            action.defaults?.forEach { kv in
+                store.setIfAbsent(kv.key, kv.value)
+                if let actual = store.string(kv.key) {
+                    selection?.note(key: kv.key, value: actual, screenID: screenID)
+                }
+            }
             if let target = action.target { router.navigate(route: target) }
 
         case .checkAnswer:

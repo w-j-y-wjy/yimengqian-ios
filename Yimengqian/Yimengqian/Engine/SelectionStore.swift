@@ -88,4 +88,12 @@ final class SelectionStore: ObservableObject {
     func clearWrongAnswer() {
         if wrongAnswerScreenID != nil { wrongAnswerScreenID = nil }
     }
+
+    /// 供 AppStore.resetAll() 之后调用。
+    /// 原因：本对象在启动时从 UserDefaults seed 一次就不再重读，
+    /// 若重置后不显式清空，偏好测试页会继续显示上一轮的描边。
+    func reset() {
+        if !values.isEmpty { values = [:] }
+        clearWrongAnswer()
+    }
 }

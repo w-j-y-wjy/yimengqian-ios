@@ -51,6 +51,8 @@ struct FeihualingLayer: View {
             }
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
+        // 答错态只对本屏当次有效：离开再回来不该还挂着上一轮的 ✕
+        .onAppear { selection.clearWrongAnswer() }
     }
 
     private func ring(for hotspot: Hotspot, color: Color, mark: SelectionMark) -> some View {
