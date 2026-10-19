@@ -23,11 +23,14 @@ final class ActionExecutor {
     private let store: AppStore
     private let router: Router
     private let toast: ToastCenter
+    /// 选择态镜像（Phase 2 新增）。可选，缺省不影响既有 15 种动作的行为。
+    private let selection: SelectionStore?
 
-    init(store: AppStore, router: Router, toast: ToastCenter) {
+    init(store: AppStore, router: Router, toast: ToastCenter, selection: SelectionStore? = nil) {
         self.store = store
         self.router = router
         self.toast = toast
+        self.selection = selection
     }
 
     func execute(_ action: HotspotAction, screenID: String) {
@@ -45,7 +48,10 @@ final class ActionExecutor {
             action.storage?.forEach { store.setString($0.key, $0.value) }
 
         case .storageAndToast:
-            action.storage?.forEach { store.setString($0.key, $0.value) }
+            action.storage?.forEach {
+                store.setString($0.key, $0.value)
+                selection?.note(key: $0.key, value: $0.value, screenID: screenID)
+            }
             if let m = action.message { toast.show(m) }
 
         case .conditionalNavigate:
@@ -59,7 +65,11 @@ final class ActionExecutor {
 
         case .setStorageAndToast:
             if let key = action.storageKey {
-                store.setString(key, action.storageValue ?? "true")
+                let value = action.storageValue ?? "true"
+                store.setString(key, value)
+                selection?.note(key: key, value: value, screenID: screenID)
+                // 该键已经有叠层把选中态画出来了 → 省掉 Toast，否则提示条会盖住设计稿
+                if SelectionStore.visuallyRepresentedKeys.contains(key) { break }
             }
             if let m = action.message { toast.show(m) }
 
@@ -70,13 +80,17 @@ final class ActionExecutor {
 
         case .storageAndNavigate:
             if let key = action.storageKey, let target = action.target {
-                store.setString(key, action.storageValue ?? target)
+                let value = action.storageValue ?? target
+                store.setString(key, value)
+                selection?.note(key: key, value: value, screenID: screenID)
                 router.navigate(route: target)
             }
 
         case .conditionalStorageNavigate:
             if let key = action.storageKey, store.string(key) == nil {
-                store.setString(key, action.defaultValue ?? "true")
+                let value = action.defaultValue ?? "true"
+                store.setString(key, value)
+                selection?.note(key: key, value: value, screenID: screenID)
             }
             if let target = action.target { router.navigate(route: target) }
 
@@ -117,8 +131,11 @@ final class ActionExecutor {
             if answer == nil {
                 toast.show(action.message ?? "请先选择答案")
             } else if answer != action.correctAnswer {
+                // 让叠层把"选中的这一项"标成错，而不是只弹一句提示就没了下文
+                selection?.noteWrongAnswer(screenID: screenID)
                 toast.show("回答错误，请重新选择")
             } else {
+                selection?.clearWrongAnswer()
                 action.storageFlags?.forEach { store.setString($0.key, $0.value) }
                 if let target = action.target { router.navigate(route: target) }
             }

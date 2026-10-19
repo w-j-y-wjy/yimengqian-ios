@@ -22,6 +22,10 @@
 		14640F64F4283AD27566A31B /* HotspotScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5E3518EF10CDAA7530242F /* HotspotScreenView.swift */; };
 		73C42F9D322E438A950B715A /* SpecialScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B490F81411D5AD0A3F4E3AE /* SpecialScreens.swift */; };
 		70A1697176DE87FEFA129EE2 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49424CD0300232B0F95F5F5F /* ToastView.swift */; };
+		5F60718293A4B5C6D7E8F9A0 /* SelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5F60718293A4B5C6D7E8F9 /* SelectionStore.swift */; };
+		60718293A4B5C6D7E8F9A0B1 /* ScreenNativeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2C3D4E5F60718293A4B5C6 /* ScreenNativeLayer.swift */; };
+		718293A4B5C6D7E8F9A0B1C2 /* PreferenceTestLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3D4E5F60718293A4B5C6D7 /* PreferenceTestLayer.swift */; };
+		8293A4B5C6D7E8F9A0B1C2D3 /* FeihualingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D4E5F60718293A4B5C6D7E8 /* FeihualingLayer.swift */; };
 		6172BEBBFD7F65BF0F626778 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F81D2758F77BE9993C164720 /* Assets.xcassets */; };
 		8F2A1B3C4D5E6F708192A3B4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7E1F0A2B3C4D5E6F708192A3 /* PrivacyInfo.xcprivacy */; };
 		F679BAA6C5CDBEB39975636B /* Screens in Resources */ = {isa = PBXBuildFile; fileRef = 588180E1D9E17057EF8F11EF /* Screens */; };
@@ -43,6 +47,10 @@
 		BA5E3518EF10CDAA7530242F /* HotspotScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotspotScreenView.swift; sourceTree = "<group>"; };
 		0B490F81411D5AD0A3F4E3AE /* SpecialScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialScreens.swift; sourceTree = "<group>"; };
 		49424CD0300232B0F95F5F5F /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		4E5F60718293A4B5C6D7E8F9 /* SelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionStore.swift; sourceTree = "<group>"; };
+		1B2C3D4E5F60718293A4B5C6 /* ScreenNativeLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNativeLayer.swift; sourceTree = "<group>"; };
+		2C3D4E5F60718293A4B5C6D7 /* PreferenceTestLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceTestLayer.swift; sourceTree = "<group>"; };
+		3D4E5F60718293A4B5C6D7E8 /* FeihualingLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeihualingLayer.swift; sourceTree = "<group>"; };
 		F81D2758F77BE9993C164720 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3EB4B42563E1790C617AFAF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7E1F0A2B3C4D5E6F708192A3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -103,6 +111,7 @@
 				1FA2603BC653CC1DA3A603FA /* ActionExecutor.swift */,
 				77932300CD381023C07FDAFD /* Router.swift */,
 				F2ECF489276B84BBA512401D /* ToastCenter.swift */,
+				4E5F60718293A4B5C6D7E8F9 /* SelectionStore.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -139,8 +148,19 @@
 				BA5E3518EF10CDAA7530242F /* HotspotScreenView.swift */,
 				0B490F81411D5AD0A3F4E3AE /* SpecialScreens.swift */,
 				49424CD0300232B0F95F5F5F /* ToastView.swift */,
+				0A1B2C3D4E5F60718293A4B5 /* Native */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F60718293A4B5 /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				1B2C3D4E5F60718293A4B5C6 /* ScreenNativeLayer.swift */,
+				2C3D4E5F60718293A4B5C6D7 /* PreferenceTestLayer.swift */,
+				3D4E5F60718293A4B5C6D7E8 /* FeihualingLayer.swift */,
+			);
+			path = Native;
 			sourceTree = "<group>";
 		};
 		07920D067CD2804DDCFEDD95 /* Products */ = {
@@ -238,6 +258,10 @@
 				14640F64F4283AD27566A31B /* in Sources */,
 				73C42F9D322E438A950B715A /* in Sources */,
 				70A1697176DE87FEFA129EE2 /* in Sources */,
+				5F60718293A4B5C6D7E8F9A0 /* in Sources */,
+				60718293A4B5C6D7E8F9A0B1 /* in Sources */,
+				718293A4B5C6D7E8F9A0B1C2 /* in Sources */,
+				8293A4B5C6D7E8F9A0B1C2D3 /* in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

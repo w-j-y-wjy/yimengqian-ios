@@ -23,6 +23,7 @@ struct HotspotScreenView: View {
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var toast: ToastCenter
+    @EnvironmentObject private var selection: SelectionStore
 
     /// 调试模式：显示热区红色边框与标签（对应 Web 的 ?debug=1）
     @State private var debug = false
@@ -39,6 +40,9 @@ struct HotspotScreenView: View {
                 ZStack(alignment: .topLeading) {
                     imageLayer(width: w, height: h)
                     hotspotLayer(width: w, height: h)
+                    // 原生叠层：只补位图做不到的实时状态（选中态、判题反馈）。
+                    // 它 .allowsHitTesting(false)，不会抢热区的点击。
+                    ScreenNativeLayer(screen: screen, containerSize: CGSize(width: w, height: h))
                 }
                 .frame(width: w, height: h)
                 .contentShape(Rectangle())
@@ -115,7 +119,7 @@ struct HotspotScreenView: View {
     }
 
     private func execute(_ hotspot: Hotspot) {
-        let executor = ActionExecutor(store: store, router: router, toast: toast)
+        let executor = ActionExecutor(store: store, router: router, toast: toast, selection: selection)
         executor.execute(hotspot.action, screenID: screen.id)
     }
 }
@@ -129,10 +133,8 @@ private struct HotspotButton: View {
     let onTap: () -> Void
 
     var body: some View {
-        let x = containerW * CGFloat(hotspot.x) / 100
-        let y = containerH * CGFloat(hotspot.y) / 100
-        let w = containerW * CGFloat(hotspot.width) / 100
-        let h = containerH * CGFloat(hotspot.height) / 100
+        // 与叠层共用同一套换算（Hotspot.rect），保证两套渲染永远对得上
+        let frame = hotspot.rect(in: CGSize(width: containerW, height: containerH))
         return ZStack(alignment: .topLeading) {
             if debug {
                 Rectangle()
@@ -147,8 +149,8 @@ private struct HotspotButton: View {
                 Color.clear
             }
         }
-        .frame(width: w, height: h)
-        .position(x: x + w / 2, y: y + h / 2)
+        .frame(width: frame.width, height: frame.height)
+        .position(x: frame.midX, y: frame.midY)
         .contentShape(Rectangle())
         .onTapGesture { onTap() }
     }

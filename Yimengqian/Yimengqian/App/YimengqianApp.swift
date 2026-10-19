@@ -11,6 +11,7 @@ struct YimengqianApp: App {
     @StateObject private var store: AppStore
     @StateObject private var router: Router
     @StateObject private var toast = ToastCenter()
+    @StateObject private var selection: SelectionStore
 
     init() {
         let store = AppStore()
@@ -18,6 +19,8 @@ struct YimengqianApp: App {
         let router = Router(initial: initial)
         _store = StateObject(wrappedValue: store)
         _router = StateObject(wrappedValue: router)
+        // 选择态由 AppStore 派生：读出已存的选择，后续写入经 ActionExecutor 镜像回来
+        _selection = StateObject(wrappedValue: SelectionStore(store: store))
     }
 
     var body: some Scene {
@@ -26,6 +29,7 @@ struct YimengqianApp: App {
                 .environmentObject(store)
                 .environmentObject(router)
                 .environmentObject(toast)
+                .environmentObject(selection)
                 .tint(Theme.vermilion)
         }
     }
