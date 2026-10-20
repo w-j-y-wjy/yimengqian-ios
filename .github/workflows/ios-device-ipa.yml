@@ -1,0 +1,94 @@
+# 真机包（未签名 IPA）
+#
+# 为什么单独一个工作流：主工作流 ios-build.yml 每次 push 都跑，那是「编译 + 冒烟 + 截图」用的，
+# 产物是模拟器架构，装不到真机。真机试用只需要偶尔出一份设备包，所以做成手动触发，
+# 既不拖慢每次 push，也不会在 Actions 里堆一堆用不上的 IPA。
+#
+# 用法：Actions → 真机包（未签名 IPA）→ Run workflow → 下 artifacts 里的 device-ipa-unsigned。
+# 本机是 Windows、没有 Xcode，所以只能出**未签名**包；签名与安装交给电脑上的 iOS 辅助工具
+# （用 Apple ID 重签，免费证书 7 天有效）。未签名包的好处是与任何账号无关、CI 不接触凭据。
+name: 真机包（未签名 IPA）
+
+on:
+  workflow_dispatch:
+
+jobs:
+  device-ipa:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: 检出
+        uses: actions/checkout@v4
+
+      - name: 工具链信息
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          echo "### $(xcodebuild -version | head -1)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 编译真机包（Release · 不签名）
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Yimengqian/Yimengqian.xcodeproj \
+            -scheme Yimengqian \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build/DeviceDerived \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            build 2>&1 | tee device-build.log
+          echo "warning 行数: $(grep -c 'warning:' device-build.log || true)"
+          echo "error   行数: $(grep -c 'error:' device-build.log || true)"
+
+      - name: 打包未签名 IPA
+        run: |
+          set -euo pipefail
+          APP="build/DeviceDerived/Build/Products/Release-iphoneos/Yimengqian.app"
+          if [ ! -d "$APP" ]; then
+            echo "::error::找不到设备产物：$APP"
+            find build/DeviceDerived/Build/Products -maxdepth 2 -name "*.app" || true
+            exit 1
+          fi
+          # 真机包必须是 arm64 设备切片，出现 -simulator 切片说明用错了 SDK
+          lipo -info "$APP/Yimengqian" | tee arch.txt
+          if grep -q "simulator" arch.txt; then
+            echo "::error::产物含模拟器切片，装不到真机"
+            exit 1
+          fi
+          # 一份未签名包不该带 _CodeSignature，带了说明意外走了签名流程
+          if [ -d "$APP/_CodeSignature" ]; then
+            echo "::warning::产物带有 _CodeSignature，重签前工具可能报错"
+          fi
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry "Yimengqian-unsigned.ipa" Payload
+          ls -l Yimengqian-unsigned.ipa
+          shasum -a 256 Yimengqian-unsigned.ipa | tee ipa-sha256.txt
+          BID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' Payload/Yimengqian.app/Info.plist)
+          MOS=$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' Payload/Yimengqian.app/Info.plist)
+          SIZE=$(du -h Yimengqian-unsigned.ipa | cut -f1)
+          {
+            echo "### 真机包已生成（未签名）"
+            echo ""
+            echo "| 项 | 值 |"
+            echo "|---|---|"
+            echo "| Bundle ID | \`$BID\` |"
+            echo "| 最低系统 | iOS $MOS |"
+            echo "| 体积 | $SIZE |"
+            echo "| SHA256 | \`$(cut -d' ' -f1 ipa-sha256.txt)\` |"
+            echo ""
+            echo "签名：用 Apple ID 重签后再安装（免费证书 7 天有效，装完需在 设置 → 通用 → VPN 与设备管理 里信任）。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 上传 IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: device-ipa-unsigned
+          path: |
+            Yimengqian-unsigned.ipa
+            ipa-sha256.txt
+            device-build.log
+          retention-days: 14
