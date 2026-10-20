@@ -3,12 +3,12 @@
 //  静态内容数据 —— 对应安卓原型 app-project/src/data/*.ts
 //  dynasties.ts / characters.ts / poems.ts / artifacts.ts / activities.ts / rewards.ts
 //
-//  图片引用约定（2026-10-19 修正）：
-//  旧版本这里全部指向 "Reference/xxx.png"，而 Content/Reference/ 里 24/25 张文件名
-//  与内容错配（例：Reference/splash.png 实际是汴京地图），等于每条数据都挂错了图。
-//  现统一改指 "Screens/<id>.png" —— 那 25 张文件名与内容严格对应（MD5 已核）。
-//  ⚠️ Screens/ 是整屏设计稿（852×1846），当条目缩略图用会显示整页；
-//     Phase 4 需要从这里裁切出单件器物/单枚印章的小图。
+//  图片引用约定（2026-10-20 更新）：
+//  - 条目小图统一指向 "ArtApp/<类型>-<实体id>.jpg|png"，即 Content/ArtApp/。
+//    这批是 26 张独立配图 + 4 枚印章，按实体一一对应，不再拿整屏设计稿当缩略图。
+//  - 整屏设计稿仍保留在 "Screens/<屏id>.png"（北宋朝代卡仍用 bianjing 整屏，因为没单独出图）。
+//  - Content/Art/ 存放 AI 生成的原始大图（80 MB，体积大，不进包、不进 git）；
+//    Content/ArtApp/ 是压缩后的打包用版本（约 9 MB），只提交这一份。
 //
 
 import Foundation
@@ -24,7 +24,7 @@ enum ContentData {
             description: "万国来朝，诗酒风流",
             unlocked: false,
             recommended: false,
-            image: "Screens/dynasties.png",
+            image: "ArtApp/dynasty-tang.jpg",
             characters: ["libai"]
         ),
         Dynasty(
@@ -46,7 +46,7 @@ enum ContentData {
             description: "山水清雅，西湖烟雨",
             unlocked: false,
             recommended: false,
-            image: "Screens/dynasties.png",
+            image: "ArtApp/dynasty-nan-song.jpg",
             characters: []
         ),
         Dynasty(
@@ -57,7 +57,7 @@ enum ContentData {
             description: "繁华锦绣，秦淮灯影",
             unlocked: false,
             recommended: false,
-            image: "Screens/dynasties.png",
+            image: "ArtApp/dynasty-ming.jpg",
             characters: []
         ),
     ]
@@ -110,7 +110,7 @@ enum ContentData {
                     date: "元丰五年"
                 ),
             ],
-            image: "Screens/sushi.png"
+            image: "ArtApp/character-sushi.jpg"
         ),
         Character(
             id: "libai",
@@ -122,9 +122,47 @@ enum ContentData {
             works: [],
             footprints: [],
             letters: [],
-            // TODO(Phase 4)：李白暂无独立立绘，先留空表示"无素材"，
-            // 不要拿苏轼的图占位（那会变成张冠李戴的可见错误）。
-            image: ""
+            image: "ArtApp/character-libai.jpg"
+        ),
+        Character(
+            id: "liqingzhao",
+            name: "李清照",
+            dynasty: "南宋",
+            title: "易安居士",
+            tags: ["婉约", "清冷", "才情"],
+            bio: "号易安居士，齐州章丘人，宋代女词人，婉约词派代表。前期词风清丽婉转，多写闺阁闲愁与自然风物；南渡之后词风转为沉郁，家国之痛融入笔端，后人誉为“千古第一才女”。",
+            works: [
+                Poem(
+                    id: "ru-meng-ling",
+                    title: "如梦令",
+                    author: "李清照",
+                    dynasty: "南宋",
+                    content: "昨夜雨疏风骤，浓睡不消残酒。",
+                    category: "婉约"
+                ),
+                Poem(
+                    id: "sheng-sheng-man",
+                    title: "声声慢",
+                    author: "李清照",
+                    dynasty: "南宋",
+                    content: "寻寻觅觅，冷冷清清，凄凄惨惨戚戚。",
+                    category: "婉约"
+                ),
+            ],
+            footprints: [
+                Footprint(city: "汴京", period: "少女时代", description: "生长于书香门第，少年即有诗名"),
+                Footprint(city: "青州", period: "屏居岁月", description: "与夫赵明诚屏居青州，共事金石校勘"),
+                Footprint(city: "临安", period: "南渡之后", description: "南渡流离，词风转沉郁悲凉"),
+            ],
+            letters: [
+                Letter(
+                    id: "letter-liqingzhao-1",
+                    from: "李清照",
+                    content: "生当作人杰，死亦为鬼雄。治学当以金石为证，不随流俗而改其志。",
+                    date: "绍兴二年"
+                ),
+            ],
+            image: "ArtApp/character-liqingzhao.jpg"
         ),
     ]
 
@@ -133,7 +171,7 @@ enum ContentData {
         Imagery(
             id: "gu-zhou",
             name: "孤舟",
-            image: "Screens/jiangxue-imagery.png",
+            image: "ArtApp/imagery-gu-zhou.jpg",
             meaning: "孤舟是全诗的核心意象，象征着诗人独立于尘世之外的高洁品格。渔船在风雪中，不畏严寒，展现了超然物外、悠然自得的隐逸情怀。",
             visual: "一叶扁舟，泊于江心，渔翁独坐，风雪漫天。舟身斑驳，似历尽沧桑。",
             emotion: "孤寂却不哀伤，清冷中透着坚毅与从容。",
@@ -146,7 +184,7 @@ enum ContentData {
         Imagery(
             id: "han-jiang",
             name: "寒江",
-            image: "Screens/jiangxue-imagery.png",
+            image: "ArtApp/imagery-han-jiang.jpg",
             meaning: "寒江代表了严酷的自然环境，也象征着诗人所处的困境。江水冰冷，却仍有渔翁垂钓，暗示着面对困境时的从容不迫。",
             visual: "江水如墨，寒气逼人，两岸寂寥，唯余飞雪。",
             emotion: "冷寂、深沉，却蕴含着不屈的力量。",
@@ -159,7 +197,7 @@ enum ContentData {
         Imagery(
             id: "suo-li-weng",
             name: "蓑笠翁",
-            image: "Screens/jiangxue-imagery.png",
+            image: "ArtApp/imagery-suo-li-weng.jpg",
             meaning: "蓑笠翁是渔翁的形象，代表着一种超然物外的生活态度。他不畏风雪，独自垂钓，象征着诗人对自由与独立的追求。",
             visual: "老翁披蓑戴笠，手持钓竿，端坐船头，神态安详。",
             emotion: "淡泊、宁静，与世无争的从容。",
@@ -171,7 +209,7 @@ enum ContentData {
         Imagery(
             id: "fei-xue",
             name: "飞雪",
-            image: "Screens/jiangxue-imagery.png",
+            image: "ArtApp/imagery-fei-xue.jpg",
             meaning: "飞雪既是自然景象的描写，也烘托出一种空灵、寂静的意境。雪花纷飞，覆盖了世间一切喧嚣，营造出纯净的世界。",
             visual: "漫天飞雪，纷纷扬扬，天地一片苍茫，万籁俱寂。",
             emotion: "纯净、空灵，洗涤心灵的宁静。",
@@ -200,7 +238,7 @@ enum ContentData {
                 Imagery(
                     id: "gu-zhou",
                     name: "孤舟",
-                    image: "Screens/jiangxue-imagery.png",
+                    image: "ArtApp/imagery-gu-zhou.jpg",
                     meaning: "孤舟是全诗的核心意象，象征着诗人独立于尘世之外的高洁品格。渔船在风雪中，不畏严寒，展现了超然物外、悠然自得的隐逸情怀。",
                     visual: "一叶扁舟，泊于江心，渔翁独坐，风雪漫天。舟身斑驳，似历尽沧桑。",
                     emotion: "孤寂却不哀伤，清冷中透着坚毅与从容。",
@@ -213,7 +251,7 @@ enum ContentData {
                 Imagery(
                     id: "han-jiang",
                     name: "寒江",
-                    image: "Screens/jiangxue-imagery.png",
+                    image: "ArtApp/imagery-han-jiang.jpg",
                     meaning: "寒江代表了严酷的自然环境，也象征着诗人所处的困境。江水冰冷，却仍有渔翁垂钓，暗示着面对困境时的从容不迫。",
                     visual: "江水如墨，寒气逼人，两岸寂寥，唯余飞雪。",
                     emotion: "冷寂、深沉，却蕴含着不屈的力量。",
@@ -226,7 +264,7 @@ enum ContentData {
                 Imagery(
                     id: "suo-li-weng",
                     name: "蓑笠翁",
-                    image: "Screens/jiangxue-imagery.png",
+                    image: "ArtApp/imagery-suo-li-weng.jpg",
                     meaning: "蓑笠翁是渔翁的形象，代表着一种超然物外的生活态度。他不畏风雪，独自垂钓，象征着诗人对自由与独立的追求。",
                     visual: "老翁披蓑戴笠，手持钓竿，端坐船头，神态安详。",
                     emotion: "淡泊、宁静，与世无争的从容。",
@@ -238,7 +276,7 @@ enum ContentData {
                 Imagery(
                     id: "fei-xue",
                     name: "飞雪",
-                    image: "Screens/jiangxue-imagery.png",
+                    image: "ArtApp/imagery-fei-xue.jpg",
                     meaning: "飞雪既是自然景象的描写，也烘托出一种空灵、寂静的意境。雪花纷飞，覆盖了世间一切喧嚣，营造出纯净的世界。",
                     visual: "漫天飞雪，纷纷扬扬，天地一片苍茫，万籁俱寂。",
                     emotion: "纯净、空灵，洗涤心灵的宁静。",
@@ -296,17 +334,17 @@ enum ContentData {
             pattern: "缠枝莲纹",
             usage: "陈设器",
             description: "此瓶造型饱满，釉色温润洁白，青花发色浓艳。颈部绘缠枝莲纹，腹部饰饱满盛开的莲花，枝叶交错缠绕，构图繁密而有序。整体纹饰布局与绘画技法俱佳，体现了元代瓷器艺术的最高水平。",
-            image: "Screens/artifact-result.png",
+            image: "ArtApp/artifact-qinghua-ping.jpg",
             patternDetail: PatternDetail(
                 name: "缠枝莲纹",
-                image: "Screens/artifact-pattern.png",
+                image: "ArtApp/pattern-chanzhilian.jpg",
                 structure: "缠枝莲纹以莲花为主题，茎蔓缠绕盘旋，枝叶交错相连。纹样呈S形或波状连续延伸，花头饱满，叶片翻转自然，整体构图既繁密又富有变化。在元代青花中，缠枝莲纹是最为常见的装饰题材之一。",
                 symbolism: "莲花出淤泥而不染，象征纯洁高雅、品格高尚。缠枝莲纹寓意连绵不断、生生不息，寄托了人们对美好生活的向往。在佛教文化中，莲花更是神圣之花，代表着清净无染。",
                 eraStyle: "元代青花瓷器的缠枝莲纹承袭宋代传统，但在构图与绘画技法上有了新的发展。元代缠枝莲纹花头更大、茎叶更加舒展，青花色调浓艳，具有鲜明的时代特征。与明清时期的缠枝莲纹相比，元代风格更为粗犷豪放。",
                 elements: [
-                    PatternElement(name: "莲瓣", description: "花瓣饱满圆润，层次分明，多为仰莲或覆莲形式", image: "Screens/artifact-pattern.png"),
-                    PatternElement(name: "卷草", description: "茎蔓卷曲缠绕，连接各花头，使纹样连绵不断", image: "Screens/artifact-pattern.png"),
-                    PatternElement(name: "边饰", description: "以回纹、如意云纹等几何纹样作为辅助装饰", image: "Screens/artifact-pattern.png"),
+                    PatternElement(name: "莲瓣", description: "花瓣饱满圆润，层次分明，多为仰莲或覆莲形式", image: "ArtApp/pattern-lianban.jpg"),
+                    PatternElement(name: "卷草", description: "茎蔓卷曲缠绕，连接各花头，使纹样连绵不断", image: "ArtApp/pattern-juancao.jpg"),
+                    PatternElement(name: "边饰", description: "以回纹、如意云纹等几何纹样作为辅助装饰", image: "ArtApp/pattern-bianshi.jpg"),
                 ]
             )
         ),
@@ -319,7 +357,7 @@ enum ContentData {
             pattern: "海兽葡萄纹",
             usage: "照容",
             description: "唐代铜镜中的精品，镜面光亮，背面饰海兽葡萄纹，工艺精湛。",
-            image: "Screens/artifact-home.png"
+            image: "ArtApp/artifact-tong-jing.jpg"
         ),
         Artifact(
             id: "xiang-lu",
@@ -330,7 +368,7 @@ enum ContentData {
             pattern: "缠枝莲纹",
             usage: "焚香",
             description: "明代宣德炉风格，造型端庄，铜质精良。",
-            image: "Screens/artifact-home.png"
+            image: "ArtApp/artifact-xiang-lu.jpg"
         ),
         Artifact(
             id: "yu-pei",
@@ -341,7 +379,7 @@ enum ContentData {
             pattern: "双龙纹",
             usage: "佩饰",
             description: "和田白玉质地，雕工精细，双龙相对，寓意吉祥。",
-            image: "Screens/artifact-home.png"
+            image: "ArtApp/artifact-yu-pei.jpg"
         ),
     ]
 
@@ -396,10 +434,10 @@ enum ContentData {
 
     // MARK: - activities.ts：stamps（4 枚，obtained 均 false，date 均 nil）
     static let stamps: [Stamp] = [
-        Stamp(id: "chun-ri-ya-shi", name: "春日雅士", description: "参与飞花令·春，以诗会友", image: "Screens/stamp-reward.png", obtained: false),
-        Stamp(id: "dong-po-zhi-yin", name: "东坡知音", description: "完成茶坊对谈，与苏轼畅谈人生", image: "Screens/stamp-reward.png", obtained: false),
-        Stamp(id: "qing-hui-shan-shui", name: "清辉山水", description: "赏读山水诗词，感受自然之美", image: "Screens/stamp-reward.png", obtained: false),
-        Stamp(id: "gu-wu-yan-ji", name: "古物研习", description: "识别三件以上传物", image: "Screens/stamp-reward.png", obtained: false),
+        Stamp(id: "chun-ri-ya-shi", name: "春日雅士", description: "参与飞花令·春，以诗会友", image: "ArtApp/seal-chun-ri-ya-shi.png", obtained: false),
+        Stamp(id: "dong-po-zhi-yin", name: "东坡知音", description: "完成茶坊对谈，与苏轼畅谈人生", image: "ArtApp/seal-dong-po-zhi-yin.png", obtained: false),
+        Stamp(id: "qing-hui-shan-shui", name: "清辉山水", description: "赏读山水诗词，感受自然之美", image: "ArtApp/seal-qing-hui-shan-shui.png", obtained: false),
+        Stamp(id: "gu-wu-yan-ji", name: "古物研习", description: "识别三件以上传物", image: "ArtApp/seal-gu-wu-yan-ji.png", obtained: false),
     ]
 
     // MARK: - rewards.ts：bianjingLocations（6 处）

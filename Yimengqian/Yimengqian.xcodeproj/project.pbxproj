@@ -29,6 +29,7 @@
 		6172BEBBFD7F65BF0F626778 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F81D2758F77BE9993C164720 /* Assets.xcassets */; };
 		8F2A1B3C4D5E6F708192A3B4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7E1F0A2B3C4D5E6F708192A3 /* PrivacyInfo.xcprivacy */; };
 		F679BAA6C5CDBEB39975636B /* Screens in Resources */ = {isa = PBXBuildFile; fileRef = 588180E1D9E17057EF8F11EF /* Screens */; };
+		C3A17E9B5D2F4A8C1E6B7302 /* ArtApp in Resources */ = {isa = PBXBuildFile; fileRef = D4B28FAC6E3A5B9D2F7C8413 /* ArtApp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +56,7 @@
 		3EB4B42563E1790C617AFAF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7E1F0A2B3C4D5E6F708192A3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		588180E1D9E17057EF8F11EF /* Screens */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Content/Screens"; sourceTree = "<group>"; };
+		D4B28FAC6E3A5B9D2F7C8413 /* ArtApp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Content/ArtApp"; sourceTree = "<group>"; };
 		BD59F53A36A713D1EC01EDD7 /* Yimengqian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yimengqian.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -83,6 +85,7 @@
 				3EB4B42563E1790C617AFAF0,
 				7E1F0A2B3C4D5E6F708192A3,
 				588180E1D9E17057EF8F11EF,
+				D4B28FAC6E3A5B9D2F7C8413,
 			);
 			path = Yimengqian;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 				6172BEBBFD7F65BF0F626778,
 				8F2A1B3C4D5E6F708192A3B4,
 				F679BAA6C5CDBEB39975636B,
+				C3A17E9B5D2F4A8C1E6B7302,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

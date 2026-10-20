@@ -15,3 +15,7 @@ xcuserdata/
 # 日志与临时产物
 *.log
 scripts/out/
+
+# AI 生成的原始大图（80 MB）：保留在本地，不进 git、也不进包。
+# 打包用的是 Content/ArtApp/（压缩后约 9 MB，已提交）。
+Yimengqian/Yimengqian/Content/Art/

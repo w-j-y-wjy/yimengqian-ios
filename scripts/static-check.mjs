@@ -133,6 +133,27 @@ if (pngOnDisk.length !== 25) bad('content.screens', `Content/Screens 下应有 2
 else if (orphans.length) warn('content.screens', `有未被任何屏引用的设计稿：${orphans.join(', ')}`)
 else ok('content.screens', '25 张设计稿全部被引用，无游离文件')
 
+// ── 2b. 内容层配图：引用要能落到磁盘，且所在目录要挂进工程 ──────────────────
+// 这两条都是「不报错但白屏」的坑：
+//   ① 文件名打错 → UIImage 返回 nil，页面上是一片空白；
+//   ② 目录没加进 pbxproj 的 Resources → 文件在磁盘上，但不在 .app 里。
+const CD_PATH = join(SRC, 'Models', 'ContentData.swift')
+if (existsSync(CD_PATH)) {
+  const cdSrc = stripComments(read(CD_PATH))
+  const cdRefs = [...cdSrc.matchAll(/image:\s*"([^"]+)"/g)].map((m) => m[1]).filter(Boolean)
+  const uniq = [...new Set(cdRefs)]
+  const missingArt = uniq.filter((r) => !existsSync(join(CONTENT, r)))
+  if (missingArt.length) bad('content.images', `ContentData 引用了不存在的图：${missingArt.join(', ')}`)
+  else ok('content.images', `${uniq.length} 个内容配图引用全部命中 Content/ 下的真实文件`)
+
+  const pbxSrc = existsSync(PBX) ? read(PBX) : ''
+  const folderPaths = [...pbxSrc.matchAll(/isa = PBXFileReference; lastKnownFileType = folder; path = "?([^";]+)"?;/g)].map((m) => m[1])
+  const usedDirs = [...new Set(uniq.map((r) => r.split('/')[0]))]
+  const notBundled = usedDirs.filter((d) => !folderPaths.some((p) => p === d || p.endsWith('/' + d)))
+  if (notBundled.length) bad('content.bundle', `这些素材目录没加进工程 Resources，不会进包：${notBundled.join(', ')}`)
+  else ok('content.bundle', `素材目录均已以文件夹引用进包：${usedDirs.join(', ')}`)
+}
+
 // ── 3. Info.plist 关键键（权限声明会随 AI 能力增加，届时在此扩展）──────────
 const PLIST = join(SRC, 'Info.plist')
 if (!existsSync(PLIST)) bad('plist', '找不到 Info.plist')
