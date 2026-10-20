@@ -43,6 +43,8 @@ final class SelectionStore: ObservableObject {
         StorageKeys.preferenceDynasty,
         StorageKeys.preferenceMood,
         StorageKeys.feihualingAnswer,
+        // 收藏页叠层会重绘整条筛选胶囊（FavoritesLayer），选中态已可见 → 省掉盖住设计稿的提示条
+        StorageKeys.favoriteFilter,
     ]
 
     /// key → 当前选中值

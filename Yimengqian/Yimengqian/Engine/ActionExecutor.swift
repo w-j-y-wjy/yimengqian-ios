@@ -75,6 +75,14 @@ final class ActionExecutor {
 
         case .toggleStorage:
             guard let key = action.storageKey else { return }
+            // 收藏类热区（§1 的「假收藏」）：过去只往离散键写一个 "true"，收藏页读的是
+            // snapshot.favorites，界面因此毫无变化。命中映射表时改走 toggleFavorite，
+            // 离散键由 AppStore 作为镜像同步 —— 配置侧零改动，重跑生成器也不会回退。
+            if let target = AppStore.favoriteKeyMap[key] {
+                let added = store.toggleFavorite(type: target.type, itemId: target.itemId)
+                toast.show(added ? (action.onMessage ?? "已收藏") : (action.offMessage ?? "已取消"))
+                return
+            }
             let isOn = store.toggle(key)
             toast.show(isOn ? (action.onMessage ?? "已收藏") : (action.offMessage ?? "已取消"))
 

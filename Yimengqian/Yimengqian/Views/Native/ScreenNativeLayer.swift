@@ -70,6 +70,8 @@ struct ScreenNativeLayer: View {
                 PreferenceTestLayer(screen: screen, container: containerSize)
             case "feihualing-challenge":
                 FeihualingLayer(screen: screen, container: containerSize)
+            case "favorites":
+                FavoritesLayer(screen: screen, container: containerSize)
             default:
                 EmptyView()
             }

@@ -1,7 +1,7 @@
 // 一梦千年 iOS —— Xcode 工程文件生成器
 // 扫描 Yimengqian/Yimengqian 下的 .swift 文件与固定资源，生成 project.pbxproj（objectVersion 56，Xcode 14+ 兼容）
 // 用法：node tools/generate_pbxproj.mjs
-import { readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync, writeFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -46,6 +46,37 @@ if (!screensRel) {
   throw new Error('未找到资源目录（Content/Screens 与 Resources 都不存在）。拒绝生成不含资源的工程——请先确认设计稿在磁盘上。');
 }
 
+// 内容配图目录（目前是 Content/ArtApp）：从 ContentData.swift 的 image 引用推导。
+// 为什么必须推导而不是写死：2026-10-20 重跑本脚本时，手工加进 pbxproj 的 ArtApp 引用被
+// 静默丢掉，26 张内容配图全都不进包（App 里全是白图），而磁盘与 ContentData 看着都正常。
+// static-check 的 content.bundle 会拦这一条，但拦不住"已经推上去才发现"，所以源头要自洽。
+const CONTENT_ROOT = path.join(APP_DIR, 'Content');
+const contentDirs = (() => {
+  const cdPath = path.join(APP_DIR, 'Models', 'ContentData.swift');
+  const out = new Set();
+  if (existsSync(cdPath)) {
+    const src = readFileSync(cdPath, 'utf8').replace(/\/\/[^\n]*/g, '');
+    for (const m of src.matchAll(/image:\s*"([^"]+)"/g)) {
+      const top = m[1].split('/')[0];
+      // Reference/ 是死资源（无视图渲染、文件名与内容错配），明确排除
+      if (top && top !== 'Reference' && top !== 'Screens') out.add(top);
+    }
+  }
+  return [...out]
+    .filter((d) => {
+      const p = path.join(CONTENT_ROOT, d);
+      return existsSync(p) && statSync(p).isDirectory();
+    })
+    .sort();
+})();
+if (contentDirs.length) console.log(`[pbxproj] 内容配图目录：${contentDirs.join(', ')}`);
+
+/// 需要以「文件夹引用」方式整目录进包的资源：设计稿 + 各内容配图目录
+const resourceFolders = [
+  { name: 'Screens', rel: screensRel },
+  ...contentDirs.map((d) => ({ name: d, rel: `Content/${d}` })),
+];
+
 const FR = (p) => `FR-${p}`;
 const BF = (p) => `BF-${p}`;
 const fileRefId = (p) => id(FR(p));
@@ -88,7 +119,10 @@ for (const d of dirs) {
 const fixedRefs = [];
 if (hasAssets) { fixedRefs.push({ id: fileRefId('Assets.xcassets'), name: 'Assets.xcassets', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Assets.xcassets')); }
 if (hasInfoPlist) { fixedRefs.push({ id: fileRefId('Info.plist'), name: 'Info.plist', fileRef: `{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Info.plist')); }
-fixedRefs.push({ id: fileRefId('Screens'), name: 'Screens', fileRef: `{isa = PBXFileReference; lastKnownFileType = folder; path = "${screensRel}"; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('Screens'));
+for (const folder of resourceFolders) {
+  fixedRefs.push({ id: fileRefId(folder.name), name: folder.name, fileRef: `{isa = PBXFileReference; lastKnownFileType = folder; path = "${folder.rel}"; sourceTree = "<group>"; };` });
+  rootChildIds.push(fileRefId(folder.name));
+}
 if (hasPrivacy) { fixedRefs.push({ id: fileRefId('PrivacyInfo.xcprivacy'), name: 'PrivacyInfo.xcprivacy', fileRef: `{isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };` }); rootChildIds.push(fileRefId('PrivacyInfo.xcprivacy')); }
 
 // —— 文件引用段 ——
@@ -115,9 +149,9 @@ if (hasAssets) {
   buildFileLines.push(`\t\t${bid} /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Assets.xcassets')} /* Assets.xcassets */; };`);
   resourceBuildIds.push(bid);
 }
-{
-  const bid = buildFileId('Screens');
-  buildFileLines.push(`\t\t${bid} /* Screens in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId('Screens')} /* Screens */; };`);
+for (const folder of resourceFolders) {
+  const bid = buildFileId(folder.name);
+  buildFileLines.push(`\t\t${bid} /* ${folder.name} in Resources */ = {isa = PBXBuildFile; fileRef = ${fileRefId(folder.name)} /* ${folder.name} */; };`);
   resourceBuildIds.push(bid);
 }
 if (hasPrivacy) {

@@ -18,6 +18,9 @@ enum Theme {
     // MARK: - 色板（与 global.css :root 完全一致）
     static let paper = Color(hex: 0xF5F0E8)
     static let paperLight = Color(hex: 0xFAF6EF)
+    /// 设计稿宣纸底的实测值（#f4efe4）。叠层要覆盖烤进图里的文字/数字时用它，
+    /// 比 paper 更贴近位图底色，补丁不会在纸面上留下一块浅色方块。
+    static let paperWarm = Color(hex: 0xF4EFE4)
     static let paperDark = Color(hex: 0xE8E0D0)
     static let ink = Color(hex: 0x2C2416)
     static let inkLight = Color(hex: 0x5A4E3C)
