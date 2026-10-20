@@ -107,6 +107,15 @@ jobs:
             exit 1
           fi
 
+          # 内容配图守卫：ContentData 里 23 处 image 指向 ArtApp/，若目录没进包就会静默白屏
+          ART=$(find "$APP" \( -name '*.jpg' -o -name '*.png' \) -path '*ArtApp*' | wc -l | tr -d ' ')
+          echo "配图数量：$ART"
+          [ "$ART" -eq 30 ] || {
+            echo "::error::ArtApp 应为 30 个文件（26 jpg + 4 png），实际 $ART"
+            find "$APP" -maxdepth 4 -type d | head -20
+            exit 1
+          }
+
           SIZE_MB=$(du -sm "$APP" | cut -f1)
           echo "App 体积：${SIZE_MB} MB（基线 113 MB，去掉 Reference 后应约 58 MB）"
           {
@@ -115,6 +124,7 @@ jobs:
             echo "| 项 | 值 |"
             echo "|---|---|"
             echo "| 设计稿数量 | $COUNT / 25 |"
+            echo "| 内容配图数量 | $ART / 30 |"
             echo "| Reference 进包 | 否 |"
             echo "| App 体积 | ${SIZE_MB} MB |"
           } >> "$GITHUB_STEP_SUMMARY"
