@@ -251,7 +251,7 @@ enum ScreenCatalog {
                 Hotspot(id: "bottom-home", label: "首页", x: 5.258, y: 92.35, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/home")),
                 Hotspot(id: "bottom-city", label: "古城", x: 24.319, y: 92.48, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "bottom-poetry", label: "诗境", x: 44.601, y: 92.35, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/poetry")),
-                Hotspot(id: "bottom-favorites", label: "收藏", x: 63.756, y: 92.35, width: 10, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已收藏《江雪》", storageKey: "favoriteJiangxue", storageValue: "true")),
+                Hotspot(id: "bottom-favorites", label: "收藏", x: 63.756, y: 92.35, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/favorites")),
                 Hotspot(id: "bottom-profile", label: "我的", x: 83.568, y: 92.307, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/profile"))
             ]),
         ScreenConfig(id: "jiangxue-imagery", route: "/poetry/jiangxue/imagery", image: "Screens/jiangxue-imagery.png", hotspots: [
@@ -403,7 +403,7 @@ enum ScreenCatalog {
                 Hotspot(id: "filter-artifact", label: "器物", x: 37.061, y: 22.041, width: 14.977, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：器物收藏", storageKey: "favoriteFilter", storageValue: "artifact")),
                 Hotspot(id: "filter-character", label: "人物", x: 53.371, y: 21.781, width: 15.634, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：人物收藏", storageKey: "favoriteFilter", storageValue: "character")),
                 Hotspot(id: "filter-letter", label: "书信", x: 69.869, y: 22.388, width: 15.352, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：书信收藏", storageKey: "favoriteFilter", storageValue: "letter")),
-                Hotspot(id: "filter-stamp", label: "印章", x: 85.85, y: 22.061, width: 14.977, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：印章收藏", storageKey: "favoriteFilter", storageValue: "stamp")),
+                Hotspot(id: "filter-stamp", label: "印章", x: 85.85, y: 22.061, width: 14.15, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：印章收藏", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "edit-btn", label: "编辑", x: 85.562, y: 27.718, width: 10, height: 2.833, action: HotspotAction(type: .toast, message: "收藏编辑模式已开启")),
                 Hotspot(id: "item-yijiangnan", label: "忆江南", x: 3.122, y: 30.147, width: 31.221, height: 20.948, action: HotspotAction(type: .toast, message: "诗词详情将在后续开放")),
                 Hotspot(id: "item-qingyou", label: "青釉瓶", x: 34.911, y: 30.147, width: 29.906, height: 21.121, action: HotspotAction(type: .navigate, target: "/artifact/result")),

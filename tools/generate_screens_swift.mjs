@@ -39,6 +39,15 @@ const tsUrl = new URL(`file:///${SCREENS_TS.replace(/\\/g, '/')}`);
 const { screens } = await import(tsUrl.href);
 console.log(`[cfg] 从 screens.ts 读取 ${screens.length} 个屏幕`);
 
+// 15 种动作类型白名单。定义在合并之前：合并阶段要用它校验 iOS 侧的动作覆盖，
+// 若留到后面会触发 TDZ（Cannot access 'isCase' before initialization）。
+const actionCases = [
+  'navigate', 'back', 'toast', 'storage', 'storageAndToast', 'conditionalNavigate',
+  'setStorageAndToast', 'toggleStorage', 'storageAndNavigate', 'conditionalStorageNavigate',
+  'incrementOnce', 'delayedNavigate', 'conditionalJump', 'setDefaultsAndNavigate', 'checkAnswer',
+];
+const isCase = (t) => actionCases.includes(t);
+
 // —— 2. 读取覆盖并合并 ——
 const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : fallback);
 const overrides = JSON.parse(readFileSync(OVERRIDES_JSON, 'utf8'));
@@ -47,6 +56,7 @@ const deletions = readJson(IOS_DELETIONS, {});
 
 let deletedCount = 0;
 let iosOverrideCount = 0;
+let actionOverrideCount = 0;
 const merged = screens.map((s) => {
   const ovA = overrides[s.id] || {};
   const ovI = iosOverrides[s.id] || {};
@@ -58,15 +68,44 @@ const merged = screens.map((s) => {
     hotspots: s.hotspots
       .filter((h) => !del.has(h.id))
       .map((h) => {
-        const o = ovI[h.id] || ovA[h.id];   // iOS 侧优先
-        if (!o) return h;
-        return { ...h, x: o.x, y: o.y, width: o.width, height: o.height };
+        const oA = ovA[h.id];
+        const oI = ovI[h.id];
+        if (!oA && !oI) return h;
+
+        // 坐标：iOS 侧优先。**只有给了数值才覆盖** —— 允许一条覆盖只写 action
+        // （旧写法 `x: o.x` 在字段缺失时会变成 undefined，最后被 swNum 序列化成 0，
+        //  热区会静默塌缩到左上角，这类"改动作顺手把坐标清零"的坑必须提前堵住。
+        const rect = {};
+        for (const src of [oA, oI]) {
+          if (!src) continue;
+          for (const k of ['x', 'y', 'width', 'height']) {
+            if (typeof src[k] === 'number') rect[k] = src[k];
+          }
+        }
+
+        // 动作：只认 iOS 侧，且**整条替换**（不做字段级合并 —— 否则从
+        // setStorageAndToast 改成 navigate 时，旧的 storageKey/message 会残留在配置里）。
+        // 为什么不在安卓 hotspot-overrides.json 里改动作：那是安卓源工程的修正层，
+        // iOS 这边发现的动作错误不应反向污染另一个仓库。
+        let action = h.action;
+        if (oI && oI.action) {
+          if (!isCase(oI.action.type)) {
+            throw new Error(
+              `tools/hotspot-overrides.ios.json 里 ${s.id}/${h.id} 的 action.type 非法：${JSON.stringify(oI.action.type)}`
+            );
+          }
+          action = oI.action;
+          actionOverrideCount += 1;
+        }
+
+        return { ...h, ...rect, action };
       }),
   };
 });
 const overriddenCount = Object.keys(overrides).length;
 console.log(`[cfg] 合并 ${overriddenCount} 个屏幕的安卓坐标覆盖`);
-if (iosOverrideCount) console.log(`[cfg] 叠加 ${iosOverrideCount} 条 iOS 侧坐标修正`);
+if (iosOverrideCount) console.log(`[cfg] 叠加 ${iosOverrideCount} 条 iOS 侧修正（坐标 / 动作）`);
+if (actionOverrideCount) console.log(`[cfg] 按 iOS 侧修正替换 ${actionOverrideCount} 条动作`);
 if (deletedCount) console.log(`[cfg] 按删除清单剔除 ${deletedCount} 个热区`);
 
 // —— 3. 工具函数 ——
@@ -92,13 +131,6 @@ const mapImageForIos = (s) => {
   if (existsSync(path.join(IOS_SHOTS, guess))) return `Screens/${guess}`;
   return mapImage(s.image);
 };
-
-const actionCases = [
-  'navigate', 'back', 'toast', 'storage', 'storageAndToast', 'conditionalNavigate',
-  'setStorageAndToast', 'toggleStorage', 'storageAndNavigate', 'conditionalStorageNavigate',
-  'incrementOnce', 'delayedNavigate', 'conditionalJump', 'setDefaultsAndNavigate', 'checkAnswer',
-];
-const isCase = (t) => actionCases.includes(t);
 
 function emitAction(a) {
   if (!a || typeof a !== 'object') return 'HotspotAction(type: .toast)';

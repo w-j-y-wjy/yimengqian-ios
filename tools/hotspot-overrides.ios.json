@@ -47,6 +47,14 @@
       "height": 2.546
     }
   },
+  "jiangxue-analysis": {
+    "bottom-favorites": {
+      "action": {
+        "type": "navigate",
+        "target": "/favorites"
+      }
+    }
+  },
   "dynasties": {
     "bottom-home": {
       "x": 0,
@@ -215,6 +223,14 @@
       "x": 86.559,
       "y": 5.066,
       "width": 12,
+      "height": 5
+    }
+  },
+  "favorites": {
+    "filter-stamp": {
+      "x": 85.85,
+      "y": 22.061,
+      "width": 14.15,
       "height": 5
     }
   }
