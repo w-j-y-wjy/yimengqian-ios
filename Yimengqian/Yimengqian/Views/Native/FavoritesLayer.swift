@@ -66,23 +66,21 @@ struct FavoritesLayer: View {
 
     // MARK: - 筛选条
 
-    /// 整条胶囊带先铺一层宣纸底色，再逐颗重绘。
-    /// 为什么要铺整条而不是逐颗覆盖：胶囊之间的缝也是位图内容，逐颗覆盖会留下
-    /// 位图原本的金色描边残影，看着像重影。
+    /// 先逐颗擦掉位图里的旧胶囊（略外扩，抹掉描边残影），再统一画新的。
+    /// 为什么不再整条铺底色：整条铺会在宣纸底上留下一块比周围更亮的横条（CI 截图可见，
+    /// 像一条贴上去的色带）；逐颗擦除只影响胶囊本身，缝里的宣纸纹理原样保留。
+    /// 必须先擦完所有胶囊再画 —— 交错绘制会让后一颗的擦除盖掉前一颗的新胶囊。
     @ViewBuilder
     private var filterBand: some View {
-        let rects = filterHotspots.map { $0.rect(in: container) }
-        if let first = rects.first {
-            let union = rects.dropFirst().reduce(first) { $0.union($1) }
-            let band = union.insetBy(dx: -5, dy: -5)
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+        ForEach(filterHotspots) { hotspot in
+            let rect = hotspot.rect(in: container)
+            Capsule(style: .continuous)
                 .fill(Theme.paperWarm)
-                .frame(width: band.width, height: band.height)
-                .offset(x: band.minX, y: band.minY)
-
-            ForEach(filterHotspots) { hotspot in
-                chip(hotspot)
-            }
+                .frame(width: rect.width + 8, height: rect.height + 8)
+                .offset(x: rect.minX - 4, y: rect.minY - 4)
+        }
+        ForEach(filterHotspots) { hotspot in
+            chip(hotspot)
         }
     }
 
