@@ -82,8 +82,16 @@ const BF = (p) => `BF-${p}`;
 const fileRefId = (p) => id(FR(p));
 const buildFileId = (p) => id(BF(p));
 
+// 路径一律转成 posix 分隔符再写进工程文件。
+// 本仓库在 Windows 上开发、在 macOS 上编译，而 pbxproj 的 path 值不能带反斜杠：
+// 2026-10-20 实测写成 path = Views\Native; 会让 xcodebuild 直接报
+// 「project is damaged … missing semicolon」，而旧版静态检查看不出来。
+// 顺带让文件 ID 的哈希种子跨平台一致，换机器重跑不会产生无谓 diff。
+const toPosix = (p) => p.split(path.sep).join('/');
+const relPosix = (target) => toPosix(path.relative(APP_DIR, target));
+
 // 目录分组：相对 APP_DIR 的一级目录名 → 组名；其余文件放根组
-const dirs = [...new Set(swiftFiles.map((f) => path.relative(APP_DIR, path.dirname(f))))];
+const dirs = [...new Set(swiftFiles.map((f) => relPosix(path.dirname(f))))];
 const groupOf = {};
 for (const d of dirs) {
   groupOf[d] = id(`G-${d}`);
@@ -108,11 +116,11 @@ const groupSections = [];
 const rootChildren = [];
 const rootChildIds = [];
 for (const d of dirs) {
-  const files = swiftFiles.filter((f) => path.relative(APP_DIR, path.dirname(f)) === d).sort();
-  const childIds = files.map((f) => fileRefId(path.relative(APP_DIR, f)));
+  const files = swiftFiles.filter((f) => relPosix(path.dirname(f)) === d).sort();
+  const childIds = files.map((f) => fileRefId(relPosix(f)));
   const gid = groupOf[d];
   groupSections.push(`\t\t${gid} /* ${d} */ = {\n\t\t\tisa = PBXGroup;\n\t\t\tchildren = (\n${childIds.map((c) => `\t\t\t\t${c} /* ${path.basename(files[childIds.indexOf(c)])} */,`).join('\n')}\n\t\t\t);\n\t\t\tpath = ${d};\n\t\t\tsourceTree = "<group>";\n\t\t};`);
-  rootChildren.push(...files.map((f) => ({ id: fileRefId(path.relative(APP_DIR, f)), name: path.basename(f), gid })));
+  rootChildren.push(...files.map((f) => ({ id: fileRefId(relPosix(f)), name: path.basename(f), gid })));
   rootChildIds.push(gid);
 }
 // 固定项
@@ -128,7 +136,7 @@ if (hasPrivacy) { fixedRefs.push({ id: fileRefId('PrivacyInfo.xcprivacy'), name:
 // —— 文件引用段 ——
 const fileRefLines = [];
 for (const f of swiftFiles) {
-  const rel = path.relative(APP_DIR, f);
+  const rel = relPosix(f);
   fileRefLines.push(`\t\t${fileRefId(rel)} /* ${path.basename(f)} */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ${path.basename(f)}; sourceTree = "<group>"; };`);
 }
 for (const fr of fixedRefs) fileRefLines.push(`\t\t${fr.id} /* ${fr.name} */ = ${fr.fileRef}`);
@@ -138,7 +146,7 @@ fileRefLines.push(`\t\t${appProductRefId} /* Yimengqian.app */ = {isa = PBXFileR
 const buildFileLines = [];
 const sourceBuildIds = [];
 for (const f of swiftFiles) {
-  const rel = path.relative(APP_DIR, f);
+  const rel = relPosix(f);
   const bid = buildFileId(rel);
   buildFileLines.push(`\t\t${bid} /* ${path.basename(f)} in Sources */ = {isa = PBXBuildFile; fileRef = ${fileRefId(rel)} /* ${path.basename(f)} */; };`);
   sourceBuildIds.push(bid);

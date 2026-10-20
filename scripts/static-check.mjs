@@ -65,6 +65,13 @@ if (!existsSync(PBX)) {
   if (/objectVersion = 56;/m.test(pbx)) ok('pbxproj.objectVersion', 'objectVersion = 56（Xcode 14 格式，Xcode 16 可读）')
   else warn('pbxproj.objectVersion', 'objectVersion 不是 56，格式可能被改动过')
 
+  // 路径分隔符必须是 /：在 Windows 上跑 tools/generate_pbxproj.mjs 会把 path 写成
+  // `path = Views\Native;`，xcodebuild 直接判「project is damaged / missing semicolon」。
+  // 本机没有 Xcode，这条只能靠静态检查提前拦（2026-10-20 实测踩过）。
+  const backslashPaths = [...pbx.matchAll(/path = [^;]*\\[^;]*;/g)].map((m) => m[0])
+  if (backslashPaths.length) bad('pbxproj.paths', `路径含反斜杠，Xcode 会判定工程损坏：${backslashPaths.slice(0, 3).join(' | ')}`)
+  else ok('pbxproj.paths', '路径分隔符全部为 /（跨平台可编译）')
+
   if (existsSync(SCHEME)) ok('scheme', '共享 scheme 存在')
   else bad('scheme', '缺少 xcshareddata/xcschemes/Yimengqian.xcscheme（CI 无法 xcodebuild）')
 
