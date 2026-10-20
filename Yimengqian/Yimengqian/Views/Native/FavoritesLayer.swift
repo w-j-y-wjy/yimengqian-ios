@@ -98,7 +98,9 @@ struct FavoritesLayer: View {
             .frame(width: rect.width, height: rect.height)
             .background(
                 Capsule(style: .continuous)
-                    .fill(isActive ? Theme.vermilion : Theme.paperLight)
+                    // 未选中用宣纸底而不是 paperLight：设计稿的胶囊几乎与背景同色，
+                    // 只靠金色描边区分；用更亮的 paperLight 会浮出一排白胶囊。
+                    .fill(isActive ? Theme.vermilion : Theme.paperWarm)
             )
             .overlay(
                 Capsule(style: .continuous)
