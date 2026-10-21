@@ -221,6 +221,21 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-artifact.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 设置页（S11）与作品列表（S12）
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen profile \
+            -nativeDetail /native/settings/main
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-settings.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen profile \
+            -nativeDetail /native/list/works
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-works.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"
