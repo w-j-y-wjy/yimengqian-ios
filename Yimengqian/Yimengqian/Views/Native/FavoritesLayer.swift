@@ -236,7 +236,8 @@ struct FavoriteCardInfo {
                 return FavoriteCardInfo(
                     title: poem.title,
                     subtitle: "\(poem.dynasty) · \(poem.author)",
-                    image: poem.imagery?.first?.image
+                    // 优先用诗自己的插画；《江雪》没有专属图，退回它的意象图
+                    image: poem.image ?? poem.imagery?.first?.image
                 )
             }
             // 意象（如「孤舟」）在枚举里只能归到 poem，靠 imagery 表补正文与配图

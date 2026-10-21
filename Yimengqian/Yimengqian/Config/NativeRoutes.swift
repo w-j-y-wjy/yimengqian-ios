@@ -106,9 +106,9 @@ struct NativeDetailContent {
             }
             // 配图必须"按诗取图"：此前对非《江雪》的诗回退到江雪意象图，
             // 结果《鸟鸣涧》详情页显示的是孤舟寒江图 —— 语义完全错位。
-            // 现在优先用该诗自己的插画（ArtApp/poem-*.jpg，此前从未被引用），
-            // 只有《江雪》用它的意象图（那是同一幅画的意象拆解）。
-            let hero = Self.poemArtwork(id) ?? (id == "jiangxue" ? p.imagery?.first?.image : nil)
+            // 现在直接用 Poem.image（poem-*.jpg，此前从未被引用）；《江雪》没有专属插画，
+            // 用它自己的意象图；其余诗没有图就不显示 hero，绝不借用别人的画。
+            let hero = p.image ?? (id == "jiangxue" ? p.imagery?.first?.image : nil)
             let tags = (p.imagery ?? (id == "jiangxue" ? ContentData.jiangxueImagery : []))
                 .flatMap { $0.keywords }
                 .prefix(4)
@@ -158,8 +158,8 @@ struct NativeDetailContent {
             guard let act = ContentData.activities.first(where: { $0.id == id }) else { return nil }
             return NativeDetailContent(
                 title: act.name,
-                subtitle: act.unlocked ? "已解锁" : "未解锁",
-                hero: nil,
+                subtitle: act.unlocked ? "已解锁 · \(act.participants ?? 0) 人参与" : "未解锁",
+                hero: act.image,
                 lines: [],
                 sections: [("玩法", act.description)],
                 tags: [act.type],
@@ -223,16 +223,6 @@ struct NativeDetailContent {
                 tags: names,
                 favorite: nil
             )
-        }
-    }
-
-    /// 诗词专属插画（ContentData.Poem 没有 image 字段，这 3 张图此前从未被引用）
-    private static func poemArtwork(_ id: String) -> String? {
-        switch id {
-        case "niao-ming-jian": return "ArtApp/poem-niao-ming-jian.jpg"
-        case "jing-ye-si": return "ArtApp/poem-jing-ye-si.jpg"
-        case "chun-ri": return "ArtApp/poem-chun-ri.jpg"
-        default: return nil
         }
     }
 }

@@ -293,7 +293,8 @@ enum ContentData {
             author: "王维",
             dynasty: "唐",
             content: "人闲桂花落，\n夜静春山空。\n月出惊山鸟，\n时鸣春涧中。",
-            category: "山水"
+            category: "山水",
+            image: "ArtApp/poem-niao-ming-jian.jpg"
         ),
         Poem(
             id: "jing-ye-si",
@@ -301,7 +302,8 @@ enum ContentData {
             author: "李白",
             dynasty: "唐",
             content: "床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。",
-            category: "月夜"
+            category: "月夜",
+            image: "ArtApp/poem-jing-ye-si.jpg"
         ),
         Poem(
             id: "chun-ri",
@@ -309,7 +311,8 @@ enum ContentData {
             author: "朱熹",
             dynasty: "宋",
             content: "胜日寻芳泗水滨，\n无边光景一时新。\n等闲识得东风面，\n万紫千红总是春。",
-            category: "四季"
+            category: "四季",
+            image: "ArtApp/poem-chun-ri.jpg"
         ),
     ]
 
@@ -385,11 +388,11 @@ enum ContentData {
 
     // MARK: - activities.ts：activities（5 项）
     static let activities: [Activity] = [
-        Activity(id: "feihualing", name: "飞花令·春", description: "以诗会友，飞花拾春", type: "quiz", unlocked: true, participants: 12345),
-        Activity(id: "dengmi", name: "猜灯谜", description: "打开灯谜，谜底顿生", type: "puzzle", unlocked: true, participants: 12345),
-        Activity(id: "hua-zhao", name: "古画找物", description: "画中寻物，妙趣在里", type: "find", unlocked: true, participants: 8967),
-        Activity(id: "wenyang", name: "纹样配对", description: "纹艺之美，百文百相", type: "match", unlocked: true, participants: 5456),
-        Activity(id: "qigu", name: "器物辨识", description: "识器明理，见器如著", type: "identify", unlocked: true, participants: 5128),
+        Activity(id: "feihualing", name: "飞花令·春", description: "以诗会友，飞花拾春", type: "quiz", unlocked: true, participants: 12345, image: "ArtApp/activity-feihualing.jpg"),
+        Activity(id: "dengmi", name: "猜灯谜", description: "打开灯谜，谜底顿生", type: "puzzle", unlocked: true, participants: 12345, image: "ArtApp/activity-dengmi.jpg"),
+        Activity(id: "hua-zhao", name: "古画找物", description: "画中寻物，妙趣在里", type: "find", unlocked: true, participants: 8967, image: "ArtApp/activity-hua-zhao.jpg"),
+        Activity(id: "wenyang", name: "纹样配对", description: "纹艺之美，百文百相", type: "match", unlocked: true, participants: 5456, image: "ArtApp/activity-wenyang.jpg"),
+        Activity(id: "qigu", name: "器物辨识", description: "识器明理，见器如著", type: "identify", unlocked: true, participants: 5128, image: "ArtApp/activity-qigu.jpg"),
     ]
 
     // MARK: - activities.ts：feihualingQuestions（3 题）

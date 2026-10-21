@@ -364,5 +364,39 @@
         "target": "/city/bianjing"
       }
     }
+  },
+  "activities-home": {
+    "game-lantern": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/dengmi"
+      }
+    },
+    "game-painting": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/hua-zhao"
+      }
+    },
+    "game-pattern": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/wenyang"
+      }
+    },
+    "game-artifact": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/qigu"
+      }
+    },
+    "week-reward": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/favorites",
+        "storageKey": "favoriteFilter",
+        "storageValue": "stamp"
+      }
+    }
   }
 }

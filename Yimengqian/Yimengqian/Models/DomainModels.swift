@@ -39,6 +39,9 @@ struct Poem: Codable, Identifiable, Equatable {
     var category: String
     var analysis: PoemAnalysis? = nil
     var imagery: [Imagery]? = nil
+    /// 诗作配图（poem-*.jpg）。此前 Poem 没有图片字段，3 张诗作插画从未显示；
+    /// 加可选默认值不破坏 Codable（同 analysis / imagery 的写法）。
+    var image: String? = nil
 }
 
 struct PoemAnalysis: Codable, Equatable {
@@ -117,6 +120,8 @@ struct Activity: Codable, Identifiable, Equatable {
     var type: String
     var unlocked: Bool
     var participants: Int? = nil
+    /// 活动配图（activity-*.jpg）。此前没有该字段，5 张活动图从未显示。
+    var image: String? = nil
 }
 
 struct FeihualingQuestion: Codable, Identifiable, Equatable {
