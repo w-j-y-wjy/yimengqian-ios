@@ -271,6 +271,15 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-spot.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 题注编辑（S24）：预填 cardNote 验证回填
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen poetry-card \
+            -nativeDetail /native/note/main \
+            -cardNote "此卡取水墨意，留白处最见寒江"
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-note.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"
