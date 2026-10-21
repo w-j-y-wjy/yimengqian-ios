@@ -190,12 +190,27 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-profile.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 原生详情页（大整改 S1）：设计稿里没有的详情改由原生页承载
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen poetry-home \
+            -nativeDetail /native/poem/niao-ming-jian
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-poem.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen dynasties \
+            -nativeDetail /native/city/tang
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-city.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"
             exit 1
           fi
-          echo "### 叠层截图已生成（偏好测试 / 飞花令 / 收藏页 / 个人中心）" >> "$GITHUB_STEP_SUMMARY"
+          echo "### 叠层截图已生成（偏好测试 / 飞花令 / 收藏页 / 个人中心 / 原生详情）" >> "$GITHUB_STEP_SUMMARY"
 
       - name: 上传证据（截图 + 编译日志）
         if: always()

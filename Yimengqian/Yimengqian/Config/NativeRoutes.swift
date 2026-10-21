@@ -26,6 +26,10 @@ enum NativeDetail: Equatable {
     case activity(String)
     case character(String)
     case letter(String)
+    /// 朝代城池详情：盛唐·长安 / 南宋·临安 / 明代·金陵 等。
+    /// 这三国没有设计稿屏（只有汴京有），但 ContentData.dynasties 里有完整描述与朝代图，
+    /// 正好把此前从未显示的 dynasty-tang / dynasty-nan-song / dynasty-ming 三张图用起来。
+    case city(String)
 
     static let prefix = "/native/"
 
@@ -40,6 +44,7 @@ enum NativeDetail: Equatable {
         case "activity": return .activity(parts[1])
         case "character": return .character(parts[1])
         case "letter": return .letter(parts[1])
+        case "city": return .city(parts[1])
         default: return nil
         }
     }
@@ -52,6 +57,7 @@ enum NativeDetail: Equatable {
         case .activity(let id): return "\(Self.prefix)activity/\(id)"
         case .character(let id): return "\(Self.prefix)character/\(id)"
         case .letter(let id): return "\(Self.prefix)letter/\(id)"
+        case .city(let id): return "\(Self.prefix)city/\(id)"
         }
     }
 
@@ -63,13 +69,14 @@ enum NativeDetail: Equatable {
         case .activity: return "activity"
         case .character: return "character"
         case .letter: return "letter"
+        case .city: return "city"
         }
     }
 
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v):
             return v
         }
     }
@@ -178,6 +185,22 @@ struct NativeDetailContent {
                 sections: [],
                 tags: [],
                 favorite: (.letter, id)
+            )
+
+        case .city(let id):
+            guard let d = ContentData.dynasties.first(where: { $0.id == id }) else { return nil }
+            // characters 里存的是人物 id，翻成名字做标签
+            let names = d.characters.compactMap { cid in
+                ContentData.characters.first(where: { $0.id == cid })?.name
+            }
+            return NativeDetailContent(
+                title: "\(d.name)·\(d.city)",
+                subtitle: d.period,
+                hero: d.image,
+                lines: [],
+                sections: [("城池", d.description)],
+                tags: names,
+                favorite: nil
             )
         }
     }

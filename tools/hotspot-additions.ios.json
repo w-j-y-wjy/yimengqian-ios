@@ -1,0 +1,61 @@
+{
+  "_说明": "设计稿上画了可点元素、但安卓源配置里没有热区的情况。生成器会把它们追加到该屏热区末尾；id 不得与已有热区重复，矩形必须在 0-100 内。坐标按 Content/Screens/<屏id>.png（852x1846）目测，单位百分比。",
+  "home": [
+    {
+      "id": "home-avatar",
+      "label": "头像",
+      "x": 4.0,
+      "y": 4.2,
+      "width": 10.0,
+      "height": 6.0,
+      "action": { "type": "navigate", "target": "/profile" }
+    },
+    {
+      "id": "home-feihualing-card",
+      "label": "今日雅集·飞花令",
+      "x": 3.8,
+      "y": 55.5,
+      "width": 92.4,
+      "height": 17.6,
+      "action": { "type": "navigate", "target": "/activities/feihualing" }
+    },
+    {
+      "id": "home-daily-poem",
+      "label": "今日诗签",
+      "x": 3.8,
+      "y": 76.4,
+      "width": 66.0,
+      "height": 11.5,
+      "action": { "type": "navigate", "target": "/native/poem/niao-ming-jian" }
+    }
+  ],
+  "dynasties": [
+    {
+      "id": "dynasties-char-libai",
+      "label": "推荐人物·李白",
+      "x": 4.0,
+      "y": 74.0,
+      "width": 29.5,
+      "height": 9.5,
+      "action": { "type": "navigate", "target": "/native/character/libai" }
+    },
+    {
+      "id": "dynasties-char-sushi",
+      "label": "推荐人物·苏轼",
+      "x": 35.8,
+      "y": 74.0,
+      "width": 28.5,
+      "height": 9.5,
+      "action": { "type": "navigate", "target": "/native/character/sushi" }
+    },
+    {
+      "id": "dynasties-char-liqingzhao",
+      "label": "推荐人物·李清照",
+      "x": 66.0,
+      "y": 74.0,
+      "width": 29.5,
+      "height": 9.5,
+      "action": { "type": "navigate", "target": "/native/character/liqingzhao" }
+    }
+  ]
+}

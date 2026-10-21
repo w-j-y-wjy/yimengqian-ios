@@ -92,7 +92,7 @@ enum ScreenCatalog {
                 Hotspot(id: "enter-dream", label: "入梦", x: 20, y: 83.263, width: 59.953, height: 7.34, action: HotspotAction(type: .conditionalJump, target: "/onboarding/intro"))
             ]),
         ScreenConfig(id: "home", route: "/home", image: "Screens/home.png", hotspots: [
-                Hotspot(id: "enter-city", label: "进入城内", x: 60.817, y: 34.72, width: 30.939, height: 5, action: HotspotAction(type: .navigate, target: "/city/dynasties")),
+                Hotspot(id: "enter-city", label: "进入城内", x: 60.817, y: 34.72, width: 30.939, height: 5, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "nav-dynasty", label: "朝代漫游", x: 2.376, y: 42.476, width: 16.854, height: 11.414, action: HotspotAction(type: .navigate, target: "/city/dynasties")),
                 Hotspot(id: "nav-character", label: "古人互动", x: 21, y: 42, width: 18, height: 8, action: HotspotAction(type: .navigate, target: "/character/sushi")),
                 Hotspot(id: "nav-poetry", label: "诗境生成", x: 40, y: 42, width: 18, height: 8, action: HotspotAction(type: .navigate, target: "/poetry")),
@@ -102,20 +102,26 @@ enum ScreenCatalog {
                 Hotspot(id: "bottom-city", label: "古城", x: 20, y: 93, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/city/dynasties")),
                 Hotspot(id: "bottom-activity", label: "雅集", x: 40, y: 93, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/activities")),
                 Hotspot(id: "bottom-favorites", label: "收藏", x: 60, y: 93, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/favorites")),
-                Hotspot(id: "bottom-profile", label: "我的", x: 80, y: 93, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/profile"))
+                Hotspot(id: "bottom-profile", label: "我的", x: 80, y: 93, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/profile")),
+                Hotspot(id: "home-avatar", label: "头像", x: 4, y: 4.2, width: 10, height: 6, action: HotspotAction(type: .navigate, target: "/profile")),
+                Hotspot(id: "home-feihualing-card", label: "今日雅集·飞花令", x: 3.8, y: 55.5, width: 92.4, height: 17.6, action: HotspotAction(type: .navigate, target: "/activities/feihualing")),
+                Hotspot(id: "home-daily-poem", label: "今日诗签", x: 3.8, y: 76.4, width: 66, height: 11.5, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian"))
             ]),
         ScreenConfig(id: "dynasties", route: "/city/dynasties", image: "Screens/dynasties.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 3.005, y: 5.377, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "tang", label: "盛唐·长安", x: 4.221, y: 14.247, width: 91.972, height: 13.537, action: HotspotAction(type: .toast, message: "该梦境尚在修复中")),
-                Hotspot(id: "song-bianjing", label: "北宋·汴京", x: 3.845, y: 28.73, width: 93.944, height: 13.451, action: HotspotAction(type: .toast, message: "已选择北宋·汴京")),
-                Hotspot(id: "song-linan", label: "南宋·临安", x: 3.563, y: 43.424, width: 93.756, height: 12.497, action: HotspotAction(type: .toast, message: "该梦境尚在修复中")),
-                Hotspot(id: "ming", label: "明代·金陵", x: 4.502, y: 57.384, width: 92.535, height: 11.934, action: HotspotAction(type: .toast, message: "敬请期待")),
+                Hotspot(id: "tang", label: "盛唐·长安", x: 4.221, y: 14.247, width: 91.972, height: 13.537, action: HotspotAction(type: .navigate, target: "/native/city/tang")),
+                Hotspot(id: "song-bianjing", label: "北宋·汴京", x: 3.845, y: 28.73, width: 93.944, height: 13.451, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
+                Hotspot(id: "song-linan", label: "南宋·临安", x: 3.563, y: 43.424, width: 93.756, height: 12.497, action: HotspotAction(type: .navigate, target: "/native/city/nan-song")),
+                Hotspot(id: "ming", label: "明代·金陵", x: 4.502, y: 57.384, width: 92.535, height: 11.934, action: HotspotAction(type: .navigate, target: "/native/city/ming")),
                 Hotspot(id: "enter-bianjing", label: "进入汴京", x: 6.455, y: 84.08, width: 87.089, height: 5, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "bottom-home", label: "首页", x: 0, y: 91.206, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/home")),
                 Hotspot(id: "bottom-city", label: "古城", x: 20.26, y: 91.087, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/city/dynasties")),
                 Hotspot(id: "bottom-activity", label: "雅集", x: 40.78, y: 90.967, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/activities")),
                 Hotspot(id: "bottom-favorites", label: "收藏", x: 61.299, y: 90.847, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/favorites")),
-                Hotspot(id: "bottom-profile", label: "我的", x: 80, y: 90.728, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/profile"))
+                Hotspot(id: "bottom-profile", label: "我的", x: 80, y: 90.728, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/profile")),
+                Hotspot(id: "dynasties-char-libai", label: "推荐人物·李白", x: 4, y: 74, width: 29.5, height: 9.5, action: HotspotAction(type: .navigate, target: "/native/character/libai")),
+                Hotspot(id: "dynasties-char-sushi", label: "推荐人物·苏轼", x: 35.8, y: 74, width: 28.5, height: 9.5, action: HotspotAction(type: .navigate, target: "/native/character/sushi")),
+                Hotspot(id: "dynasties-char-liqingzhao", label: "推荐人物·李清照", x: 66, y: 74, width: 29.5, height: 9.5, action: HotspotAction(type: .navigate, target: "/native/character/liqingzhao"))
             ]),
         ScreenConfig(id: "bianjing", route: "/city/bianjing", image: "Screens/bianjing.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 4.225, y: 5.204, width: 10, height: 5, action: HotspotAction(type: .back)),
@@ -178,7 +184,7 @@ enum ScreenCatalog {
                 Hotspot(id: "voice-2", label: "语音2", x: 20.199, y: 53.59, width: 61.395, height: 7.386, action: HotspotAction(type: .toast, message: "正在播放苏轼回复")),
                 Hotspot(id: "topic-1", label: "你如何面对人生起伏？", x: 5.657, y: 67.364, width: 88.499, height: 5, action: HotspotAction(type: .storageAndToast, message: "已选择：如何面对人生起伏", storage: [KV(key: "dialogueTopic", value: "life")])),
                 Hotspot(id: "topic-2", label: "黄州给你带来了什么？", x: 6.125, y: 73.373, width: 89.062, height: 5, action: HotspotAction(type: .storageAndToast, message: "已选择：黄州经历", storage: [KV(key: "dialogueTopic", value: "huangzhou")])),
-                Hotspot(id: "topic-3", label: "你最想告诉后人的一句话？", x: 5.188, y: 79.382, width: 89.062, height: 5, action: HotspotAction(type: .storageAndToast, message: "已选择：寄语后人", storage: [KV(key: "dialogueTopic", value: "message")])),
+                Hotspot(id: "topic-3", label: "你最想告诉后人的一句话？", x: 5.188, y: 79.382, width: 89.062, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择：寄语后人", storageKey: "dialogueTopic", storageValue: "words")),
                 Hotspot(id: "continue-btn", label: "继续交谈", x: 16.594, y: 86.208, width: 66.647, height: 5, action: HotspotAction(type: .conditionalNavigate, target: "/task/reward", message: "请先选择一个话题"))
             ]),
         ScreenConfig(id: "task-reward", route: "/task/reward", image: "Screens/task-reward.png", hotspots: [

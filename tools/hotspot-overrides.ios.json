@@ -113,6 +113,30 @@
       "y": 90.728,
       "width": 20,
       "height": 7
+    },
+    "song-bianjing": {
+      "action": {
+        "type": "navigate",
+        "target": "/city/bianjing"
+      }
+    },
+    "tang": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/tang"
+      }
+    },
+    "song-linan": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/nan-song"
+      }
+    },
+    "ming": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/ming"
+      }
     }
   },
   "bianjing": {
@@ -211,7 +235,16 @@
       "height": 7
     }
   },
-  "teahouse-dialogue": {},
+  "teahouse-dialogue": {
+    "topic-3": {
+      "action": {
+        "type": "setStorageAndToast",
+        "message": "已选择：寄语后人",
+        "storageKey": "dialogueTopic",
+        "storageValue": "words"
+      }
+    }
+  },
   "artifact-home": {
     "guide": {
       "x": 78.701,
@@ -279,6 +312,14 @@
       "action": {
         "type": "navigate",
         "target": "/native/pattern/边饰"
+      }
+    }
+  },
+  "home": {
+    "enter-city": {
+      "action": {
+        "type": "navigate",
+        "target": "/city/bianjing"
       }
     }
   }

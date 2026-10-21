@@ -53,16 +53,44 @@ const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, 'u
 const overrides = JSON.parse(readFileSync(OVERRIDES_JSON, 'utf8'));
 const iosOverrides = readJson(IOS_OVERRIDES, {});
 const deletions = readJson(IOS_DELETIONS, {});
+// 新增热区清单（本仓库维护）：设计稿上画了可点元素、但安卓源里没有热区的情况。
+// 表结构：{ "<屏 id>": [ { id, label, x, y, width, height, action: {…} }, … ] }
+// 为什么放在生成器而不是手改 ScreensConfig：手改会被下一次生成静默回退（本文件是生成物）。
+const IOS_ADDITIONS = path.join(ROOT, 'tools', 'hotspot-additions.ios.json');
+const additions = readJson(IOS_ADDITIONS, {});
 
 let deletedCount = 0;
 let iosOverrideCount = 0;
 let actionOverrideCount = 0;
+let additionCount = 0;
 const merged = screens.map((s) => {
   const ovA = overrides[s.id] || {};
   const ovI = iosOverrides[s.id] || {};
   const del = new Set(deletions[s.id] || []);
+  const add = Array.isArray(additions[s.id]) ? additions[s.id] : [];
   if (del.size) deletedCount += s.hotspots.filter((h) => del.has(h.id)).length;
   if (Object.keys(ovI).length) iosOverrideCount += Object.keys(ovI).length;
+
+  // 新增热区：先校验，再追加到尾部（ZStack 里后绘制者在上层，新增的贴合元素的一小块
+  // 不容易被已有大热区抢走，但仍要求不与已有 id 冲突、矩形在画面内）
+  const added = add.map((h, i) => {
+    const where = `${s.id}/${h.id || `#${i}`}`;
+    if (!h.id || typeof h.id !== 'string') throw new Error(`hotspot-additions.ios.json: ${where} 缺 id`);
+    if (s.hotspots.some((x) => x.id === h.id)) throw new Error(`hotspot-additions.ios.json: ${where} 与已有热区 id 重复`);
+    for (const k of ['x', 'y', 'width', 'height']) {
+      if (typeof h[k] !== 'number') throw new Error(`hotspot-additions.ios.json: ${where} 的 ${k} 必须是数字`);
+    }
+    if (h.width <= 0 || h.height <= 0) throw new Error(`hotspot-additions.ios.json: ${where} 尺寸必须为正`);
+    if (h.x < 0 || h.y < 0 || h.x + h.width > 100.5 || h.y + h.height > 100.5) {
+      throw new Error(`hotspot-additions.ios.json: ${where} 超出画面（x+w=${h.x + h.width} y+h=${h.y + h.height}）`);
+    }
+    if (!h.action || !isCase(h.action.type)) {
+      throw new Error(`hotspot-additions.ios.json: ${where} 的 action.type 非法`);
+    }
+    additionCount += 1;
+    return { id: h.id, label: h.label || h.id, x: h.x, y: h.y, width: h.width, height: h.height, action: h.action };
+  });
+
   return {
     ...s,
     hotspots: s.hotspots
@@ -99,7 +127,8 @@ const merged = screens.map((s) => {
         }
 
         return { ...h, ...rect, action };
-      }),
+      })
+      .concat(added),
   };
 });
 const overriddenCount = Object.keys(overrides).length;
@@ -107,6 +136,7 @@ console.log(`[cfg] 合并 ${overriddenCount} 个屏幕的安卓坐标覆盖`);
 if (iosOverrideCount) console.log(`[cfg] 叠加 ${iosOverrideCount} 条 iOS 侧修正（坐标 / 动作）`);
 if (actionOverrideCount) console.log(`[cfg] 按 iOS 侧修正替换 ${actionOverrideCount} 条动作`);
 if (deletedCount) console.log(`[cfg] 按删除清单剔除 ${deletedCount} 个热区`);
+if (additionCount) console.log(`[cfg] 按新增清单补 ${additionCount} 个热区（设计稿上有可点元素、源配置里缺）`);
 
 // —— 3. 工具函数 ——
 const swStr = (s) => JSON.stringify(String(s)); // JSON 转义 ≈ Swift 字符串转义

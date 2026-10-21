@@ -145,6 +145,7 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     letter: new Set([...cd.matchAll(/Letter\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     activity: new Set([...cd.matchAll(/Activity\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     pattern: new Set([...cd.matchAll(/PatternElement\(name: "([^"]+)"/g)].map((m) => m[1])),
+    city: new Set([...cd.matchAll(/Dynasty\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
   }
   const badNative = []
   for (const t of nativeTargets) {
