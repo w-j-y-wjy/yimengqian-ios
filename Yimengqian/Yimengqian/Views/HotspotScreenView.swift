@@ -44,6 +44,18 @@ struct HotspotScreenView: View {
                 // 原生叠层：只补位图做不到的实时状态（选中态、判题反馈）。
                 // 它 .allowsHitTesting(false)，不会抢热区的点击。
                 ScreenNativeLayer(screen: screen, containerSize: fitted)
+                if debug {
+                    // 调试模式顺带显示构建号：真机上装了两份同名 App 时，
+                    // 这是唯一能当场判断"我点的到底是哪一版"的办法。
+                    Text(buildStamp)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule(style: .continuous).fill(Color.black.opacity(0.6)))
+                        .padding(.top, 54)
+                        .padding(.leading, 12)
+                }
             }
             .frame(width: fitted.width, height: fitted.height)
             // 形状与手势必须写在 .position 之前：.position 会让视图铺满父级，
@@ -60,6 +72,14 @@ struct HotspotScreenView: View {
                 onInit?()
             }
         }
+    }
+
+    /// 构建标识：版本号 + 构建号，取自身（不硬编码），调试模式显示在左上角
+    private var buildStamp: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "构建 \(version) (\(build))"
     }
 
     /// 等比放入屏幕后的设计稿尺寸（保持 852:1846 的比例，只缩不放）
