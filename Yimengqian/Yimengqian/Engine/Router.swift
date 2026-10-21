@@ -6,14 +6,15 @@
 //       - back()            对应 navigate(-1)，栈底不动作；
 //       - navigate(route:)  按路由查 ScreenCatalog 后压栈；
 //       - jump(to:)         替换整个栈（对齐 conditionalJump 直达 /home：清空栈再推入目标）。
-// 说明：@Published navigationID 作为转场令牌，视图监听其变化驱动页面切换动画。
+// 说明：@Published navigationID 是「换屏令牌」，值一变 RootView 就重建当前屏。
+//       2026-10-21 起不再驱动转场动画（真机验收要求直接换图，不要左右推入）。
 
 import Foundation
 import SwiftUI
 
 final class Router: ObservableObject {
     @Published private(set) var stack: [ScreenConfig] = []
-    @Published var navigationID = UUID()  // 触发转场的令牌
+    @Published var navigationID = UUID()  // 换屏令牌（只用来强制重建视图，不驱动动画）
 
     init(initial: ScreenConfig) {
         stack = [initial]

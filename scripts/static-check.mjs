@@ -235,6 +235,25 @@ if (existsSync(OV_IOS) || existsSync(DEL_IOS)) {
   else ok('hotspot.ios', `iOS 侧修正 ${nO} 条坐标 / ${nD} 条删除，引用全部有效`)
 }
 
+// ── 5. 热区命中：contentShape 必须写在 .position 之前 ──────────────────────
+// SwiftUI 的 .position 会把视图撑成父级的整块尺寸；之后再加 contentShape(Rectangle())，
+// 可点区域就变成**整个屏幕**，ZStack 里最后绘制的热区会吃掉所有点击。
+// 2026-10-21 真机实测症状：不管点哪里都跳到收藏页。本机没有 Xcode，只能静态拦住。
+{
+  const viewPath = join(SRC, 'Views', 'HotspotScreenView.swift')
+  const src = stripComments(read(viewPath))
+  const start = src.indexOf('private struct HotspotButton')
+  if (start === -1) bad('views.hittest', '找不到 HotspotButton 定义，命中测试规则失效')
+  else {
+    const btn = src.slice(start)
+    const iShape = btn.indexOf('.contentShape(')
+    const iPos = btn.indexOf('.position(')
+    if (iShape === -1 || iPos === -1) bad('views.hittest', 'HotspotButton 缺少 contentShape 或 position')
+    else if (iShape > iPos) bad('views.hittest', 'contentShape 在 .position 之后 → 可点区域会变成整屏（点哪都触发最后一个热区）')
+    else ok('views.hittest', '热区形状先于定位（可点区域 = 热区本身）')
+  }
+}
+
 if (KNOWN.length) {
   for (const k of KNOWN) (STRICT ? bad : warn)(`known.${k.id}`, k.msg)
 } else {

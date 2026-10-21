@@ -1,7 +1,7 @@
 // RootView.swift
 //
 // 来源：对齐 React 原型 App.tsx（路由栈）与 global.css（app-frame / toast 布局）。
-// 用途：根视图 —— 渲染路由栈栈顶屏幕（带转场动画），在顶层叠加 Toast 浮层；
+// 用途：根视图 —— 渲染路由栈栈顶屏幕（直接换图、无转场动画），在顶层叠加 Toast 浮层；
 //       启动页（splash）支持五连击重置全部数据（对应 Web 的 ?reset=1）。
 
 import SwiftUI
@@ -26,10 +26,11 @@ struct RootView: View {
                     onExtraTap: top.id == "splash" ? handleSplashTap : nil
                 )
                 .id(top.id + "|" + String(router.stack.count))
-                .transition(.move(edge: .trailing).combined(with: .opacity))
+                // 不做转场动画：这是「一屏一张设计稿」的点击原型，从右滑入会把整页图
+                // 像卡片一样推过来，反而暴露它是拼出来的。直接换图更像原生 App。
+                // （用户 2026-10-21 真机验收要求：不要左右推入，直接切换。）
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: router.navigationID)
         .overlay(alignment: .bottom) {
             if let msg = toast.message {
                 ToastView(message: msg)
