@@ -247,6 +247,30 @@
       "y": 90.847,
       "width": 20,
       "height": 7
+    },
+    "work-chibi": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/nian-nu-jiao"
+      }
+    },
+    "work-dingfengbo": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/ding-feng-bo"
+      }
+    },
+    "footprint-hangzhou": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/nan-song"
+      }
+    },
+    "letter": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/letter/letter-sushi-1"
+      }
     }
   },
   "teahouse-dialogue": {
@@ -265,6 +289,24 @@
       "y": 5.664,
       "width": 18,
       "height": 5
+    },
+    "hot-mirror": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/tong-jing"
+      }
+    },
+    "hot-incense": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/xiang-lu"
+      }
+    },
+    "hot-jade": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/yu-pei"
+      }
     }
   },
   "feihualing-challenge": {
@@ -396,6 +438,40 @@
         "target": "/favorites",
         "storageKey": "favoriteFilter",
         "storageValue": "stamp"
+      }
+    }
+  },
+  "dreambook": {
+    "city-hangzhou": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/nan-song"
+      }
+    },
+    "city-jinling": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/ming"
+      }
+    },
+    "person-liqingzhao": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/character/liqingzhao"
+      }
+    }
+  },
+  "profile": {
+    "trace-hangzhou": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/nan-song"
+      }
+    },
+    "trace-nanjing": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/ming"
       }
     }
   }
