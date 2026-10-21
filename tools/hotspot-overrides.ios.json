@@ -58,7 +58,11 @@
       "x": 83.181,
       "y": 5.664,
       "width": 12,
-      "height": 5
+      "height": 5,
+      "action": {
+        "type": "navigate",
+        "target": "/poetry"
+      }
     }
   },
   "jiangxue-imagery": {
@@ -535,6 +539,16 @@
       }
     },
     "view-rewards": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/favorites",
+        "storageKey": "favoriteFilter",
+        "storageValue": "stamp"
+      }
+    }
+  },
+  "identity-result": {
+    "initial-stamp": {
       "action": {
         "type": "storageAndNavigate",
         "target": "/favorites",

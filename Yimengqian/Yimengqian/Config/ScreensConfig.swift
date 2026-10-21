@@ -226,7 +226,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "jiangxue-scene", route: "/poetry/jiangxue", image: "Screens/jiangxue-scene.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 0.78, y: 5.305, width: 12, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "poetry-lib", label: "诗库", x: 83.181, y: 5.664, width: 12, height: 5, action: HotspotAction(type: .toast, message: "返回诗库可探索更多诗词")),
+                Hotspot(id: "poetry-lib", label: "诗库", x: 83.181, y: 5.664, width: 12, height: 5, action: HotspotAction(type: .navigate, target: "/poetry")),
                 Hotspot(id: "play-btn", label: "播放按钮", x: 40.939, y: 36.197, width: 17.606, height: 6.907, action: HotspotAction(type: .toggleStorage, storageKey: "jiangxueVideoPlaying", onMessage: "正在播放《江雪》诗境", offMessage: "已暂停诗境")),
                 Hotspot(id: "style-ink", label: "水墨画风", x: 5.845, y: 55.72, width: 20.329, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择水墨画风", storageKey: "jiangxueStyle", storageValue: "ink")),
                 Hotspot(id: "style-gongbi", label: "工笔画风", x: 28.69, y: 55.937, width: 21.362, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择工笔画风", storageKey: "jiangxueStyle", storageValue: "gongbi")),
@@ -317,7 +317,7 @@ enum ScreenCatalog {
                 Hotspot(id: "back", label: "返回", x: 2.72, y: 5.208, width: 10, height: 5, action: HotspotAction(type: .back)),
                 Hotspot(id: "identity", label: "身份画像", x: 8.311, y: 12.744, width: 35.791, height: 18.623, action: HotspotAction(type: .toast, message: "梦客·苏蘅，江南游学者")),
                 Hotspot(id: "recommend-city", label: "推荐汴京", x: 3.435, y: 59.197, width: 93.751, height: 12.983, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
-                Hotspot(id: "initial-stamp", label: "初始印章", x: 2.556, y: 72.456, width: 93.939, height: 11.768, action: HotspotAction(type: .toast, message: "获得初始印章\"清晖远游\"")),
+                Hotspot(id: "initial-stamp", label: "初始印章", x: 2.556, y: 72.456, width: 93.939, height: 11.768, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "enter-dream", label: "进入我的梦境", x: 10.246, y: 85.466, width: 79.965, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/home", storageKey: "onboardingComplete", storageValue: "true")),
                 Hotspot(id: "retry-btn", label: "重新测试", x: 25.029, y: 91.21, width: 51.735, height: 5, action: HotspotAction(type: .navigate, target: "/onboarding/preferences"))
             ]),
