@@ -1,0 +1,82 @@
+// ProfileLayer.swift
+//
+// 个人中心叠层（Phase 3 · A-6）
+//
+// 解决的问题：四张统计卡上的数字（诗词 128 / 器物 86 / 人物 43 / 印章 27）是**烤进位图**的，
+// 无论数据层存了什么都不会变。做完 A 线之后收藏已经真实落库，这一层把它们画回卡片上。
+//
+// 做法：
+// - 数字槽位不另起坐标：取 `stat-*` 热区卡片矩形，再按实测比例切出「数字那一行」
+//   （左侧插画、上方标签、下方单位都留原位，只盖数字本身）；
+// - 覆盖色用 Theme.cardTan（#e8d3b4，从设计稿卡片内部采样的实测值），否则纸色补丁会露出来；
+// - 数字来源统一走 AppStore.collection(filter:)，与收藏页筛选看到的一致 ——
+//   点「器物 1 件」进收藏页就真的是 1 件，不会出现"上面写 128、进去只有 1 张"。
+//
+// 数字包围盒实测（profile.png 852×1846，深色像素 bbox）：
+//   诗词 128 → (140,652)-(187,699)；人物 43 → (541,652)-(581,699)；印章 27 → (742,652)-(782,699)
+//   单位字（篇/件/位/枚）在 y=701 起，所以遮罩必须停在 700 以内，避免把量词也盖掉。
+
+import SwiftUI
+
+struct ProfileLayer: View {
+    let screen: ScreenConfig
+    let container: CGSize
+
+    @EnvironmentObject private var store: AppStore
+
+    /// 一个统计卡里的数字槽位：热区 id + 类型 + 相对卡片矩形的比例
+    private struct StatSlot {
+        let hotspotID: String
+        let type: FavoriteType
+        /// 数字行左边界（相对卡片宽度）：避开左侧插画
+        let fx: CGFloat
+        /// 数字行宽度（相对卡片宽度）：留够 3 位数字的余量
+        let fw: CGFloat
+    }
+
+    /// fx/fw 是逐卡实测的，不统一取一个值：四张卡的插画宽度不一样，
+    /// 用统一比例会把「器物」卡的首位数字裁掉 7px。
+    private let slots: [StatSlot] = [
+        StatSlot(hotspotID: "stat-poetry", type: .poem, fx: 0.545, fw: 0.445),
+        StatSlot(hotspotID: "stat-artifact", type: .artifact, fx: 0.470, fw: 0.475),
+        StatSlot(hotspotID: "stat-character", type: .character, fx: 0.545, fw: 0.375),
+        StatSlot(hotspotID: "stat-stamp", type: .stamp, fx: 0.525, fw: 0.370),
+    ]
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(slots, id: \.hotspotID) { slot in
+                if let card = screen.hotspots.first(where: { $0.id == slot.hotspotID }) {
+                    numberPatch(slot: slot, card: card.rect(in: container))
+                }
+            }
+        }
+        .frame(width: container.width, height: container.height, alignment: .topLeading)
+    }
+
+    /// 数字行：遮罩 + 重绘。纵向 0.47h..0.795h 对应设计稿 y 640..700（数字 652..699，量词 701 起）。
+    private func numberPatch(slot: StatSlot, card: CGRect) -> some View {
+        let band = CGRect(
+            x: card.minX + card.width * slot.fx,
+            y: card.minY + card.height * 0.470,
+            width: card.width * slot.fw,
+            height: card.height * 0.325
+        )
+        let count = store.collection(filter: slot.type.rawValue).count
+
+        return ZStack(alignment: .leading) {
+            // 先盖掉烤进图里的旧数字（否则会和新数字叠成「1283」这种鬼影）
+            Rectangle()
+                .fill(Theme.cardTan)
+            // 字号按槽位高度推：实测数字字高约 48px（设计稿 1846 高），≈ 槽高的 0.8 倍
+            Text("\(count)")
+                .font(.custom("KaitiSC-Bold", size: band.height * 0.95))
+                .foregroundColor(Theme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .padding(.leading, 1)
+        }
+        .frame(width: band.width, height: band.height, alignment: .leading)
+        .offset(x: band.minX, y: band.minY)
+    }
+}

@@ -72,6 +72,8 @@ struct ScreenNativeLayer: View {
                 FeihualingLayer(screen: screen, container: containerSize)
             case "favorites":
                 FavoritesLayer(screen: screen, container: containerSize)
+            case "profile":
+                ProfileLayer(screen: screen, container: containerSize)
             default:
                 EmptyView()
             }

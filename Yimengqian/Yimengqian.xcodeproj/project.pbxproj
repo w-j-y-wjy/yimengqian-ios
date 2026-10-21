@@ -24,6 +24,7 @@
 		1AAAA65062FDA3CDF0C5BF7C /* FavoritesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4B9A3ACCE74B4DD83A906 /* FavoritesLayer.swift */; };
 		A14D86C6E6D666163782CE81 /* FeihualingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14E1D562CFF6D93BAE10D32 /* FeihualingLayer.swift */; };
 		73284F9E1C6B0CBE68782968 /* PreferenceTestLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */; };
+		9515E1F10B6754A3CC4C6F76 /* ProfileLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */; };
 		85CF7F4B43B6B476B81E06CE /* ScreenNativeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */; };
 		3AB3D0451A3987E646761802 /* SpecialScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766B2E663E2C05778F06D762 /* SpecialScreens.swift */; };
 		EAE97EC63CAA230CAADC726F /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD46AF34014FC22CD991FD7 /* ToastView.swift */; };
@@ -51,6 +52,7 @@
 		C1C4B9A3ACCE74B4DD83A906 /* FavoritesLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesLayer.swift; sourceTree = "<group>"; };
 		F14E1D562CFF6D93BAE10D32 /* FeihualingLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeihualingLayer.swift; sourceTree = "<group>"; };
 		78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceTestLayer.swift; sourceTree = "<group>"; };
+		9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLayer.swift; sourceTree = "<group>"; };
 		3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNativeLayer.swift; sourceTree = "<group>"; };
 		766B2E663E2C05778F06D762 /* SpecialScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialScreens.swift; sourceTree = "<group>"; };
 		1AD46AF34014FC22CD991FD7 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				C1C4B9A3ACCE74B4DD83A906 /* FavoritesLayer.swift */,
 				F14E1D562CFF6D93BAE10D32 /* FeihualingLayer.swift */,
 				78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */,
+				9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */,
 				3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */,
 			);
 			path = Views/Native;
@@ -267,6 +270,7 @@
 				1AAAA65062FDA3CDF0C5BF7C /* in Sources */,
 				A14D86C6E6D666163782CE81 /* in Sources */,
 				73284F9E1C6B0CBE68782968 /* in Sources */,
+				9515E1F10B6754A3CC4C6F76 /* in Sources */,
 				85CF7F4B43B6B476B81E06CE /* in Sources */,
 				3AB3D0451A3987E646761802 /* in Sources */,
 				EAE97EC63CAA230CAADC726F /* in Sources */,

@@ -10,6 +10,7 @@ struct RootView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var toast: ToastCenter
     @EnvironmentObject private var store: AppStore
+    @EnvironmentObject private var selection: SelectionStore
 
     @State private var resetTapCount = 0
     @State private var resetTapAt: Date?
@@ -70,6 +71,10 @@ struct RootView: View {
 
     private func performReset() {
         store.resetAll()
+        // 选择态必须一起清：SelectionStore 启动时从 UserDefaults seed 一次就不再重读，
+        // 漏掉这一步，重置后偏好测试的描边、飞花令的选中框、收藏的筛选高亮都还停在上一轮。
+        // （这正是 08 文档说的"答错态跨屏残留"同一类问题，2026-10-21 体检发现无人调用。）
+        selection.reset()
         // 清空路由栈回到启动页，避免"数据已清空但仍停留在内页"的错乱状态
         if let splash = ScreenCatalog.screen(id: "splash") {
             router.jump(to: splash)

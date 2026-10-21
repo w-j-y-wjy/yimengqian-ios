@@ -47,8 +47,9 @@ struct FavoritesLayer: View {
     /// 当前筛选值（SelectionStore 已跟踪 favoriteFilter，改筛选会驱动本层刷新）
     private var activeFilter: String? { selection.value(StorageKeys.favoriteFilter) }
 
-    /// 当前筛选下要显示的收藏（已按日期倒序，见 AppStore.favorites(filter:)）
-    private var items: [FavoriteItem] { store.favorites(filter: activeFilter) }
+    /// 当前筛选下要显示的条目。走 collection 而不是 favorites：
+    /// 印章栏要合并「已获得 + 已收藏」，否则领奖拿到的章在页面里找不到。
+    private var items: [FavoriteItem] { store.collection(filter: activeFilter) }
 
     /// 卡片槽位：`item-*` 热区按「先上后下、先左后右」排序，保证与视觉网格一致
     private var slots: [Hotspot] {

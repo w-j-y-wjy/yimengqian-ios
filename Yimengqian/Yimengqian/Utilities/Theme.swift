@@ -21,6 +21,9 @@ enum Theme {
     /// 设计稿宣纸底的实测值（#f4efe4）。叠层要覆盖烤进图里的文字/数字时用它，
     /// 比 paper 更贴近位图底色，补丁不会在纸面上留下一块浅色方块。
     static let paperWarm = Color(hex: 0xF4EFE4)
+    /// 个人中心四张统计卡的底色实测值（#e8d3b4，profile.png 卡片内部多点采样 5 点均值）。
+    /// 盖卡片里的数字必须用这个色 —— 用 paperWarm 会明显偏浅，留下色块。
+    static let cardTan = Color(hex: 0xE8D3B4)
     static let paperDark = Color(hex: 0xE8E0D0)
     static let ink = Color(hex: 0x2C2416)
     static let inkLight = Color(hex: 0x5A4E3C)

@@ -188,6 +188,61 @@ final class AppStore: ObservableObject {
         }
     }
 
+    // MARK: - 印章（P0-2：领奖页要真的发印章）
+
+    /// 「领取」类热区的 flagKey → 印章 id。
+    /// 配置里 claim-btn 用 incrementOnce 只写了一个没人读的计数（petalCount），
+    /// 领奖页文案却说「已收入收藏」，实际什么都没发生 —— 这张表把「写 flag」接成「真的发章」。
+    static let stampClaimMap: [String: String] = [
+        StorageKeys.springStampClaimed: "chun-ri-ya-shi",
+    ]
+
+    /// 授予印章。幂等：已获得则不改日期。返回本次是否新获得。
+    @discardableResult
+    func grantStamp(id: String, date: String = AppSnapshot.dateString()) -> Bool {
+        guard let idx = snapshot.stamps.firstIndex(where: { $0.id == id }) else { return false }
+        guard !snapshot.stamps[idx].obtained else { return false }
+        snapshot.stamps[idx].obtained = true
+        snapshot.stamps[idx].date = date
+        snapshot.stampCount = snapshot.stamps.filter { $0.obtained }.count
+        return true
+    }
+
+    /// 已获得的印章（按获得日期倒序）
+    func obtainedStamps() -> [Stamp] {
+        snapshot.stamps.filter { $0.obtained }.sorted { ($0.date ?? "") > ($1.date ?? "") }
+    }
+
+    /// 收藏页「印章」口径：已获得的印章 + 被收藏的印章（同一枚只出现一次）。
+    /// 为什么合并：设计稿入口叫「查看我的印章」，印章是获得物而不是收藏物，
+    /// 只显示收藏会让领奖拿到的章在页面上找不到。
+    private func stampItems(extraFavorites: [FavoriteItem]) -> [FavoriteItem] {
+        var seen = Set<String>()
+        var out: [FavoriteItem] = []
+        for s in snapshot.stamps where s.obtained {
+            seen.insert(s.id)
+            out.append(FavoriteItem(id: "stamp-\(s.id)", type: .stamp, itemId: s.id, date: s.date ?? AppSnapshot.dateString()))
+        }
+        for f in extraFavorites where f.type == .stamp && !seen.contains(f.itemId) {
+            seen.insert(f.itemId)
+            out.append(f)
+        }
+        return out.sorted { $0.date > $1.date }
+    }
+
+    /// 收藏页统一入口：印章栏走「已获得 + 已收藏」，其余按类型筛收藏；
+    /// filter 为空时把两部分合并 —— 否则「全部」会比「印章」还少，看着像丢数据。
+    func collection(filter: String?) -> [FavoriteItem] {
+        let favorites = self.favorites(filter: filter)
+        let type = FavoriteType.fromFilter(filter)
+        if type == .stamp { return stampItems(extraFavorites: favorites) }
+        if type == nil {
+            let nonStamp = favorites.filter { $0.type != .stamp }
+            return (nonStamp + stampItems(extraFavorites: favorites)).sorted { $0.date > $1.date }
+        }
+        return favorites
+    }
+
     /// 老版本升级迁移：过去只有离散键、快照 favorites 恒为空。
     /// 快照里还没有任何收藏时，把已置位的离散键补成收藏项，避免升级后收藏全丢。
     /// 注意：init 内的赋值不触发 didSet（属性观察器在初始化阶段不回调），所以这里显式落盘。

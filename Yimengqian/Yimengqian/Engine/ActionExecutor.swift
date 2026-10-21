@@ -108,6 +108,11 @@ final class ActionExecutor {
                 if let countKey = action.storageKey {
                     store.incrementInt(countKey, by: 1)
                 }
+                // 领奖类热区：配置里只写了 flag 与一个没人读的计数，
+                // 命中「flag → 印章」映射时才真的发章进快照（否则「已收入收藏」是句空话）。
+                if let stampId = AppStore.stampClaimMap[flag] {
+                    store.grantStamp(id: stampId)
+                }
             }
             if let m = action.message { toast.show(m) }
 
