@@ -243,6 +243,11 @@ struct NativeDetailContent {
                 tags: names,
                 favorite: nil
             )
+
+        case .list:
+            // 列表页走 NativeListView，不生成"详情内容"；这里必须显式返回，
+            // 否则 switch 不穷尽（CI 第一次就报了 switch must be exhaustive）。
+            return nil
         }
     }
 }
