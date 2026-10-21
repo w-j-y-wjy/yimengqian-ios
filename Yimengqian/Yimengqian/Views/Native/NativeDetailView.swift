@@ -128,12 +128,15 @@ struct NativeDetailView: View {
                 .aspectRatio(contentMode: .fill)
                 .frame(height: 220)
                 .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
                     LinearGradient(
-                        colors: [Color.clear, Theme.paperWarm.opacity(0.85)],
+                        colors: [Color.clear, Theme.paperWarm.opacity(0.6)],
                         startPoint: .center, endPoint: .bottom
                     )
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 )
+                .padding(.horizontal, 20)
         } else {
             Rectangle().fill(Theme.paperWarm).frame(height: 8)
         }

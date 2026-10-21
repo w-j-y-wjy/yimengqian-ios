@@ -104,14 +104,22 @@ struct NativeDetailContent {
                 sections.append(("创作背景", a.background))
                 sections.append(("艺术特色", a.features))
             }
-            let imagery = p.imagery ?? ContentData.jiangxueImagery
+            // 配图必须"按诗取图"：此前对非《江雪》的诗回退到江雪意象图，
+            // 结果《鸟鸣涧》详情页显示的是孤舟寒江图 —— 语义完全错位。
+            // 现在优先用该诗自己的插画（ArtApp/poem-*.jpg，此前从未被引用），
+            // 只有《江雪》用它的意象图（那是同一幅画的意象拆解）。
+            let hero = Self.poemArtwork(id) ?? (id == "jiangxue" ? p.imagery?.first?.image : nil)
+            let tags = (p.imagery ?? (id == "jiangxue" ? ContentData.jiangxueImagery : []))
+                .flatMap { $0.keywords }
+                .prefix(4)
+                .map { $0 }
             return NativeDetailContent(
                 title: p.title,
                 subtitle: "\(p.dynasty) · \(p.author)",
-                hero: imagery.first?.image,
+                hero: hero,
                 lines: p.content.split(separator: "\n").map(String.init),
                 sections: sections,
-                tags: imagery.flatMap { $0.keywords }.prefix(4).map { $0 },
+                tags: tags,
                 favorite: (.poem, id)
             )
 
@@ -193,15 +201,38 @@ struct NativeDetailContent {
             let names = d.characters.compactMap { cid in
                 ContentData.characters.first(where: { $0.id == cid })?.name
             }
+            var sections: [(String, String)] = [("城池", d.description)]
+            // 人物：把"这座城里有谁"写出来，而不是只留一行简介
+            let people = d.characters.compactMap { cid in
+                ContentData.characters.first(where: { $0.id == cid })
+            }
+            if !people.isEmpty {
+                sections.append(("城中人物", people.map { "\($0.name)：\($0.title)，\($0.tags.joined(separator: "、"))" }.joined(separator: "\n")))
+            }
+            // 诗作：按朝代名匹配（poems 的 dynasty 是「唐 / 宋 / 元 / 明」，朝代号是「盛唐 / 北宋…」）
+            let poems = ContentData.poems.filter { d.name.contains($0.dynasty) }
+            if !poems.isEmpty {
+                sections.append(("此城诗作", poems.map { "《\($0.title)》— \($0.author)" }.joined(separator: "\n")))
+            }
             return NativeDetailContent(
                 title: "\(d.name)·\(d.city)",
                 subtitle: d.period,
                 hero: d.image,
                 lines: [],
-                sections: [("城池", d.description)],
+                sections: sections,
                 tags: names,
                 favorite: nil
             )
+        }
+    }
+
+    /// 诗词专属插画（ContentData.Poem 没有 image 字段，这 3 张图此前从未被引用）
+    private static func poemArtwork(_ id: String) -> String? {
+        switch id {
+        case "niao-ming-jian": return "ArtApp/poem-niao-ming-jian.jpg"
+        case "jing-ye-si": return "ArtApp/poem-jing-ye-si.jpg"
+        case "chun-ri": return "ArtApp/poem-chun-ri.jpg"
+        default: return nil
         }
     }
 }
