@@ -12,6 +12,10 @@
 // - 三颗 tab 的热区矩形 y 都是 37.6..42.6%，x 10.3/37.2/63.8%，宽 24.3/24.5/25.9%
 // - 正文面板底色采样 #EFDEC8；选中 tab 底色采样 #E9D1AC
 // - 正文区从 y 43.7% 到 57.7%（下方 58.7% 起是三张要素卡）
+//
+// 实现注意（踩过坑）：不要用「frame + offset + clipped」三段式 —— offset 是渲染期位移，
+// 再 clipped 会按原始布局框裁剪，文字会被切掉大半（第一次截图就是一列残字）。
+// 正确做法：遮罩与内容放进同一个 ZStack，用 padding 排内容，最后整体 offset 到位。
 
 import SwiftUI
 
@@ -51,11 +55,17 @@ struct PatternTabsLayer: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            // tab 行：整排擦掉再画
-            Rectangle()
-                .fill(Theme.patternPanel)
-                .frame(width: container.width * 0.836, height: container.height * 0.064)
-                .offset(x: container.width * 0.082, y: container.height * 0.3688)
+            tabRow
+            bodyPanel
+        }
+        .frame(width: container.width, height: container.height, alignment: .topLeading)
+    }
+
+    // MARK: - tab 行
+
+    private var tabRow: some View {
+        ZStack(alignment: .topLeading) {
+            Rectangle().fill(Theme.patternPanel)
 
             ForEach(Array(tabs.enumerated()), id: \.offset) { _, tab in
                 let isOn = tab.value == current
@@ -69,23 +79,27 @@ struct PatternTabsLayer: View {
                         .minimumScaleFactor(0.7)
                 }
                 .frame(width: container.width * tab.w, height: container.height * 0.050)
-                .offset(x: container.width * tab.x, y: container.height * 0.3761)
+                .offset(x: (container.width * tab.x) - (container.width * 0.082),
+                        y: container.height * 0.0073)
             }
+        }
+        .frame(width: container.width * 0.836, height: container.height * 0.064, alignment: .topLeading)
+        .offset(x: container.width * 0.082, y: container.height * 0.3688)
+    }
 
-            // 正文：擦掉旧段落（从图标右侧起，保留图标），重绘当前段
-            Rectangle()
-                .fill(Theme.patternPanel)
-                .frame(width: container.width * 0.815, height: container.height * 0.140)
-                .offset(x: container.width * 0.135, y: container.height * 0.4370)
+    // MARK: - 正文
 
+    private var bodyPanel: some View {
+        ZStack(alignment: .topLeading) {
+            Rectangle().fill(Theme.patternPanel)
             Text(bodyText)
                 .font(.custom("SongtiSC-Regular", size: container.height * 0.0148))
                 .foregroundColor(Theme.inkLight)
-                .lineSpacing(container.height * 0.0045)
-                .frame(width: container.width * 0.795, height: container.height * 0.134, alignment: .topLeading)
-                .offset(x: container.width * 0.145, y: container.height * 0.4400)
-                .clipped()
+                .lineSpacing(container.height * 0.0042)
+                .padding(.leading, 10)
+                .padding(.top, 4)
         }
-        .frame(width: container.width, height: container.height, alignment: .topLeading)
+        .frame(width: container.width * 0.815, height: container.height * 0.140, alignment: .topLeading)
+        .offset(x: container.width * 0.135, y: container.height * 0.4370)
     }
 }
