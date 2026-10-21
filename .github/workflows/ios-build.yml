@@ -261,6 +261,33 @@ jobs:
           fi
           echo "### 叠层截图已生成（偏好测试 / 飞花令 / 收藏页 / 个人中心 / 原生详情）" >> "$GITHUB_STEP_SUMMARY"
 
+      # 25 屏全量扫屏：逐屏冷启动 + 截图，用于回归（白屏/崩溃/设计稿缺失都会暴露）
+      - name: 全量扫屏（25 屏逐屏截图）
+        if: always()
+        run: |
+          set -o pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          BUNDLE_ID="${{ env.BUNDLE_ID }}"
+          SCREENS="splash home dynasties bianjing teahouse sushi teahouse-dialogue task-reward poetry-home jiangxue-scene jiangxue-analysis jiangxue-imagery poetry-card onboarding-intro preference-test identity-result artifact-home artifact-result artifact-pattern activities-home feihualing-challenge stamp-reward favorites dreambook profile"
+          mkdir -p sweep
+          for s in $SCREENS; do
+            xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen "$s" >/dev/null 2>&1
+            sleep 3
+            xcrun simctl io "$UDID" screenshot "sweep/$s.png" >/dev/null 2>&1 || echo "::warning::$s 截图失败"
+            xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
+          done
+          ls -l sweep | head -30
+          COUNT=$(ls sweep/*.png 2>/dev/null | wc -l | tr -d ' ')
+          echo "### 扫屏完成：$COUNT / 25 屏" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$COUNT" -lt 25 ]; then
+            echo "::error::扫屏截图不足 25 张（$COUNT）"
+            exit 1
+          fi
+          if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
+            echo "::error::扫屏阶段产生了崩溃日志"
+            exit 1
+          fi
+
       - name: 上传证据（截图 + 编译日志）
         if: always()
         uses: actions/upload-artifact@v4
@@ -269,6 +296,7 @@ jobs:
           path: |
             splash.png
             overlay-*.png
+            sweep/*.png
             build.log
           retention-days: 7
           if-no-files-found: warn
