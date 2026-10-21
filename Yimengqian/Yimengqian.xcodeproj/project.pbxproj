@@ -19,6 +19,7 @@
 		47656225A31E745E88EC4EFC /* ContentData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A66F7C98ACD01016C42FEB /* ContentData.swift */; };
 		2457253E58741AB61787C474 /* DomainModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189767A1CBB4925C28E5162A /* DomainModels.swift */; };
 		988C6E5747536E37CFF6B32B /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC9603BE637D0AE9ED5450A /* AppStore.swift */; };
+		9E0FDB7BC578A09D3518EDB8 /* RewardRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78926E631B6ECBED5D6377D2 /* RewardRules.swift */; };
 		0260153A920D4F2EDF40B6A6 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5943FC32792DF613316533F /* Helpers.swift */; };
 		D5037A24424E9FA27DF805C4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5342F8E48BA3DEEB66718A5 /* Theme.swift */; };
 		9DC89FCA4104455C51784CF6 /* HotspotScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1828A9688D7D25703FC15400 /* HotspotScreenView.swift */; };
@@ -49,6 +50,7 @@
 		D4A66F7C98ACD01016C42FEB /* ContentData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentData.swift; sourceTree = "<group>"; };
 		189767A1CBB4925C28E5162A /* DomainModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainModels.swift; sourceTree = "<group>"; };
 		9FC9603BE637D0AE9ED5450A /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		78926E631B6ECBED5D6377D2 /* RewardRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardRules.swift; sourceTree = "<group>"; };
 		D5943FC32792DF613316533F /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D5342F8E48BA3DEEB66718A5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		1828A9688D7D25703FC15400 /* HotspotScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotspotScreenView.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				9FC9603BE637D0AE9ED5450A /* AppStore.swift */,
+				78926E631B6ECBED5D6377D2 /* RewardRules.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				47656225A31E745E88EC4EFC /* in Sources */,
 				2457253E58741AB61787C474 /* in Sources */,
 				988C6E5747536E37CFF6B32B /* in Sources */,
+				9E0FDB7BC578A09D3518EDB8 /* in Sources */,
 				0260153A920D4F2EDF40B6A6 /* in Sources */,
 				D5037A24424E9FA27DF805C4 /* in Sources */,
 				9DC89FCA4104455C51784CF6 /* in Sources */,

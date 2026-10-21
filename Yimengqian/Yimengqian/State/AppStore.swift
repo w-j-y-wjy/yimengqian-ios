@@ -243,6 +243,55 @@ final class AppStore: ObservableObject {
         return favorites
     }
 
+    // MARK: - 数值闭环（文化值 / 雅集值 / 花瓣 / 等级 / 足迹）
+    //
+    // 统一入口：所有"操作带来的数值变化"都走 applyReward，避免又出现
+    // "SpecialScreens 写离散键、快照里另有常量"的两套账。
+
+    /// 记一笔奖励，返回变更摘要（供 Toast 用）
+    @discardableResult
+    func applyReward(_ rule: RewardRule, note: String? = nil, date: String = AppSnapshot.dateString()) -> String {
+        var parts: [String] = []
+        if rule.culture != 0 {
+            snapshot.cultureValue = max(0, snapshot.cultureValue + rule.culture)
+            parts.append("文化值\(rule.culture > 0 ? "+" : "")\(rule.culture)")
+        }
+        if rule.ya != 0 {
+            snapshot.yaValue = max(0, snapshot.yaValue + rule.ya)
+            parts.append("雅集值\(rule.ya > 0 ? "+" : "")\(rule.ya)")
+        }
+        if rule.petals != 0 {
+            snapshot.petals = max(0, snapshot.petals + rule.petals)
+            parts.append("花瓣\(rule.petals > 0 ? "+" : "")\(rule.petals)")
+        }
+        if rule.culture != 0 {
+            snapshot.level = RewardRules.level(for: snapshot.cultureValue)
+        }
+        if let tag = rule.tag {
+            recordVisit(tag, date: date)
+        }
+        return parts.joined(separator: "、")
+    }
+
+    /// 最近足迹：去重后插到最前，最多保留 8 条
+    func recordVisit(_ tag: String, date: String = AppSnapshot.dateString()) {
+        snapshot.recentViews.removeAll { $0 == tag }
+        snapshot.recentViews.insert("\(date)|\(tag)", at: 0)
+        if snapshot.recentViews.count > 8 { snapshot.recentViews = Array(snapshot.recentViews.prefix(8)) }
+    }
+
+    /// 记录已完成的对谈话题（幂等）
+    func completeDialogue(topic: String) {
+        guard !snapshot.dialogueCompleted.contains(topic) else { return }
+        snapshot.dialogueCompleted.append(topic)
+    }
+
+    /// 累计生成的诗境卡（保存一张 +1，幂等由调用方的 flag 保证）
+    func addGeneratedCard(_ id: String, date: String = AppSnapshot.dateString()) {
+        guard !snapshot.generatedCards.contains(id) else { return }
+        snapshot.generatedCards.append(id)
+    }
+
     /// 老版本升级迁移：过去只有离散键、快照 favorites 恒为空。
     /// 快照里还没有任何收藏时，把已置位的离散键补成收藏项，避免升级后收藏全丢。
     /// 注意：init 内的赋值不触发 didSet（属性观察器在初始化阶段不回调），所以这里显式落盘。

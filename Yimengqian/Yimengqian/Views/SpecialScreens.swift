@@ -9,14 +9,18 @@
 import Foundation
 
 /// TaskReward：进入即结算奖励（对齐 TaskReward.tsx handleInit，仅一次）
+///
+/// 2026-10-22 整改：原实现只往离散键写 cultureValue/stampDongpo/bianjingProgress，
+/// 而个人中心读的是快照字段、印章读的是 snapshot.stamps —— 于是"领了奖但哪里都没变"。
+/// 现在统一走 AppStore.applyReward / grantStamp；离散键仍照写（兼容旧逻辑与 resetAll）。
 func taskRewardOnInit(store: AppStore) {
     guard store.string(StorageKeys.teaRewardClaimed) != "true" else { return }
-    let current = Int(store.string(StorageKeys.cultureValue) ?? "0") ?? 0
-    store.setString(StorageKeys.cultureValue, String(current + 50))
     store.setString(StorageKeys.teaRewardClaimed, "true")
     store.setString(StorageKeys.stampDongpo, "true")
     store.setString(StorageKeys.sushiLetter, "true")
     store.setString(StorageKeys.bianjingProgress, "75")
+    store.applyReward(RewardRules.taskReward)
+    store.grantStamp(id: "dong-po-zhi-yin")
 }
 
 /// 返回某屏幕 ID 的 onInit 回调（无则 nil）

@@ -49,6 +49,7 @@ struct ProfileLayer: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
+            progressPatches
             ForEach(slots, id: \.hotspotID) { slot in
                 if let card = screen.hotspots.first(where: { $0.id == slot.hotspotID }) {
                     numberPatch(slot: slot, card: card.rect(in: container))
@@ -82,5 +83,59 @@ struct ProfileLayer: View {
         }
         .frame(width: band.width, height: band.height, alignment: .leading)
         .offset(x: band.minX, y: band.minY)
+    }
+
+    // MARK: - 文化进度 / 等级（数据闭环：这些数字以前是烤死的）
+
+    /// 设计稿实测（852×1846）：
+    /// - 进度条：x 19.95%→80.0%，y 26.81%..28.4%（深色像素 bbox 170..759 / 495..525，右侧留给数值文字）
+    /// - 进度数值：`culture-progress` 热区矩形（82.9%,25.4%,10%,5%）正好盖住「1280 / 2000」
+    /// - 等级文字：`千年知音` 占 56.6%..62.3%，其后的 `Lv.4` 约 62.5%..68.5%，再往右是印章图案，不能碰
+    private var progressPatches: some View {
+        let culture = store.snapshot.cultureValue
+        let ratio = min(1.0, max(0.0, Double(culture) / 2000.0))
+        return ZStack(alignment: .topLeading) {
+            // 进度条：先铺纸色盖掉烤死的朱砂填充，再画轨道 + 新填充
+            Rectangle()
+                .fill(Theme.paperWarm)
+                .frame(width: container.width * 0.605, height: container.height * 0.018)
+                .offset(x: container.width * 0.1995, y: container.height * 0.2665)
+
+            Capsule()
+                .fill(Theme.paperDark.opacity(0.55))
+                .frame(width: container.width * 0.60, height: container.height * 0.0075)
+                .offset(x: container.width * 0.20, y: container.height * 0.2725)
+            Capsule()
+                .fill(Theme.vermilion)
+                .frame(width: container.width * 0.60 * CGFloat(ratio), height: container.height * 0.0075)
+                .offset(x: container.width * 0.20, y: container.height * 0.2725)
+
+            // 进度数值：热区矩形就是它的位置，换掉烤死的「1280 / 2000」
+            if let hotspot = screen.hotspots.first(where: { $0.id == "culture-progress" }) {
+                let rect = hotspot.rect(in: container)
+                ZStack(alignment: .trailing) {
+                    Rectangle().fill(Theme.paperWarm)
+                    Text("\(culture) / 2000")
+                        .font(.custom("SongtiSC-Regular", size: rect.height * 0.46))
+                        .foregroundColor(Theme.inkLight)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                }
+                .frame(width: rect.width, height: rect.height, alignment: .trailing)
+                .offset(x: rect.minX, y: rect.minY)
+            }
+
+            // 等级：只覆盖「Lv.N」那一小段，左边的「千年知音」与右边的印章图案保持位图
+            ZStack(alignment: .leading) {
+                Rectangle().fill(Theme.paperWarm)
+                Text("Lv.\(store.snapshot.level)")
+                    .font(.custom("KaitiSC-Bold", size: container.height * 0.0125))
+                    .foregroundColor(Theme.vermilion)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .frame(width: container.width * 0.060, height: container.height * 0.0235, alignment: .leading)
+            .offset(x: container.width * 0.625, y: container.height * 0.2320)
+        }
     }
 }

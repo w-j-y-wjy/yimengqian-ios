@@ -59,7 +59,15 @@ final class ActionExecutor {
             if store.string("dialogueTopic") == nil {
                 toast.show(action.message ?? "请先选择一个话题")
             } else {
+                // 对谈完成：除了置位，还要记账（文化值+50/雅集值+10）并记下话题，
+                // 否则「完成一次对谈→个人中心数字变化」这条链路是断的。
+                let firstTime = store.string("teaDialogueCompleted") == nil
                 store.setString("teaDialogueCompleted", "true")
+                if let topic = store.string("dialogueTopic") { store.completeDialogue(topic: topic) }
+                if firstTime {
+                    let gain = store.applyReward(RewardRules.teaDialogue)
+                    if !gain.isEmpty { toast.show("对谈完成 · \(gain)") }
+                }
                 if let target = action.target { router.navigate(route: target) }
             }
 
@@ -80,6 +88,8 @@ final class ActionExecutor {
             // 离散键由 AppStore 作为镜像同步 —— 配置侧零改动，重跑生成器也不会回退。
             if let target = AppStore.favoriteKeyMap[key] {
                 let added = store.toggleFavorite(type: target.type, itemId: target.itemId)
+                // 收藏 +5 文化值；取消时对称扣回，避免反复开关刷分
+                store.applyReward(RewardRule(culture: added ? 5 : -5))
                 toast.show(added ? (action.onMessage ?? "已收藏") : (action.offMessage ?? "已取消"))
                 return
             }
@@ -112,6 +122,11 @@ final class ActionExecutor {
                 // 命中「flag → 印章」映射时才真的发章进快照（否则「已收入收藏」是句空话）。
                 if let stampId = AppStore.stampClaimMap[flag] {
                     store.grantStamp(id: stampId)
+                }
+                // 保存诗境卡：记账 + 记进作品列表（不然「我的作品/最近生成」永远是死的）
+                if flag == StorageKeys.jiangxueCardCreated {
+                    store.applyReward(RewardRules.savePoetryCard)
+                    store.addGeneratedCard("jiangxue-card")
                 }
             }
             if let m = action.message { toast.show(m) }
@@ -156,7 +171,14 @@ final class ActionExecutor {
                 toast.show("回答错误，请重新选择")
             } else {
                 selection?.clearWrongAnswer()
+                // 判题前先看 flag 是否已置位：答对奖励只能记一次，重玩不再刷分
+                let alreadyRewarded = action.storageFlags?.isEmpty == false
+                    && (action.storageFlags ?? []).allSatisfy { store.string($0.key) != nil }
                 action.storageFlags?.forEach { store.setString($0.key, $0.value) }
+                if !alreadyRewarded {
+                    let gain = store.applyReward(RewardRules.feihualingCorrect)
+                    if !gain.isEmpty { toast.show("答对了 · \(gain)") }
+                }
                 if let target = action.target { router.navigate(route: target) }
             }
         }
