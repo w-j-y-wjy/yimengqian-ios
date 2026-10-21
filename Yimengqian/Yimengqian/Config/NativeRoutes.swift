@@ -30,6 +30,10 @@ enum NativeDetail: Equatable {
     /// 这三国没有设计稿屏（只有汴京有），但 ContentData.dynasties 里有完整描述与朝代图，
     /// 正好把此前从未显示的 dynasty-tang / dynasty-nan-song / dynasty-ming 三张图用起来。
     case city(String)
+    /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
+    /// 设计稿里「诗库」「查看更多活动」这类入口原本只能弹提示，这里用原生列表补上，
+    /// 列表项点开直接进对应详情（不需要新设计稿，也不做像素级覆盖）。
+    case list(String)
 
     static let prefix = "/native/"
 
@@ -45,6 +49,7 @@ enum NativeDetail: Equatable {
         case "character": return .character(parts[1])
         case "letter": return .letter(parts[1])
         case "city": return .city(parts[1])
+        case "list": return .list(parts[1])
         default: return nil
         }
     }
@@ -58,6 +63,7 @@ enum NativeDetail: Equatable {
         case .character(let id): return "\(Self.prefix)character/\(id)"
         case .letter(let id): return "\(Self.prefix)letter/\(id)"
         case .city(let id): return "\(Self.prefix)city/\(id)"
+        case .list(let id): return "\(Self.prefix)list/\(id)"
         }
     }
 
@@ -70,15 +76,22 @@ enum NativeDetail: Equatable {
         case .character: return "character"
         case .letter: return "letter"
         case .city: return "city"
+        case .list: return "list"
         }
     }
 
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v):
             return v
         }
+    }
+
+    /// 列表页走 NativeListView（自绘行），不走详情排版
+    var isList: Bool {
+        if case .list = self { return true }
+        return false
     }
 }
 
@@ -93,6 +106,9 @@ struct NativeDetailContent {
     let tags: [String]
     /// 可收藏的类型；纹样要素/活动这类"库内容"不可收藏
     let favorite: (type: FavoriteType, itemId: String)?
+    /// 附加插图（如器物详情里的纹样图）。纹样大图 pattern-chanzhilian.jpg 此前从未被渲染，
+    /// 放进器物详情的「纹样」段落下是最省事、也不会破坏位图的做法。
+    var gallery: [String] = []
 
     static func resolve(_ detail: NativeDetail) -> NativeDetailContent? {
         switch detail {
@@ -126,10 +142,13 @@ struct NativeDetailContent {
         case .artifact(let id):
             guard let a = ContentData.artifacts.first(where: { $0.id == id }) else { return nil }
             var sections: [(String, String)] = [("简介", a.description)]
+            var gallery: [String] = []
             if let pd = a.patternDetail {
                 sections.append(("纹样 · \(pd.name)", pd.structure))
                 sections.append(("寓意", pd.symbolism))
                 sections.append(("时代风格", pd.eraStyle))
+                gallery.append(pd.image)
+                gallery.append(contentsOf: pd.elements.map { $0.image })
             }
             return NativeDetailContent(
                 title: a.name,
@@ -138,7 +157,8 @@ struct NativeDetailContent {
                 lines: [],
                 sections: sections,
                 tags: [a.pattern, a.shape, a.usage].filter { !$0.isEmpty },
-                favorite: (.artifact, id)
+                favorite: (.artifact, id),
+                gallery: gallery
             )
 
         case .patternElement(let name):

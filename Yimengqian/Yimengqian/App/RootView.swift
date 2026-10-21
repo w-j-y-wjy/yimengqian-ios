@@ -38,13 +38,18 @@ struct RootView: View {
                     .padding(.bottom, 90)
             }
         }
-        // 原生详情浮层（/native/...）：盖在整屏设计稿之上、可交互；
+        // 原生浮层（/native/...）：详情页或列表页，盖在整屏设计稿之上、可交互；
         // 关闭只清浮层，不动路由栈（避免"在设计稿上点返回误退一屏"）
         .overlay {
-            if let detail = router.nativeDetail,
-               let content = NativeDetailContent.resolve(detail) {
-                NativeDetailView(detail: detail, content: content)
-                    .zIndex(2)
+            if let detail = router.nativeDetail {
+                Group {
+                    if case .list(let listID) = detail {
+                        NativeListView(listID: listID)
+                    } else if let content = NativeDetailContent.resolve(detail) {
+                        NativeDetailView(detail: detail, content: content)
+                    }
+                }
+                .zIndex(2)
             }
         }
         .alert("重置全部旅程数据？", isPresented: $showResetConfirm) {

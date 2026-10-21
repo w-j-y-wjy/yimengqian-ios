@@ -33,6 +33,18 @@
         "type": "navigate",
         "target": "/profile"
       }
+    },
+    "search-icon": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/poems"
+      }
+    },
+    "poetry-lib": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/poems"
+      }
     }
   },
   "jiangxue-scene": {
@@ -299,6 +311,12 @@
         "type": "navigate",
         "target": "/native/letter/letter-sushi-1"
       }
+    },
+    "work-more": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/poems"
+      }
     }
   },
   "teahouse-dialogue": {
@@ -466,6 +484,12 @@
         "target": "/favorites",
         "storageKey": "favoriteFilter",
         "storageValue": "stamp"
+      }
+    },
+    "view-all": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/activities"
       }
     }
   },
