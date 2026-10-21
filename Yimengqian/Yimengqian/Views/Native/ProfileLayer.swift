@@ -119,8 +119,10 @@ struct ProfileLayer: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
-            .frame(width: container.width * 0.0760, height: container.height * 0.0138, alignment: .trailing)
-            .offset(x: container.width * 0.5120, y: container.height * 0.2318)
+            // 遮罩比文字 bbox 再放大一圈：位图文字的抗锯齿下缘实测到 y≈456，
+            // 只盖到 452 会在新字下方留一排虚线状的残影（截图复现过）。
+            .frame(width: container.width * 0.0800, height: container.height * 0.0165, alignment: .trailing)
+            .offset(x: container.width * 0.5100, y: container.height * 0.2306)
         }
     }
 
