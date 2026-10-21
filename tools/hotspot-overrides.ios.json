@@ -66,13 +66,21 @@
       "x": 6.455,
       "y": 75.027,
       "width": 42.254,
-      "height": 2.546
+      "height": 2.546,
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jiangxue"
+      }
     },
     "poem-line-2": {
       "x": 6.455,
       "y": 77.573,
       "width": 42.254,
-      "height": 2.546
+      "height": 2.546,
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jiangxue"
+      }
     }
   },
   "jiangxue-analysis": {
@@ -169,6 +177,12 @@
       "y": 89.891,
       "width": 20,
       "height": 7
+    },
+    "title": {
+      "action": {
+        "type": "navigate",
+        "target": "/city/dynasties"
+      }
     }
   },
   "teahouse": {
@@ -285,6 +299,34 @@
       "y": 5.066,
       "width": 12,
       "height": 5
+    },
+    "stamp-card": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/favorites",
+        "storageKey": "favoriteFilter",
+        "storageValue": "stamp"
+      }
+    },
+    "ya-card": {
+      "action": {
+        "type": "navigate",
+        "target": "/activities"
+      }
+    },
+    "petal-card": {
+      "action": {
+        "type": "navigate",
+        "target": "/activities/feihualing"
+      }
+    },
+    "stamp-book": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/favorites",
+        "storageKey": "favoriteFilter",
+        "storageValue": "stamp"
+      }
     }
   },
   "favorites": {
