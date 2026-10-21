@@ -49,6 +49,7 @@ struct ProfileLayer: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
+            cultureProgress
             ForEach(slots, id: \.hotspotID) { slot in
                 if let card = screen.hotspots.first(where: { $0.id == slot.hotspotID }) {
                     numberPatch(slot: slot, card: card.rect(in: container))
@@ -56,6 +57,51 @@ struct ProfileLayer: View {
             }
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
+    }
+
+    // MARK: - 文化进度（第 3 轮：这次先把锚点量准再画）
+    //
+    // 上一轮失败原因：用"搜索框内深色像素 bbox"量进度条，而搜索框压在纸纹上，
+    // bbox 等于搜索框本身 → 坐标全错。这次分三步锚定，每一步都有像素证据：
+    //   1) 横向扫描 y=514 这一行：朱砂填充 200..431，其后灰色空槽 449..541 → 整条 200..541（341px）
+    //   2) 数值「1280 / 2000」墨色 bbox：577..697，y 506..523
+    //   3) 卡片底色采样：#eddbc1（用纸色会露白，所以新增 Theme.cardCream）
+    // 换算成百分比：条 x=23.47% w=40.14%，y=27.63% h=0.49%；数值 x=67.72% w=14.20% y=27.41% h=0.98%
+    private var cultureProgress: some View {
+        let culture = store.snapshot.cultureValue
+        let ratio = min(1.0, max(0.0, Double(culture) / 2000.0))
+        let barX = container.width * 0.2347
+        let barY = container.height * 0.2763
+        let barW = container.width * 0.4014
+        let barH = max(3.0, container.height * 0.0049)
+        return ZStack(alignment: .topLeading) {
+            // 先盖掉烤死的旧条（含填充与空槽），再画新条
+            Rectangle()
+                .fill(Theme.cardCream)
+                .frame(width: container.width * 0.4210, height: container.height * 0.0110)
+                .offset(x: container.width * 0.2300, y: container.height * 0.2720)
+
+            Capsule()
+                .fill(Theme.barTrack)
+                .frame(width: barW, height: barH)
+                .offset(x: barX, y: barY)
+            Capsule()
+                .fill(Theme.vermilion)
+                .frame(width: barW * CGFloat(ratio), height: barH)
+                .offset(x: barX, y: barY)
+
+            // 数值：盖掉「1280 / 2000」重画真实值（右对齐，与设计稿一致）
+            ZStack(alignment: .trailing) {
+                Rectangle().fill(Theme.cardCream)
+                Text("\(culture) / 2000")
+                    .font(.custom("SongtiSC-Regular", size: container.height * 0.0135))
+                    .foregroundColor(Theme.inkLight)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .frame(width: container.width * 0.1420, height: container.height * 0.0098, alignment: .trailing)
+            .offset(x: container.width * 0.6772, y: container.height * 0.2741)
+        }
     }
 
     /// 数字行：遮罩 + 重绘。纵向 0.47h..0.795h 对应设计稿 y 640..700（数字 652..699，量词 701 起）。
