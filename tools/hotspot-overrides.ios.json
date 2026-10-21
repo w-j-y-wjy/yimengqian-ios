@@ -45,7 +45,7 @@
     "search-icon": {
       "action": {
         "type": "navigate",
-        "target": "/native/list/poems"
+        "target": "/native/search/main"
       }
     },
     "poetry-lib": {
@@ -571,6 +571,12 @@
         "type": "navigate",
         "target": "/native/character/liqingzhao"
       }
+    },
+    "search": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/main"
+      }
     }
   },
   "artifact-pattern": {
@@ -668,6 +674,12 @@
       "action": {
         "type": "navigate",
         "target": "/native/list/activities"
+      }
+    },
+    "search": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/main"
       }
     }
   },

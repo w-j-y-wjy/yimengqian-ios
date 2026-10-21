@@ -199,7 +199,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "poetry-home", route: "/poetry", image: "Screens/poetry-home.png", hotspots: [
                 Hotspot(id: "user-avatar", label: "用户头像", x: 4.535, y: 5.724, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/profile")),
-                Hotspot(id: "search-icon", label: "搜索", x: 71.197, y: 6.07, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/list/poems")),
+                Hotspot(id: "search-icon", label: "搜索", x: 71.197, y: 6.07, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/search/main")),
                 Hotspot(id: "poetry-lib", label: "诗库", x: 81.197, y: 5.897, width: 17.136, height: 4.74, action: HotspotAction(type: .navigate, target: "/native/list/poems")),
                 Hotspot(id: "daily-card", label: "今日诗签", x: 3.873, y: 12.189, width: 92.254, height: 22.644, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian")),
                 Hotspot(id: "enter-poetry", label: "进入诗境", x: 8.779, y: 28.45, width: 30.282, height: 4.827, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian")),
@@ -365,7 +365,7 @@ enum ScreenCatalog {
                 Hotspot(id: "favorite-pattern", label: "收藏纹样", x: 47.488, y: 91.576, width: 44.93, height: 5, action: HotspotAction(type: .toggleStorage, storageKey: "favoriteArtifactPattern", onMessage: "已收藏纹样", offMessage: "已取消收藏纹样"))
             ]),
         ScreenConfig(id: "activities-home", route: "/activities", image: "Screens/activities-home.png", hotspots: [
-                Hotspot(id: "search", label: "搜索", x: 86.667, y: 5.42, width: 10, height: 5, action: HotspotAction(type: .toast, message: "搜索雅集活动")),
+                Hotspot(id: "search", label: "搜索", x: 86.667, y: 5.42, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/search/main")),
                 Hotspot(id: "feihualing-card", label: "飞花令·春", x: 5, y: 10, width: 90, height: 15, action: HotspotAction(type: .navigate, target: "/activities/feihualing")),
                 Hotspot(id: "join-btn", label: "立即参与", x: 8.075, y: 25.467, width: 26.432, height: 5, action: HotspotAction(type: .navigate, target: "/activities/feihualing")),
                 Hotspot(id: "view-all", label: "查看全部活动", x: 68.92, y: 31.9, width: 28.592, height: 5, action: HotspotAction(type: .navigate, target: "/native/list/activities")),
@@ -403,7 +403,7 @@ enum ScreenCatalog {
                 Hotspot(id: "view-stamps", label: "查看我的印章", x: 8.24, y: 93.213, width: 82.113, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp"))
             ]),
         ScreenConfig(id: "favorites", route: "/favorites", image: "Screens/favorites.png", hotspots: [
-                Hotspot(id: "search", label: "搜索", x: 85.54, y: 4.77, width: 10, height: 5, action: HotspotAction(type: .toast, message: "搜索我的收藏")),
+                Hotspot(id: "search", label: "搜索", x: 85.54, y: 4.77, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/search/main")),
                 Hotspot(id: "filter-all", label: "全部", x: 5.005, y: 21.738, width: 15.54, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：全部收藏", storageKey: "favoriteFilter", storageValue: "all")),
                 Hotspot(id: "filter-poetry", label: "诗词", x: 21.033, y: 21.868, width: 14.601, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：诗词收藏", storageKey: "favoriteFilter", storageValue: "poetry")),
                 Hotspot(id: "filter-artifact", label: "器物", x: 37.061, y: 22.041, width: 14.977, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：器物收藏", storageKey: "favoriteFilter", storageValue: "artifact")),

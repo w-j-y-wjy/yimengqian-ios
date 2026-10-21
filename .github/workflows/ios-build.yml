@@ -254,6 +254,14 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-pattern-tabs.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 全站搜索（S21）
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen poetry-home \
+            -nativeDetail /native/search/main
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-search.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"

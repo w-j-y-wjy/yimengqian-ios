@@ -152,6 +152,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     list: new Set(['poems', 'activities', 'works']),
     // 原生设置页（NativeSettingsView，固定 main）
     settings: new Set(['main']),
+    // 原生搜索页（NativeSearchView，固定 main）
+    search: new Set(['main']),
   }
   const badNative = []
   for (const t of nativeTargets) {

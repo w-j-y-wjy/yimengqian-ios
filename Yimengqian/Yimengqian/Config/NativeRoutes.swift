@@ -32,6 +32,8 @@ enum NativeDetail: Equatable {
     case city(String)
     /// 设置页（数据统计/版本/重置）：原本三处「设置」入口只能弹提示
     case settings
+    /// 全站搜索（诗/物/人/活动）：诗境首页、雅集页、收藏页三处「搜索」原本只弹提示
+    case search
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
     /// 设计稿里「诗库」「查看更多活动」这类入口原本只能弹提示，这里用原生列表补上，
     /// 列表项点开直接进对应详情（不需要新设计稿，也不做像素级覆盖）。
@@ -53,6 +55,7 @@ enum NativeDetail: Equatable {
         case "city": return .city(parts[1])
         case "list": return .list(parts[1])
         case "settings": return .settings
+        case "search": return .search
         default: return nil
         }
     }
@@ -68,6 +71,7 @@ enum NativeDetail: Equatable {
         case .city(let id): return "\(Self.prefix)city/\(id)"
         case .list(let id): return "\(Self.prefix)list/\(id)"
         case .settings: return "\(Self.prefix)settings/main"
+        case .search: return "\(Self.prefix)search/main"
         }
     }
 
@@ -82,6 +86,7 @@ enum NativeDetail: Equatable {
         case .city: return "city"
         case .list: return "list"
         case .settings: return "settings"
+        case .search: return "search"
         }
     }
 
@@ -91,6 +96,7 @@ enum NativeDetail: Equatable {
              .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v):
             return v
         case .settings: return "main"
+        case .search: return "main"
         }
     }
 
@@ -103,7 +109,7 @@ enum NativeDetail: Equatable {
     /// 走独立全屏原生页（列表 / 设置），不依赖 NativeDetailContent
     var isNativePage: Bool {
         switch self {
-        case .list, .settings: return true
+        case .list, .settings, .search: return true
         default: return false
         }
     }
@@ -274,6 +280,9 @@ struct NativeDetailContent {
 
         case .settings:
             // 设置页走 NativeSettingsView，不生成详情内容
+            return nil
+        case .search:
+            // 搜索页走 NativeSearchView，不生成详情内容
             return nil
         case .list:
             // 列表页走 NativeListView，不生成"详情内容"；这里必须显式返回，

@@ -45,6 +45,8 @@ struct RootView: View {
                 Group {
                     if case .settings = detail {
                         NativeSettingsView()
+                    } else if case .search = detail {
+                        NativeSearchView()
                     } else if case .list(let listID) = detail {
                         NativeListView(listID: listID)
                     } else if let content = NativeDetailContent.resolve(detail) {
