@@ -254,10 +254,11 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-pattern-tabs.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
-          # 全站搜索（S21）
+          # 全站搜索（S21）：预填关键词，验证四类内容都能搜到
           xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -initialScreen poetry-home \
-            -nativeDetail /native/search/main
+            -nativeDetail /native/search/main \
+            -searchKeyword 苏轼
           sleep 6
           xcrun simctl io "$UDID" screenshot overlay-native-search.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true

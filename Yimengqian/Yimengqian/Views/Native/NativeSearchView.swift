@@ -88,7 +88,12 @@ struct NativeSearchView: View {
         .padding(.vertical, 9)
         .background(Capsule().fill(Theme.paperLight))
         .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8))
-        .onAppear { keyword = "" }
+        // 启动参数 -searchKeyword 可预填关键词（CI 截图用来验证结果列表）
+        .onAppear {
+            if keyword.isEmpty {
+                keyword = UserDefaults.standard.string(forKey: "searchKeyword") ?? ""
+            }
+        }
     }
 
     private var hintList: some View {
@@ -96,17 +101,20 @@ struct NativeSearchView: View {
             Text("可以搜这些")
                 .font(.custom("SongtiSC-Regular", size: 12))
                 .foregroundColor(Theme.inkMuted)
-            ForEach(hintWords, id: \.self) { w in
-                Button(action: { keyword = w }) {
-                    Text(w)
-                        .font(.custom("SongtiSC-Regular", size: 13))
-                        .foregroundColor(Theme.inkLight)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Capsule().fill(Theme.paperLight))
-                        .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.4), lineWidth: 0.8))
+            // 自适应列：词语短，竖着排会显得空，一行放三四个更紧凑
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 64), spacing: 8)], alignment: .leading, spacing: 8) {
+                ForEach(hintWords, id: \.self) { w in
+                    Button(action: { keyword = w }) {
+                        Text(w)
+                            .font(.custom("SongtiSC-Regular", size: 13))
+                            .foregroundColor(Theme.inkLight)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 6)
+                            .background(Capsule().fill(Theme.paperLight))
+                            .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.4), lineWidth: 0.8))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
         .padding(.top, 6)
