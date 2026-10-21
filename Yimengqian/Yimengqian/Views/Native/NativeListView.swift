@@ -199,13 +199,15 @@ struct NativeListView: View {
                 }
         case "works":
             // 诗境卡作品：快照里记的是生成记录 id（保存时写入），这里翻成可读行
+            let note = store.string(StorageKeys.cardNote)
             return store.snapshot.generatedCards.enumerated().map { index, raw in
                 let poemID = raw.replacingOccurrences(of: "-card", with: "")
                 let poem = NativeDetail.allPoems().first(where: { $0.id == poemID })
+                let base = "已在诗境卡工坊生成并保存"
                 return Row(
                     id: raw,
                     title: poem.map { "《\($0.title)》诗境卡" } ?? "诗境卡 \(index + 1)",
-                    subtitle: "已在诗境卡工坊生成并保存",
+                    subtitle: (note?.isEmpty == false ? "题注：\(note!)　" : "") + base,
                     image: poem?.image ?? poem?.imagery?.first?.image,
                     route: "/poetry/card"
                 )

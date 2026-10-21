@@ -287,7 +287,7 @@ enum ScreenCatalog {
                 Hotspot(id: "layout-whitespace", label: "留白", x: 71.507, y: 57.133, width: 21.08, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择留白布局", storageKey: "poetryCardLayout", storageValue: "whitespace")),
                 Hotspot(id: "seal-red", label: "朱印", x: 31.385, y: 63.876, width: 29.249, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已添加朱印", storageKey: "poetryCardSeal", storageValue: "red")),
                 Hotspot(id: "seal-none", label: "无印", x: 62.136, y: 63.703, width: 30.563, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已取消印章", storageKey: "poetryCardSeal", storageValue: "none")),
-                Hotspot(id: "add-note", label: "添加题注", x: 3.403, y: 71.142, width: 46.62, height: 11.327, action: HotspotAction(type: .toast, message: "题注编辑将在后续开放")),
+                Hotspot(id: "add-note", label: "添加题注", x: 3.403, y: 71.142, width: 46.62, height: 11.327, action: HotspotAction(type: .navigate, target: "/native/note/main")),
                 Hotspot(id: "select-border", label: "选择边框", x: 50.915, y: 71.516, width: 45.211, height: 11.284, action: HotspotAction(type: .toast, message: "已打开边框选择")),
                 Hotspot(id: "save-card", label: "保存诗境卡", x: 4.789, y: 84.761, width: 43.521, height: 5, action: HotspotAction(type: .incrementOnce, message: "已保存至\"我的作品\"", storageKey: "poetryCardCount", flagKey: "jiangxueCardCreated")),
                 Hotspot(id: "share", label: "分享给朋友", x: 50.164, y: 84.397, width: 44.46, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/card"))

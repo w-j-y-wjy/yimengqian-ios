@@ -53,6 +53,8 @@ enum StorageKeys {
     static let poetryCategory = "poetryCategory"
     /// 纹样详解页的 tab（structure / symbolism / era），由 PatternTabsLayer 渲染正文
     static let patternTab = "patternTab"
+    /// 诗境卡题注（NativeNoteView 写入，「我的作品」列表展示）
+    static let cardNote = "cardNote"
     static let dreambookOpened = "dreambookOpened"
     static let currentCity = "currentCity"
     static let initialStamp = "initialStamp"
@@ -105,6 +107,7 @@ enum StorageKeys {
         favoriteFilter,
         poetryCategory,
         patternTab,
+        cardNote,
         dreambookOpened,
         currentCity,
         initialStamp,

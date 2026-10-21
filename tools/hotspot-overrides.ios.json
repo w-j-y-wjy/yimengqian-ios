@@ -883,6 +883,12 @@
         "type": "navigate",
         "target": "/native/share/card"
       }
+    },
+    "add-note": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/note/main"
+      }
     }
   }
 }

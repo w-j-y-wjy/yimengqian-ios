@@ -38,6 +38,8 @@ enum NativeDetail: Equatable {
     case spot(String)
     /// 分享页：三处「分享」原本只弹「原型模拟」，改为拉起系统分享面板
     case share(String)
+    /// 诗境卡题注编辑：原本只弹「题注编辑将在后续开放」
+    case note
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
     /// 设计稿里「诗库」「查看更多活动」这类入口原本只能弹提示，这里用原生列表补上，
     /// 列表项点开直接进对应详情（不需要新设计稿，也不做像素级覆盖）。
@@ -62,6 +64,7 @@ enum NativeDetail: Equatable {
         case "search": return .search
         case "spot": return .spot(parts[1])
         case "share": return .share(parts[1])
+        case "note": return .note
         default: return nil
         }
     }
@@ -80,6 +83,7 @@ enum NativeDetail: Equatable {
         case .search: return "\(Self.prefix)search/main"
         case .spot(let id): return "\(Self.prefix)spot/\(id)"
         case .share(let id): return "\(Self.prefix)share/\(id)"
+        case .note: return "\(Self.prefix)note/main"
         }
     }
 
@@ -97,6 +101,7 @@ enum NativeDetail: Equatable {
         case .search: return "search"
         case .spot: return "spot"
         case .share: return "share"
+        case .note: return "note"
         }
     }
 
@@ -107,6 +112,7 @@ enum NativeDetail: Equatable {
             return v
         case .settings: return "main"
         case .search: return "main"
+        case .note: return "main"
         }
     }
 
@@ -119,7 +125,7 @@ enum NativeDetail: Equatable {
     /// 走独立全屏原生页（列表 / 设置），不依赖 NativeDetailContent
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share: return true
+        case .list, .settings, .search, .share, .note: return true
         default: return false
         }
     }
@@ -312,6 +318,9 @@ struct NativeDetailContent {
             return nil
         case .share:
             // 分享页走 NativeShareView，不生成详情内容
+            return nil
+        case .note:
+            // 题注编辑走 NativeNoteView，不生成详情内容
             return nil
         case .list:
             // 列表页走 NativeListView，不生成"详情内容"；这里必须显式返回，
