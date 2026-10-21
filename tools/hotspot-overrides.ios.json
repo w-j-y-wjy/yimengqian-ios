@@ -215,6 +215,30 @@
       "y": 90.25,
       "width": 20,
       "height": 7
+    },
+    "enter-teahouse": {
+      "action": {
+        "type": "navigate",
+        "target": "/dialogue/teahouse"
+      }
+    },
+    "daily-task": {
+      "action": {
+        "type": "navigate",
+        "target": "/dialogue/teahouse"
+      }
+    },
+    "literati": {
+      "action": {
+        "type": "navigate",
+        "target": "/activities"
+      }
+    },
+    "tea-ware": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/qigu"
+      }
     }
   },
   "sushi": {
@@ -472,6 +496,50 @@
       "action": {
         "type": "navigate",
         "target": "/native/city/ming"
+      }
+    }
+  },
+  "artifact-result": {
+    "detail-btn": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/qinghua-ping"
+      }
+    }
+  },
+  "task-reward": {
+    "stamp-dongpo": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/favorites",
+        "storageKey": "favoriteFilter",
+        "storageValue": "stamp"
+      }
+    },
+    "sushi-letter": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/letter/letter-sushi-1"
+      }
+    },
+    "culture-value": {
+      "action": {
+        "type": "navigate",
+        "target": "/profile"
+      }
+    },
+    "progress": {
+      "action": {
+        "type": "navigate",
+        "target": "/city/bianjing"
+      }
+    },
+    "view-rewards": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/favorites",
+        "storageKey": "favoriteFilter",
+        "storageValue": "stamp"
       }
     }
   }
