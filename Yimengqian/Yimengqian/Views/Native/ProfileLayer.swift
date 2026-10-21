@@ -104,8 +104,8 @@ struct ProfileLayer: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
-            .frame(width: container.width * 0.1520, height: container.height * 0.0104, alignment: .trailing)
-            .offset(x: container.width * 0.6710, y: container.height * 0.2735)
+            .frame(width: container.width * 0.1520, height: container.height * 0.0116, alignment: .trailing)
+            .offset(x: container.width * 0.6710, y: container.height * 0.2728)
         }
     }
 
