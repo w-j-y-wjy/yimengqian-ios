@@ -29,6 +29,7 @@
 		75EFC6EC79E2B9DA869042EB /* NativeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52084E6076EE14F180ED59 /* NativeListView.swift */; };
 		8B2534327375CC31AB377B8C /* NativeSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB3FD91164D2F422B589819A /* NativeSearchView.swift */; };
 		3D30CFBD28AB28252872E8C4 /* NativeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A9E7EC07957370D98F32AB /* NativeSettingsView.swift */; };
+		570DBD39C0A70AC108072EA9 /* NativeShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90FD6D0C67BF36A5C02C485 /* NativeShareView.swift */; };
 		F9DF5A206E83625DE0173D3D /* PatternTabsLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16CD535413F009F01875FBFC /* PatternTabsLayer.swift */; };
 		99DEEA9D408D58D471C43CF8 /* PoetryCardOptionsLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FF8115D385E426233034B0 /* PoetryCardOptionsLayer.swift */; };
 		73284F9E1C6B0CBE68782968 /* PreferenceTestLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */; };
@@ -65,6 +66,7 @@
 		5E52084E6076EE14F180ED59 /* NativeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeListView.swift; sourceTree = "<group>"; };
 		EB3FD91164D2F422B589819A /* NativeSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeSearchView.swift; sourceTree = "<group>"; };
 		E6A9E7EC07957370D98F32AB /* NativeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeSettingsView.swift; sourceTree = "<group>"; };
+		D90FD6D0C67BF36A5C02C485 /* NativeShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeShareView.swift; sourceTree = "<group>"; };
 		16CD535413F009F01875FBFC /* PatternTabsLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatternTabsLayer.swift; sourceTree = "<group>"; };
 		67FF8115D385E426233034B0 /* PoetryCardOptionsLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoetryCardOptionsLayer.swift; sourceTree = "<group>"; };
 		78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceTestLayer.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				5E52084E6076EE14F180ED59 /* NativeListView.swift */,
 				EB3FD91164D2F422B589819A /* NativeSearchView.swift */,
 				E6A9E7EC07957370D98F32AB /* NativeSettingsView.swift */,
+				D90FD6D0C67BF36A5C02C485 /* NativeShareView.swift */,
 				16CD535413F009F01875FBFC /* PatternTabsLayer.swift */,
 				67FF8115D385E426233034B0 /* PoetryCardOptionsLayer.swift */,
 				78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */,
@@ -299,6 +302,7 @@
 				75EFC6EC79E2B9DA869042EB /* in Sources */,
 				8B2534327375CC31AB377B8C /* in Sources */,
 				3D30CFBD28AB28252872E8C4 /* in Sources */,
+				570DBD39C0A70AC108072EA9 /* in Sources */,
 				F9DF5A206E83625DE0173D3D /* in Sources */,
 				99DEEA9D408D58D471C43CF8 /* in Sources */,
 				73284F9E1C6B0CBE68782968 /* in Sources */,

@@ -552,7 +552,11 @@
       "x": 86.559,
       "y": 5.066,
       "width": 12,
-      "height": 5
+      "height": 5,
+      "action": {
+        "type": "navigate",
+        "target": "/native/share/stamp"
+      }
     },
     "stamp-card": {
       "action": {
@@ -619,6 +623,12 @@
         "type": "navigate",
         "target": "/native/letter/jia-shu"
       }
+    },
+    "item-letter": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/letter/yu-you-ren-shu"
+      }
     }
   },
   "artifact-pattern": {
@@ -662,6 +672,12 @@
         "storageKey": "patternTab",
         "storageValue": "era",
         "message": "当前查看"
+      }
+    },
+    "share": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/share/pattern"
       }
     }
   },
@@ -858,6 +874,14 @@
         "target": "/favorites",
         "storageKey": "favoriteFilter",
         "storageValue": "stamp"
+      }
+    }
+  },
+  "poetry-card": {
+    "share": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/share/card"
       }
     }
   }

@@ -156,6 +156,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     search: new Set(['main']),
     // 汴京城内地点（取自 ContentData.bianjingLocations）
     spot: new Set([...cd.matchAll(/CityLocation\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    // 分享页（NativeShareView 支持的三类内容）
+    share: new Set(['card', 'pattern', 'stamp']),
   }
   const badNative = []
   for (const t of nativeTargets) {

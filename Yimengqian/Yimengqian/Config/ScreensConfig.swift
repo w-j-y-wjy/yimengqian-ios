@@ -290,7 +290,7 @@ enum ScreenCatalog {
                 Hotspot(id: "add-note", label: "添加题注", x: 3.403, y: 71.142, width: 46.62, height: 11.327, action: HotspotAction(type: .toast, message: "题注编辑将在后续开放")),
                 Hotspot(id: "select-border", label: "选择边框", x: 50.915, y: 71.516, width: 45.211, height: 11.284, action: HotspotAction(type: .toast, message: "已打开边框选择")),
                 Hotspot(id: "save-card", label: "保存诗境卡", x: 4.789, y: 84.761, width: 43.521, height: 5, action: HotspotAction(type: .incrementOnce, message: "已保存至\"我的作品\"", storageKey: "poetryCardCount", flagKey: "jiangxueCardCreated")),
-                Hotspot(id: "share", label: "分享给朋友", x: 50.164, y: 84.397, width: 44.46, height: 5, action: HotspotAction(type: .toast, message: "分享功能为原型模拟"))
+                Hotspot(id: "share", label: "分享给朋友", x: 50.164, y: 84.397, width: 44.46, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/card"))
             ]),
         ScreenConfig(id: "onboarding-intro", route: "/onboarding/intro", image: "Screens/onboarding-intro.png", hotspots: [
                 Hotspot(id: "card-city", label: "漫游古城", x: 4.437, y: 33.348, width: 91.315, height: 13.711, action: HotspotAction(type: .toast, message: "漫游古城，探索不同朝代的文化记忆")),
@@ -351,7 +351,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "artifact-pattern", route: "/artifact/pattern", image: "Screens/artifact-pattern.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 1.972, y: 5.594, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "share", label: "分享", x: 87.16, y: 5.854, width: 10, height: 5, action: HotspotAction(type: .toast, message: "分享功能为原型模拟")),
+                Hotspot(id: "share", label: "分享", x: 87.16, y: 5.854, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/pattern")),
                 Hotspot(id: "tab-structure", label: "纹样结构", x: 10.258, y: 37.606, width: 24.272, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "当前查看", storageKey: "patternTab", storageValue: "structure")),
                 Hotspot(id: "tab-symbolism", label: "寓意象征", x: 37.221, y: 37.952, width: 24.46, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "当前查看", storageKey: "patternTab", storageValue: "symbolism")),
                 Hotspot(id: "tab-era", label: "时代风格", x: 63.808, y: 37.692, width: 25.869, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "当前查看", storageKey: "patternTab", storageValue: "era")),
@@ -393,7 +393,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "stamp-reward", route: "/stamp/reward", image: "Screens/stamp-reward.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 0.26, y: 5.305, width: 12, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "share", label: "分享", x: 86.559, y: 5.066, width: 12, height: 5, action: HotspotAction(type: .toast, message: "印章分享功能为原型模拟")),
+                Hotspot(id: "share", label: "分享", x: 86.559, y: 5.066, width: 12, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/stamp")),
                 Hotspot(id: "main-stamp", label: "春日雅士", x: 24.343, y: 24.221, width: 55.54, height: 24.285, action: HotspotAction(type: .toast, message: "获得印章\"春日雅士\"")),
                 Hotspot(id: "stamp-card", label: "印章奖励", x: 8.38, y: 51.235, width: 26.244, height: 15.964, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "ya-card", label: "雅集值", x: 36.657, y: 51.538, width: 26.995, height: 15.228, action: HotspotAction(type: .navigate, target: "/activities")),
@@ -414,7 +414,7 @@ enum ScreenCatalog {
                 Hotspot(id: "item-yijiangnan", label: "忆江南", x: 3.122, y: 30.147, width: 31.221, height: 20.948, action: HotspotAction(type: .navigate, target: "/native/poem/yi-jiang-nan")),
                 Hotspot(id: "item-qingyou", label: "青釉瓶", x: 34.911, y: 30.147, width: 29.906, height: 21.121, action: HotspotAction(type: .navigate, target: "/artifact/result")),
                 Hotspot(id: "item-sushi", label: "苏轼", x: 65.376, y: 30.836, width: 31.033, height: 20.471, action: HotspotAction(type: .navigate, target: "/character/sushi")),
-                Hotspot(id: "item-letter", label: "与友人书", x: 3.549, y: 51.725, width: 30.188, height: 20.298, action: HotspotAction(type: .toast, message: "书信详情将在梦册中开放")),
+                Hotspot(id: "item-letter", label: "与友人书", x: 3.549, y: 51.725, width: 30.188, height: 20.298, action: HotspotAction(type: .navigate, target: "/native/letter/yu-you-ren-shu")),
                 Hotspot(id: "item-stamp-qinghui", label: "清晖远游", x: 35.141, y: 51.547, width: 29.343, height: 20.125, action: HotspotAction(type: .toast, message: "初始印章\"清晖远游\"")),
                 Hotspot(id: "item-chunri", label: "春日", x: 66.366, y: 52.327, width: 29.155, height: 19.691, action: HotspotAction(type: .navigate, target: "/native/poem/chun-ri")),
                 Hotspot(id: "item-maogong", label: "毛公鼎", x: 4.905, y: 72.778, width: 29.343, height: 18.434, action: HotspotAction(type: .navigate, target: "/artifact")),
