@@ -96,10 +96,13 @@ struct PatternTabsLayer: View {
                 .font(.custom("SongtiSC-Regular", size: container.height * 0.0148))
                 .foregroundColor(Theme.inkLight)
                 .lineSpacing(container.height * 0.0042)
-                .padding(.leading, 10)
+                .padding(.leading, 12)
                 .padding(.top, 4)
         }
-        .frame(width: container.width * 0.815, height: container.height * 0.140, alignment: .topLeading)
-        .offset(x: container.width * 0.135, y: container.height * 0.4370)
+        // 遮罩必须从 0.035 起：位图段落的续行从图标下方（约 x 0.045）开始折行，
+        // 只从 0.135 起遮会在左侧留下一列「莲花身/整体勾/静、典」残字（截图复现过）。
+        // 代价是原本段落首行左侧的莲花线描小图会被一起盖掉 —— 与残字相比，宁可少一枚装饰。
+        .frame(width: container.width * 0.930, height: container.height * 0.142, alignment: .topLeading)
+        .offset(x: container.width * 0.035, y: container.height * 0.4362)
     }
 }
