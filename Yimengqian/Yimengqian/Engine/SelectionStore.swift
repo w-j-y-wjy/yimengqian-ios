@@ -33,6 +33,7 @@ final class SelectionStore: ObservableObject {
         StorageKeys.poetryCardSeal,
         StorageKeys.dialogueTopic,
         StorageKeys.favoriteFilter,
+        StorageKeys.poetryCategory,
     ]
 
     /// 已经有叠层把选中态**画出来**的键 → 可以省掉那条 Toast（否则提示会盖住设计稿）。

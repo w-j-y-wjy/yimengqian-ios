@@ -45,6 +45,64 @@
         "type": "navigate",
         "target": "/native/list/poems"
       }
+    },
+    "cat-landscape": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/native/list/poems",
+        "storageKey": "poetryCategory",
+        "storageValue": "landscape"
+      }
+    },
+    "cat-seasons": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/native/list/poems",
+        "storageKey": "poetryCategory",
+        "storageValue": "seasons"
+      }
+    },
+    "cat-moon": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/native/list/poems",
+        "storageKey": "poetryCategory",
+        "storageValue": "moon"
+      }
+    },
+    "cat-sorrow": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/native/list/poems",
+        "storageKey": "poetryCategory",
+        "storageValue": "sorrow"
+      }
+    },
+    "cat-border": {
+      "action": {
+        "type": "storageAndNavigate",
+        "target": "/native/list/poems",
+        "storageKey": "poetryCategory",
+        "storageValue": "frontier"
+      }
+    },
+    "card-1": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
+    },
+    "card-2": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
+    },
+    "cards-all": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
     }
   },
   "jiangxue-scene": {
@@ -104,6 +162,24 @@
       "action": {
         "type": "navigate",
         "target": "/favorites"
+      }
+    },
+    "tab-translate": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jiangxue"
+      }
+    },
+    "tab-background": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jiangxue"
+      }
+    },
+    "tab-art": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jiangxue"
       }
     }
   },
@@ -517,6 +593,24 @@
         "type": "navigate",
         "target": "/native/settings/main"
       }
+    },
+    "poetry-card-1": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
+    },
+    "poetry-card-2": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
+    },
+    "poetry-card-3": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
     }
   },
   "profile": {
@@ -542,6 +636,12 @@
       "action": {
         "type": "navigate",
         "target": "/native/settings/main"
+      }
+    },
+    "my-works": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
       }
     }
   },

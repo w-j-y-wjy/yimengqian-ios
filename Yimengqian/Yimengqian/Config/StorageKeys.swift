@@ -48,6 +48,9 @@ enum StorageKeys {
     static let yaValue = "yaValue"
     // Favorites / Profile
     static let favoriteFilter = "favoriteFilter"
+    /// 诗境首页分类胶囊（山水/四季/月夜/离愁/边塞）。诗库列表页读它做筛选，
+    /// 值取 PoetryCategory.id（landscape/seasons/moon/sorrow/frontier）。
+    static let poetryCategory = "poetryCategory"
     static let dreambookOpened = "dreambookOpened"
     static let currentCity = "currentCity"
     static let initialStamp = "initialStamp"
@@ -98,6 +101,7 @@ enum StorageKeys {
         yaValue,
         // Favorites / Profile
         favoriteFilter,
+        poetryCategory,
         dreambookOpened,
         currentCity,
         initialStamp,

@@ -11,10 +11,12 @@
 import SwiftUI
 
 struct NativeListView: View {
-    /// "poems" 或 "activities"
+    /// "poems" / "activities" / "works"
     let listID: String
 
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var store: AppStore
+    @EnvironmentObject private var selection: SelectionStore
     @State private var keyword: String = ""
 
     var body: some View {
@@ -87,17 +89,36 @@ struct NativeListView: View {
         switch listID {
         case "poems": return "诗库"
         case "activities": return "雅集活动"
+        case "works": return "我的作品"
         default: return "列表"
         }
     }
 
     private var subtitle: String {
         switch listID {
-        case "poems": return "共 \(NativeDetail.allPoems().count) 首 · 点开可读全文与译解"
+        case "poems":
+            if let cat = categoryTitle { return "分类：\(cat) · 共 \(rows.count) 首" }
+            return "共 \(NativeDetail.allPoems().count) 首 · 点开可读全文与译解"
         case "activities": return "共 \(ContentData.activities.count) 项活动 · 点开看玩法"
+        case "works": return "共 \(rows.count) 张诗境卡 · 生成后自动入册"
         default: return ""
         }
     }
+
+    /// 分类胶囊写进 poetryCategory 的值 → 诗词的 category 文案
+    private var categoryTitle: String? {
+        guard listID == "poems", let raw = selection.value(StorageKeys.poetryCategory) else { return nil }
+        return Self.categoryMap[raw]
+    }
+
+    /// landscape / seasons / moon / sorrow / frontier → 诗词里的 category 文案
+    static let categoryMap: [String: String] = [
+        "landscape": "山水",
+        "seasons": "四季",
+        "moon": "月夜",
+        "sorrow": "离愁",
+        "frontier": "边塞",
+    ]
 
     private var topBar: some View {
         HStack {
@@ -154,7 +175,9 @@ struct NativeListView: View {
     private var rows: [Row] {
         switch listID {
         case "poems":
+            let category = categoryTitle
             return NativeDetail.allPoems()
+                .filter { category == nil || $0.category == category }
                 .filter { keyword.isEmpty || matches($0) }
                 .map { p in
                     Row(
@@ -165,6 +188,19 @@ struct NativeListView: View {
                         route: "/native/poem/\(p.id)"
                     )
                 }
+        case "works":
+            // 诗境卡作品：快照里记的是生成记录 id（保存时写入），这里翻成可读行
+            return store.snapshot.generatedCards.enumerated().map { index, raw in
+                let poemID = raw.replacingOccurrences(of: "-card", with: "")
+                let poem = NativeDetail.allPoems().first(where: { $0.id == poemID })
+                return Row(
+                    id: raw,
+                    title: poem.map { "《\($0.title)》诗境卡" } ?? "诗境卡 \(index + 1)",
+                    subtitle: "已在诗境卡工坊生成并保存",
+                    image: poem?.image ?? poem?.imagery?.first?.image,
+                    route: "/poetry/card"
+                )
+            }
         case "activities":
             return ContentData.activities.map { a in
                 Row(
