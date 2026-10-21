@@ -55,7 +55,10 @@ struct PoetryCardOptionsLayer: View {
     private func picker(_ row: Row) -> some View {
         let padX = container.width * 0.012
         let padY = container.height * 0.006
-        let bandW = container.width * (row.w + 0.024)
+        // 遮罩右边界固定到 0.945（面板右内缘）：第 2、3 排的可选项在图上还带一圈浅描边，
+        // 按控件宽度算遮罩只到 0.88，会在右侧留下两个「(」形弧线残影（截图复现过）。
+        let bandLeft = row.x0 - 0.012
+        let bandW = container.width * (0.945 - bandLeft)
         let bandH = container.height * (row.h + 0.012)
         let segW = container.width * row.w / CGFloat(row.chips.count)
         let segH = container.height * row.h
