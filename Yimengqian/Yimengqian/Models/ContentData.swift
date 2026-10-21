@@ -60,6 +60,18 @@ enum ContentData {
             image: "ArtApp/dynasty-ming.jpg",
             characters: []
         ),
+        // 黄州：苏轼谪居地，设计稿「苏轼足迹」里有它，但内容库原本没有这个城市。
+        // 没有专属配图 → image 留空（不借别的朝代图，宁可不显示 hero）。
+        Dynasty(
+            id: "huang-zhou",
+            name: "黄州",
+            city: "黄州",
+            period: "1080-1084",
+            description: "苏轼谪居黄州四年，在此写下《赤壁赋》《念奴娇·赤壁怀古》与《寒食帖》",
+            unlocked: true,
+            recommended: false,
+            characters: ["sushi"]
+        ),
     ]
 
     // MARK: - characters.ts（2 项：苏轼、李白）
@@ -163,6 +175,31 @@ enum ContentData {
                 ),
             ],
             image: "ArtApp/character-liqingzhao.jpg"
+        ),
+        // 王维：梦册「相逢古人」第三张卡画的是他，但内容库原本只有苏轼/李白/李清照。
+        // 没有专属画像 → image 留空，详情页不显示 hero，绝不借别人的肖像。
+        Character(
+            id: "wangwei",
+            name: "王维",
+            dynasty: "唐",
+            title: "诗佛",
+            tags: ["山水", "禅意", "诗画"],
+            bio: "王维，字摩诘，盛唐诗人、画家，官至尚书右丞，世称王右丞。晚年隐居辋川，山水田园诗清幽空灵；苏轼评其「诗中有画，画中有诗」。",
+            works: [
+                Poem(
+                    id: "niao-ming-jian",
+                    title: "鸟鸣涧",
+                    author: "王维",
+                    dynasty: "唐",
+                    content: "人闲桂花落，\n夜静春山空。\n月出惊山鸟，\n时鸣春涧中。",
+                    category: "山水"
+                )
+            ],
+            footprints: [
+                Footprint(city: "长安", period: "盛唐", description: "少年成名，以诗画名动京师"),
+                Footprint(city: "辋川", period: "晚年", description: "隐居辋川别业，写下《辋川集》"),
+            ],
+            letters: []
         ),
     ]
 
@@ -386,8 +423,10 @@ enum ContentData {
         ),
     ]
 
-    // MARK: - activities.ts：activities（5 项）
+    // MARK: - activities.ts：activities（5 项 + 茶坊点茶）
     static let activities: [Activity] = [
+        // 茶坊页「宋代点茶体验」原本只弹「后续开放」；内容库补上条目（无专属配图，image 留空）
+        Activity(id: "tea-ceremony", name: "宋代点茶", description: "碾茶为末，注汤击拂，看乳花咬盏——宋人茶坊里的日常", type: "ritual", unlocked: true, participants: 3260),
         Activity(id: "feihualing", name: "飞花令·春", description: "以诗会友，飞花拾春", type: "quiz", unlocked: true, participants: 12345, image: "ArtApp/activity-feihualing.jpg"),
         Activity(id: "dengmi", name: "猜灯谜", description: "打开灯谜，谜底顿生", type: "puzzle", unlocked: true, participants: 12345, image: "ArtApp/activity-dengmi.jpg"),
         Activity(id: "hua-zhao", name: "古画找物", description: "画中寻物，妙趣在里", type: "find", unlocked: true, participants: 8967, image: "ArtApp/activity-hua-zhao.jpg"),

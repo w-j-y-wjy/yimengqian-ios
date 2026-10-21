@@ -331,6 +331,18 @@
         "type": "navigate",
         "target": "/native/activity/qigu"
       }
+    },
+    "tea-ceremony": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/tea-ceremony"
+      }
+    },
+    "tea-experience": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/activity/tea-ceremony"
+      }
     }
   },
   "sushi": {
@@ -392,6 +404,12 @@
       "action": {
         "type": "navigate",
         "target": "/native/list/poems"
+      }
+    },
+    "footprint-huangzhou": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/huang-zhou"
       }
     }
   },
@@ -610,6 +628,12 @@
       "action": {
         "type": "navigate",
         "target": "/native/list/works"
+      }
+    },
+    "person-wangwei": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/character/wangwei"
       }
     }
   },

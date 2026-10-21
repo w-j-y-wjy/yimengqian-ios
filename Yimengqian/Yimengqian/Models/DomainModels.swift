@@ -13,7 +13,8 @@ struct Dynasty: Codable, Identifiable, Equatable {
     var description: String
     var unlocked: Bool
     var recommended: Bool
-    var image: String
+    /// 朝代配图。改为可选：像黄州这种没有独立配图的城市条目，不应该为了凑字段而借用别的图。
+    var image: String? = nil
     var characters: [String]
 }
 
@@ -27,7 +28,8 @@ struct Character: Codable, Identifiable, Equatable {
     var works: [Poem]
     var footprints: [Footprint]
     var letters: [Letter]
-    var image: String
+    /// 人像配图。改为可选：没有专属画像的历史人物不该借用他人肖像。
+    var image: String? = nil
 }
 
 struct Poem: Codable, Identifiable, Equatable {
