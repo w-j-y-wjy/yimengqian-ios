@@ -279,7 +279,8 @@ struct NativeDetailContent {
             )
 
         case .spot(let id):
-            // 汴京城内地点：书院 / 瓦舍 / 酒肆 / 药坊 / 码头（茶坊有自己的设计稿屏）            guard let loc = ContentData.bianjingLocations.first(where: { $0.id == id }) else { return nil }
+            // 汴京城内地点：书院 / 瓦舍 / 酒肆 / 药坊 / 码头（茶坊有自己的设计稿屏）
+            guard let loc = ContentData.bianjingLocations.first(where: { $0.id == id }) else { return nil }
             var sections: [(String, String)] = [("此地", loc.description)]
             if !loc.era.isEmpty { sections.append(("宋代风貌", loc.era)) }
             if !loc.activity.isEmpty { sections.append(("此地可做", loc.activity)) }
