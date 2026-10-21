@@ -127,10 +127,36 @@ const dupRoutes = screens.map((s) => s.route).filter((r, i, a) => a.indexOf(r) !
 if (dupRoutes.length) bad('screens.routes', `route 重复：${[...new Set(dupRoutes)].join(', ')}`)
 else ok('screens.routes', `${routes.size} 条 route 无重复`)
 
-const targets = [...new Set([...cfg.matchAll(/target:\s*"([^"]+)"/g)].map((m) => m[1]))]
+const allTargets = [...new Set([...cfg.matchAll(/target:\s*"([^"]+)"/g)].map((m) => m[1]))]
+const nativeTargets = allTargets.filter((t) => t.startsWith('/native/'))
+const targets = allTargets.filter((t) => !t.startsWith('/native/'))
 const dangling = targets.filter((t) => !routes.has(t))
 if (dangling.length) bad('screens.targets', `跳转目标不存在对应屏：${dangling.join(', ')}`)
-else ok('screens.targets', `${targets.length} 个跳转目标全部能解析到已定义 route`)
+else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析到已定义 route`)
+
+// /native/<kind>/<id> —— 原生详情路由（Config/NativeRoutes.swift）。这里校验 kind 合法且 id 在内容里存在，
+// 否则运行时会静默忽略跳转（点上去像"没反应"）。
+{
+  const cd = stripComments(read(join(SRC, 'Models', 'ContentData.swift')))
+  const ids = {
+    poem: new Set([...cd.matchAll(/Poem\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    artifact: new Set([...cd.matchAll(/Artifact\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    character: new Set([...cd.matchAll(/Character\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    letter: new Set([...cd.matchAll(/Letter\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    activity: new Set([...cd.matchAll(/Activity\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    pattern: new Set([...cd.matchAll(/PatternElement\(name: "([^"]+)"/g)].map((m) => m[1])),
+  }
+  const badNative = []
+  for (const t of nativeTargets) {
+    const parts = t.split('/')
+    const kind = parts[2]
+    const id = parts.slice(3).join('/')
+    if (parts.length < 4 || !ids[kind] || !ids[kind].has(id)) badNative.push(t)
+  }
+  if (badNative.length) bad('screens.nativeTargets', `原生详情目标无法解析（kind 或 id 不存在）：${badNative.join(', ')}`)
+  else if (nativeTargets.length) ok('screens.nativeTargets', `${nativeTargets.length} 个原生详情目标全部可解析`)
+  else ok('screens.nativeTargets', '未使用原生详情路由')
+}
 
 const screensDir = join(CONTENT, 'Screens')
 const pngOnDisk = existsSync(screensDir) ? readdirSync(screensDir).filter((f) => f.endsWith('.png')) : []

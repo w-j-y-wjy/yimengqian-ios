@@ -4,7 +4,35 @@
       "x": 3.873,
       "y": 12.189,
       "width": 92.254,
-      "height": 22.644
+      "height": 22.644,
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/niao-ming-jian"
+      }
+    },
+    "enter-poetry": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/niao-ming-jian"
+      }
+    },
+    "rec-niaoming": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/niao-ming-jian"
+      }
+    },
+    "rec-jingye": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jing-ye-si"
+      }
+    },
+    "user-avatar": {
+      "action": {
+        "type": "navigate",
+        "target": "/profile"
+      }
     }
   },
   "jiangxue-scene": {
@@ -232,6 +260,26 @@
       "y": 22.061,
       "width": 14.15,
       "height": 5
+    }
+  },
+  "artifact-pattern": {
+    "lotus-card": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/pattern/莲瓣"
+      }
+    },
+    "scroll-card": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/pattern/卷草"
+      }
+    },
+    "border-card": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/pattern/边饰"
+      }
     }
   }
 }

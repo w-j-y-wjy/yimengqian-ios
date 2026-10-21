@@ -29,6 +29,12 @@ struct YimengqianApp: App {
         _router = StateObject(wrappedValue: router)
         // 选择态由 AppStore 派生：读出已存的选择，后续写入经 ActionExecutor 镜像回来
         _selection = StateObject(wrappedValue: SelectionStore(store: store))
+        // 调试 / CI 用：`-nativeDetail /native/poem/niao-ming-jian` 直接打开原生详情页，
+        // 不需要真实点击就能截图验证（整屏设计稿仍用 -initialScreen）
+        if let raw = UserDefaults.standard.string(forKey: "nativeDetail"),
+           let detail = NativeDetail.parse(raw) {
+            router.openNative(detail)
+        }
     }
 
     var body: some Scene {

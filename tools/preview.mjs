@@ -211,7 +211,9 @@ for (const s of screens) {
       issues.push(`${s.id}/${h.id}：越界 x+w=${(h.x + h.width).toFixed(2)} y+h=${(h.y + h.height).toFixed(2)}`)
     }
     if (h.width <= 0 || h.height <= 0) issues.push(`${s.id}/${h.id}：尺寸为零`)
-    if (h.action.target && !routes.has(h.action.target)) {
+    // /native/... 是原生详情路由（NativeRoutes.swift 解析），不算设计稿屏；
+    // 预览器不渲染原生视图，所以这里只放行、不校验内容 id（由 static-check 负责校验）。
+    if (h.action.target && !h.action.target.startsWith('/native/') && !routes.has(h.action.target)) {
       issues.push(`${s.id}/${h.id}：跳转目标不存在 ${h.action.target}`)
     }
   }

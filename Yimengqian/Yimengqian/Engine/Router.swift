@@ -15,6 +15,8 @@ import SwiftUI
 final class Router: ObservableObject {
     @Published private(set) var stack: [ScreenConfig] = []
     @Published var navigationID = UUID()  // 换屏令牌（只用来强制重建视图，不驱动动画）
+    /// 原生详情浮层（/native/... 路由）。为 nil 时不显示，也不改动路由栈。
+    @Published var nativeDetail: NativeDetail?
 
     init(initial: ScreenConfig) {
         stack = [initial]
@@ -29,16 +31,36 @@ final class Router: ObservableObject {
     }
 
     /// 出栈（对齐 navigate(-1)；栈底不动作）
+    /// 注意：原生详情浮层优先关闭 —— 否则在设计稿上点"返回"会误退到上一屏。
     func back() {
+        if nativeDetail != nil {
+            nativeDetail = nil
+            return
+        }
         guard stack.count > 1 else { return }
         stack.removeLast()
         navigationID = UUID()
     }
 
-    /// 按路由跳转
+    /// 按路由跳转：先看是不是原生详情路由，再查设计稿屏幕。
+    /// 这样热区配置里可以直接写 /native/poem/xxx，不需要新增动作类型。
     func navigate(route: String) {
+        if let detail = NativeDetail.parse(route) {
+            openNative(detail)
+            return
+        }
         guard let screen = ScreenCatalog.screen(route: route) else { return }
         push(screen)
+    }
+
+    /// 打开原生详情（内容解析失败就忽略，绝不出现空白页）
+    func openNative(_ detail: NativeDetail) {
+        guard NativeDetailContent.resolve(detail) != nil else { return }
+        nativeDetail = detail
+    }
+
+    func closeNative() {
+        nativeDetail = nil
     }
 
     /// 替换栈顶（对齐 conditionalJump 直达 /home：清空栈再推入目标）

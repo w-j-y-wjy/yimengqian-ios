@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
 		E521634B06FACFFAA33DFF89 /* YimengqianApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5651D8F516DBDACCA58498 /* YimengqianApp.swift */; };
+		07DA3C03DAFC945CE0869518 /* NativeRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E758DCA970802688FD46C078 /* NativeRoutes.swift */; };
 		D05DAFF34B411B864F117BAE /* ScreensConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2CD72FA750121F7D2CA13B /* ScreensConfig.swift */; };
 		8AC2E65F0C2CE55D7AE4537A /* StorageKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFF2ABB36E2545504880D63C /* StorageKeys.swift */; };
 		225E13A81E501C49380F0A99 /* ActionExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 362BDCEC015656B86C598818 /* ActionExecutor.swift */; };
@@ -23,6 +24,7 @@
 		9DC89FCA4104455C51784CF6 /* HotspotScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1828A9688D7D25703FC15400 /* HotspotScreenView.swift */; };
 		1AAAA65062FDA3CDF0C5BF7C /* FavoritesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4B9A3ACCE74B4DD83A906 /* FavoritesLayer.swift */; };
 		A14D86C6E6D666163782CE81 /* FeihualingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14E1D562CFF6D93BAE10D32 /* FeihualingLayer.swift */; };
+		26516CFA5D185730CEF9C373 /* NativeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B9DE6A1F22014CCD3D9143 /* NativeDetailView.swift */; };
 		73284F9E1C6B0CBE68782968 /* PreferenceTestLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */; };
 		9515E1F10B6754A3CC4C6F76 /* ProfileLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */; };
 		85CF7F4B43B6B476B81E06CE /* ScreenNativeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */; };
@@ -37,6 +39,7 @@
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		DA5651D8F516DBDACCA58498 /* YimengqianApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YimengqianApp.swift; sourceTree = "<group>"; };
+		E758DCA970802688FD46C078 /* NativeRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeRoutes.swift; sourceTree = "<group>"; };
 		DA2CD72FA750121F7D2CA13B /* ScreensConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreensConfig.swift; sourceTree = "<group>"; };
 		AFF2ABB36E2545504880D63C /* StorageKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeys.swift; sourceTree = "<group>"; };
 		362BDCEC015656B86C598818 /* ActionExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionExecutor.swift; sourceTree = "<group>"; };
@@ -51,6 +54,7 @@
 		1828A9688D7D25703FC15400 /* HotspotScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotspotScreenView.swift; sourceTree = "<group>"; };
 		C1C4B9A3ACCE74B4DD83A906 /* FavoritesLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesLayer.swift; sourceTree = "<group>"; };
 		F14E1D562CFF6D93BAE10D32 /* FeihualingLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeihualingLayer.swift; sourceTree = "<group>"; };
+		F1B9DE6A1F22014CCD3D9143 /* NativeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDetailView.swift; sourceTree = "<group>"; };
 		78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceTestLayer.swift; sourceTree = "<group>"; };
 		9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLayer.swift; sourceTree = "<group>"; };
 		3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNativeLayer.swift; sourceTree = "<group>"; };
@@ -107,6 +111,7 @@
 		0A2D5534F938A2F49DB4F6FF /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				E758DCA970802688FD46C078 /* NativeRoutes.swift */,
 				DA2CD72FA750121F7D2CA13B /* ScreensConfig.swift */,
 				AFF2ABB36E2545504880D63C /* StorageKeys.swift */,
 			);
@@ -165,6 +170,7 @@
 			children = (
 				C1C4B9A3ACCE74B4DD83A906 /* FavoritesLayer.swift */,
 				F14E1D562CFF6D93BAE10D32 /* FeihualingLayer.swift */,
+				F1B9DE6A1F22014CCD3D9143 /* NativeDetailView.swift */,
 				78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */,
 				9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */,
 				3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */,
@@ -255,6 +261,7 @@
 			files = (
 				3EF49115FF5066CCA097B146 /* in Sources */,
 				E521634B06FACFFAA33DFF89 /* in Sources */,
+				07DA3C03DAFC945CE0869518 /* in Sources */,
 				D05DAFF34B411B864F117BAE /* in Sources */,
 				8AC2E65F0C2CE55D7AE4537A /* in Sources */,
 				225E13A81E501C49380F0A99 /* in Sources */,
@@ -269,6 +276,7 @@
 				9DC89FCA4104455C51784CF6 /* in Sources */,
 				1AAAA65062FDA3CDF0C5BF7C /* in Sources */,
 				A14D86C6E6D666163782CE81 /* in Sources */,
+				26516CFA5D185730CEF9C373 /* in Sources */,
 				73284F9E1C6B0CBE68782968 /* in Sources */,
 				9515E1F10B6754A3CC4C6F76 /* in Sources */,
 				85CF7F4B43B6B476B81E06CE /* in Sources */,
