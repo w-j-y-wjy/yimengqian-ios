@@ -188,6 +188,34 @@ private struct HotspotButton: View {
         // 2026-10-21 真机实测症状：不管点哪里都跳到收藏页 —— 正是这条造成的。
         .contentShape(Rectangle())
         .onTapGesture { onTap() }
+        // 无障碍：VoiceOver 读「热区文案 + 会做什么」，而不是把整屏当成一堆无名元素。
+        // 文案来自设计稿标签（label），动作说明按动作类型给一句人话。
+        .accessibilityElement(children: .ignore)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(Text(hotspot.label))
+        .accessibilityHint(Text(Self.hint(for: hotspot.action)))
         .position(x: frame.midX, y: frame.midY)
+    }
+
+    /// 动作 → 无障碍提示（不暴露内部路由字符串，说人话）
+    private static func hint(for action: HotspotAction) -> String {
+        switch action.type {
+        case .navigate, .delayedNavigate:
+            return "打开对应页面"
+        case .back:
+            return "返回上一页"
+        case .toast:
+            return action.message.map { "提示：\($0)" } ?? "显示提示"
+        case .storageAndNavigate, .conditionalStorageNavigate, .setDefaultsAndNavigate:
+            return "记录选择并打开对应页面"
+        case .storage, .storageAndToast, .setStorageAndToast, .toggleStorage:
+            return "切换选项"
+        case .incrementOnce:
+            return "领取一次"
+        case .checkAnswer:
+            return "提交答案"
+        case .conditionalNavigate, .conditionalJump:
+            return "继续"
+        }
     }
 }

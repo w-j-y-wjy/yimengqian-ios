@@ -84,5 +84,8 @@ struct ScreenNativeLayer: View {
         }
         // 关键：叠层只做展示，不参与命中测试。否则会挡住底下的透明热区。
         .allowsHitTesting(false)
+        // 无障碍：叠层是位图的补充绘制（数字/胶囊/正文），VoiceOver 应该读下面那颗热区的
+        // 语义标签，而不是把这些重复绘制再念一遍。
+        .accessibilityHidden(true)
     }
 }
