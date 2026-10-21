@@ -30,6 +30,8 @@ enum NativeDetail: Equatable {
     /// 这三国没有设计稿屏（只有汴京有），但 ContentData.dynasties 里有完整描述与朝代图，
     /// 正好把此前从未显示的 dynasty-tang / dynasty-nan-song / dynasty-ming 三张图用起来。
     case city(String)
+    /// 设置页（数据统计/版本/重置）：原本三处「设置」入口只能弹提示
+    case settings
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
     /// 设计稿里「诗库」「查看更多活动」这类入口原本只能弹提示，这里用原生列表补上，
     /// 列表项点开直接进对应详情（不需要新设计稿，也不做像素级覆盖）。
@@ -50,6 +52,7 @@ enum NativeDetail: Equatable {
         case "letter": return .letter(parts[1])
         case "city": return .city(parts[1])
         case "list": return .list(parts[1])
+        case "settings": return .settings
         default: return nil
         }
     }
@@ -64,6 +67,7 @@ enum NativeDetail: Equatable {
         case .letter(let id): return "\(Self.prefix)letter/\(id)"
         case .city(let id): return "\(Self.prefix)city/\(id)"
         case .list(let id): return "\(Self.prefix)list/\(id)"
+        case .settings: return "\(Self.prefix)settings/main"
         }
     }
 
@@ -77,6 +81,7 @@ enum NativeDetail: Equatable {
         case .letter: return "letter"
         case .city: return "city"
         case .list: return "list"
+        case .settings: return "settings"
         }
     }
 
@@ -85,6 +90,7 @@ enum NativeDetail: Equatable {
         case .poem(let v), .artifact(let v), .patternElement(let v),
              .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v):
             return v
+        case .settings: return "main"
         }
     }
 
@@ -92,6 +98,14 @@ enum NativeDetail: Equatable {
     var isList: Bool {
         if case .list = self { return true }
         return false
+    }
+
+    /// 走独立全屏原生页（列表 / 设置），不依赖 NativeDetailContent
+    var isNativePage: Bool {
+        switch self {
+        case .list, .settings: return true
+        default: return false
+        }
     }
 
     /// 全量诗词：ContentData.poems（4 首）+ 各人物 works 里挂的宋词（念奴娇/定风波/水调歌头/
@@ -258,6 +272,9 @@ struct NativeDetailContent {
                 favorite: nil
             )
 
+        case .settings:
+            // 设置页走 NativeSettingsView，不生成详情内容
+            return nil
         case .list:
             // 列表页走 NativeListView，不生成"详情内容"；这里必须显式返回，
             // 否则 switch 不穷尽（CI 第一次就报了 switch must be exhaustive）。

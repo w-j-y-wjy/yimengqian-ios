@@ -43,7 +43,9 @@ struct RootView: View {
         .overlay {
             if let detail = router.nativeDetail {
                 Group {
-                    if case .list(let listID) = detail {
+                    if case .settings = detail {
+                        NativeSettingsView()
+                    } else if case .list(let listID) = detail {
                         NativeListView(listID: listID)
                     } else if let content = NativeDetailContent.resolve(detail) {
                         NativeDetailView(detail: detail, content: content)

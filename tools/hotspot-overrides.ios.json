@@ -511,6 +511,12 @@
         "type": "navigate",
         "target": "/native/character/liqingzhao"
       }
+    },
+    "settings": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/settings/main"
+      }
     }
   },
   "profile": {
@@ -524,6 +530,18 @@
       "action": {
         "type": "navigate",
         "target": "/native/city/ming"
+      }
+    },
+    "settings": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/settings/main"
+      }
+    },
+    "my-settings": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/settings/main"
       }
     }
   },

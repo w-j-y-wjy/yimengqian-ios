@@ -428,7 +428,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "dreambook", route: "/dreambook", image: "Screens/dreambook.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 3.005, y: 5.074, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "settings", label: "设置", x: 86.502, y: 5.464, width: 10, height: 5, action: HotspotAction(type: .toast, message: "梦册设置")),
+                Hotspot(id: "settings", label: "设置", x: 86.502, y: 5.464, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
                 Hotspot(id: "city-bianjing", label: "汴京", x: 11.573, y: 32.108, width: 26.526, height: 16.831, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "city-hangzhou", label: "杭州", x: 38.253, y: 32.325, width: 25.117, height: 16.831, action: HotspotAction(type: .navigate, target: "/native/city/nan-song")),
                 Hotspot(id: "city-jinling", label: "金陵", x: 63.244, y: 32.455, width: 25.775, height: 16.354, action: HotspotAction(type: .navigate, target: "/native/city/ming")),
@@ -441,7 +441,7 @@ enum ScreenCatalog {
                 Hotspot(id: "continue-btn", label: "继续补全梦册", x: 13.239, y: 88.938, width: 73.005, height: 5, action: HotspotAction(type: .navigate, target: "/home"))
             ]),
         ScreenConfig(id: "profile", route: "/profile", image: "Screens/profile.png", hotspots: [
-                Hotspot(id: "settings", label: "设置", x: 87.16, y: 6.59, width: 11, height: 6, action: HotspotAction(type: .toast, message: "设置面板将在后续开放")),
+                Hotspot(id: "settings", label: "设置", x: 87.16, y: 6.59, width: 11, height: 6, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
                 Hotspot(id: "avatar", label: "头像", x: 6.784, y: 13.287, width: 26.714, height: 13.277, action: HotspotAction(type: .toast, message: "头像修改为原型模拟")),
                 Hotspot(id: "identity", label: "用户身份", x: 35.23, y: 17.664, width: 28.592, height: 5.043, action: HotspotAction(type: .toast, message: "梦客·苏蘅，江南游学者")),
                 Hotspot(id: "culture-progress", label: "文化进度", x: 82.934, y: 25.417, width: 10, height: 5, action: HotspotAction(type: .toast, message: "当前文化进度")),
@@ -452,7 +452,7 @@ enum ScreenCatalog {
                 Hotspot(id: "my-favorites", label: "我的收藏", x: 3.498, y: 40.836, width: 90.188, height: 7.427, action: HotspotAction(type: .navigate, target: "/favorites")),
                 Hotspot(id: "my-dreambook", label: "千年梦册", x: 3.216, y: 48.056, width: 91.408, height: 7.557, action: HotspotAction(type: .navigate, target: "/dreambook")),
                 Hotspot(id: "my-works", label: "我的作品", x: 3.498, y: 55.536, width: 92.254, height: 6.127, action: HotspotAction(type: .navigate, target: "/poetry/card")),
-                Hotspot(id: "my-settings", label: "设置", x: 3.873, y: 61.759, width: 92.723, height: 6.777, action: HotspotAction(type: .toast, message: "设置功能为原型模拟")),
+                Hotspot(id: "my-settings", label: "设置", x: 3.873, y: 61.759, width: 92.723, height: 6.777, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
                 Hotspot(id: "trace-bianjing", label: "汴京", x: 6.502, y: 74.1, width: 27.183, height: 14.187, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "trace-hangzhou", label: "杭州", x: 35.906, y: 74.143, width: 26.62, height: 13.754, action: HotspotAction(type: .navigate, target: "/native/city/nan-song")),
                 Hotspot(id: "trace-nanjing", label: "南京", x: 64.935, y: 75.356, width: 28.093, height: 12.594, action: HotspotAction(type: .navigate, target: "/native/city/ming")),

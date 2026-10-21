@@ -53,9 +53,9 @@ final class Router: ObservableObject {
         push(screen)
     }
 
-    /// 打开原生详情/列表（内容解析失败就忽略，绝不出现空白页）
+    /// 打开原生详情/列表/设置（内容解析失败就忽略，绝不出现空白页）
     func openNative(_ detail: NativeDetail) {
-        if detail.isList {
+        if detail.isNativePage {
             nativeDetail = detail
             return
         }
