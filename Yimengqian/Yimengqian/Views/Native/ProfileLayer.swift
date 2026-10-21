@@ -106,6 +106,21 @@ struct ProfileLayer: View {
             }
             .frame(width: container.width * 0.1520, height: container.height * 0.0116, alignment: .trailing)
             .offset(x: container.width * 0.6710, y: container.height * 0.2728)
+
+            // 等级：这次终于取到干净锚点。做法是按列统计行带 y 425..465 的深色像素簇，
+            // 「千年知音」占 316..427，「Lv.4」占 442..494（墨色 bbox y 432..452），
+            // 右侧 515..531 才是那枚印章——先前的 bbox 之所以连成一片，就是把印章算进去了。
+            // 现在只盖 442..494 这一小段，左右两边的位图文字与印章都不动。
+            ZStack(alignment: .trailing) {
+                Rectangle().fill(Theme.cardCream)
+                Text(verbatim: "Lv.\(store.snapshot.level)")
+                    .font(.custom("KaitiSC-Bold", size: container.height * 0.0128))
+                    .foregroundColor(Theme.vermilion)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .frame(width: container.width * 0.0760, height: container.height * 0.0138, alignment: .trailing)
+            .offset(x: container.width * 0.5120, y: container.height * 0.2318)
         }
     }
 
