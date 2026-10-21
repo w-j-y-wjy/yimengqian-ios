@@ -352,9 +352,9 @@ enum ScreenCatalog {
         ScreenConfig(id: "artifact-pattern", route: "/artifact/pattern", image: "Screens/artifact-pattern.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 1.972, y: 5.594, width: 10, height: 5, action: HotspotAction(type: .back)),
                 Hotspot(id: "share", label: "分享", x: 87.16, y: 5.854, width: 10, height: 5, action: HotspotAction(type: .toast, message: "分享功能为原型模拟")),
-                Hotspot(id: "tab-structure", label: "纹样结构", x: 10.258, y: 37.606, width: 24.272, height: 5, action: HotspotAction(type: .toast, message: "当前查看：纹样结构")),
-                Hotspot(id: "tab-symbolism", label: "寓意象征", x: 37.221, y: 37.952, width: 24.46, height: 5, action: HotspotAction(type: .toast, message: "缠枝莲寓意生生不息、连绵长久")),
-                Hotspot(id: "tab-era", label: "时代风格", x: 63.808, y: 37.692, width: 25.869, height: 5, action: HotspotAction(type: .toast, message: "元代青花纹样繁密、层次丰富")),
+                Hotspot(id: "tab-structure", label: "纹样结构", x: 10.258, y: 37.606, width: 24.272, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "当前查看", storageKey: "patternTab", storageValue: "structure")),
+                Hotspot(id: "tab-symbolism", label: "寓意象征", x: 37.221, y: 37.952, width: 24.46, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "当前查看", storageKey: "patternTab", storageValue: "symbolism")),
+                Hotspot(id: "tab-era", label: "时代风格", x: 63.808, y: 37.692, width: 25.869, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "当前查看", storageKey: "patternTab", storageValue: "era")),
                 Hotspot(id: "lotus-card", label: "莲瓣卡", x: 2.934, y: 58.7, width: 30.657, height: 18.911, action: HotspotAction(type: .navigate, target: "/native/pattern/莲瓣")),
                 Hotspot(id: "scroll-card", label: "卷草卡", x: 34.685, y: 59.176, width: 29.531, height: 18.174, action: HotspotAction(type: .navigate, target: "/native/pattern/卷草")),
                 Hotspot(id: "border-card", label: "边饰卡", x: 65.874, y: 58.787, width: 29.624, height: 18.868, action: HotspotAction(type: .navigate, target: "/native/pattern/边饰")),

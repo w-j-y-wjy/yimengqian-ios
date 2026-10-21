@@ -76,6 +76,8 @@ struct ScreenNativeLayer: View {
                 ProfileLayer(screen: screen, container: containerSize)
             case "poetry-card":
                 PoetryCardOptionsLayer(screen: screen, container: containerSize)
+            case "artifact-pattern":
+                PatternTabsLayer(screen: screen, container: containerSize)
             default:
                 EmptyView()
             }

@@ -51,6 +51,8 @@ enum StorageKeys {
     /// 诗境首页分类胶囊（山水/四季/月夜/离愁/边塞）。诗库列表页读它做筛选，
     /// 值取 PoetryCategory.id（landscape/seasons/moon/sorrow/frontier）。
     static let poetryCategory = "poetryCategory"
+    /// 纹样详解页的 tab（structure / symbolism / era），由 PatternTabsLayer 渲染正文
+    static let patternTab = "patternTab"
     static let dreambookOpened = "dreambookOpened"
     static let currentCity = "currentCity"
     static let initialStamp = "initialStamp"
@@ -102,6 +104,7 @@ enum StorageKeys {
         // Favorites / Profile
         favoriteFilter,
         poetryCategory,
+        patternTab,
         dreambookOpened,
         currentCity,
         initialStamp,

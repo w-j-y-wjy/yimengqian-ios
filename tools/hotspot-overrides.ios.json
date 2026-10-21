@@ -537,6 +537,30 @@
         "type": "navigate",
         "target": "/native/pattern/边饰"
       }
+    },
+    "tab-structure": {
+      "action": {
+        "type": "setStorageAndToast",
+        "storageKey": "patternTab",
+        "storageValue": "structure",
+        "message": "当前查看"
+      }
+    },
+    "tab-symbolism": {
+      "action": {
+        "type": "setStorageAndToast",
+        "storageKey": "patternTab",
+        "storageValue": "symbolism",
+        "message": "当前查看"
+      }
+    },
+    "tab-era": {
+      "action": {
+        "type": "setStorageAndToast",
+        "storageKey": "patternTab",
+        "storageValue": "era",
+        "message": "当前查看"
+      }
     }
   },
   "home": {

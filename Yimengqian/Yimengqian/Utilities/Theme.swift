@@ -33,6 +33,10 @@ enum Theme {
     static let panelCream = Color(hex: 0xEBDCC5)
     /// 分段控件被选中胶囊的底色（实测 #ddba87）
     static let chipTan = Color(hex: 0xDDBA87)
+    /// 纹样详解页正文面板底色（实测 #efdec8）
+    static let patternPanel = Color(hex: 0xEFDEC8)
+    /// 纹样详解页选中 tab 的底色（实测 #e9d1ac）
+    static let patternTabSel = Color(hex: 0xE9D1AC)
     static let paperDark = Color(hex: 0xE8E0D0)
     static let ink = Color(hex: 0x2C2416)
     static let inkLight = Color(hex: 0x5A4E3C)

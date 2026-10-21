@@ -34,6 +34,7 @@ final class SelectionStore: ObservableObject {
         StorageKeys.dialogueTopic,
         StorageKeys.favoriteFilter,
         StorageKeys.poetryCategory,
+        StorageKeys.patternTab,
     ]
 
     /// 已经有叠层把选中态**画出来**的键 → 可以省掉那条 Toast（否则提示会盖住设计稿）。
@@ -46,6 +47,11 @@ final class SelectionStore: ObservableObject {
         StorageKeys.feihualingAnswer,
         // 收藏页叠层会重绘整条筛选胶囊（FavoritesLayer），选中态已可见 → 省掉盖住设计稿的提示条
         StorageKeys.favoriteFilter,
+        // 诗境卡三排选项与纹样详解三个 tab 现在都由叠层重绘，同样不需要提示条
+        StorageKeys.poetryCardStyle,
+        StorageKeys.poetryCardLayout,
+        StorageKeys.poetryCardSeal,
+        StorageKeys.patternTab,
     ]
 
     /// key → 当前选中值
