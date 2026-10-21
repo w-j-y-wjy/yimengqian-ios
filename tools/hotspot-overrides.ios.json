@@ -197,6 +197,54 @@
         "type": "navigate",
         "target": "/native/poem/jiangxue"
       }
+    },
+    "main-imagery": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/imagery/gu-zhou"
+      }
+    },
+    "mini-coldriver": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/imagery/han-jiang"
+      }
+    },
+    "mini-fisherman": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/imagery/suo-li-weng"
+      }
+    },
+    "mini-snow": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/imagery/fei-xue"
+      }
+    },
+    "keyword-guji": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/孤寂"
+      }
+    },
+    "keyword-gaojie": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/高洁"
+      }
+    },
+    "keyword-kongling": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/空灵"
+      }
+    },
+    "keyword-qinghan": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/清寒"
+      }
     }
   },
   "jiangxue-analysis": {
@@ -820,6 +868,12 @@
       "action": {
         "type": "navigate",
         "target": "/native/list/works"
+      }
+    },
+    "culture-progress": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/settings/main"
       }
     }
   },

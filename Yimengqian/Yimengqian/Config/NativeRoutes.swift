@@ -40,6 +40,8 @@ enum NativeDetail: Equatable {
     case share(String)
     /// 诗境卡题注编辑：原本只弹「题注编辑将在后续开放」
     case note
+    /// 意象详解（江雪四意象：孤舟/寒江/蓑笠翁/飞雪）：原本点主卡或小卡只是把标签复读一遍
+    case imagery(String)
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
     /// 设计稿里「诗库」「查看更多活动」这类入口原本只能弹提示，这里用原生列表补上，
     /// 列表项点开直接进对应详情（不需要新设计稿，也不做像素级覆盖）。
@@ -65,6 +67,7 @@ enum NativeDetail: Equatable {
         case "spot": return .spot(parts[1])
         case "share": return .share(parts[1])
         case "note": return .note
+        case "imagery": return .imagery(parts[1])
         default: return nil
         }
     }
@@ -84,6 +87,7 @@ enum NativeDetail: Equatable {
         case .spot(let id): return "\(Self.prefix)spot/\(id)"
         case .share(let id): return "\(Self.prefix)share/\(id)"
         case .note: return "\(Self.prefix)note/main"
+        case .imagery(let id): return "\(Self.prefix)imagery/\(id)"
         }
     }
 
@@ -102,13 +106,14 @@ enum NativeDetail: Equatable {
         case .spot: return "spot"
         case .share: return "share"
         case .note: return "note"
+        case .imagery: return "imagery"
         }
     }
 
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v):
             return v
         case .settings: return "main"
         case .search: return "main"
@@ -252,9 +257,29 @@ struct NativeDetailContent {
                 favorite: (.character, id)
             )
 
+        case .imagery(let id):
+            guard let im = ContentData.jiangxueImagery.first(where: { $0.id == id }) else { return nil }
+            var sections: [(String, String)] = [
+                ("意象", im.meaning),
+                ("画面", im.visual),
+                ("情绪", im.emotion),
+            ]
+            let related = im.relatedPoems.compactMap { rid in NativeDetail.allPoems().first(where: { $0.id == rid }) }
+            if !related.isEmpty {
+                sections.append(("相关诗作", related.map { "《\($0.title)》— \($0.author)" }.joined(separator: "\n")))
+            }
+            return NativeDetailContent(
+                title: im.name,
+                subtitle: "《江雪》意象",
+                hero: im.image,
+                lines: [],
+                sections: sections,
+                tags: im.keywords,
+                favorite: nil
+            )
+
         case .spot(let id):
-            // 汴京城内地点：书院 / 瓦舍 / 酒肆 / 药坊 / 码头（茶坊有自己的设计稿屏）
-            guard let loc = ContentData.bianjingLocations.first(where: { $0.id == id }) else { return nil }
+            // 汴京城内地点：书院 / 瓦舍 / 酒肆 / 药坊 / 码头（茶坊有自己的设计稿屏）            guard let loc = ContentData.bianjingLocations.first(where: { $0.id == id }) else { return nil }
             var sections: [(String, String)] = [("此地", loc.description)]
             if !loc.era.isEmpty { sections.append(("宋代风貌", loc.era)) }
             if !loc.activity.isEmpty { sections.append(("此地可做", loc.activity)) }

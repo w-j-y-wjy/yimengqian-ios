@@ -88,10 +88,15 @@ struct NativeSearchView: View {
         .padding(.vertical, 9)
         .background(Capsule().fill(Theme.paperLight))
         .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8))
-        // 启动参数 -searchKeyword 可预填关键词（CI 截图用来验证结果列表）
+        // 启动参数 -searchKeyword 可预填关键词（CI 截图用来验证结果列表）；
+        // 路由 /native/search/<关键词> 也能预填（意象页的关键词就靠这个跳到搜索结果）
         .onAppear {
             if keyword.isEmpty {
-                keyword = UserDefaults.standard.string(forKey: "searchKeyword") ?? ""
+                if let seed = router.nativeDetail?.id, seed != "main", !seed.isEmpty {
+                    keyword = seed
+                } else {
+                    keyword = UserDefaults.standard.string(forKey: "searchKeyword") ?? ""
+                }
             }
         }
     }

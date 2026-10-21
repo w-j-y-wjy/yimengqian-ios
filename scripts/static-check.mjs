@@ -160,13 +160,21 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     share: new Set(['card', 'pattern', 'stamp']),
     // 题注编辑页（NativeNoteView，固定 main）
     note: new Set(['main']),
+    // 江雪四意象（取自 ContentData.jiangxueImagery）
+    imagery: new Set([...cd.matchAll(/Imagery\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
   }
   const badNative = []
+  // 搜索页的 id 就是预填关键词（/native/search/<关键词>）：允许中文/字母/数字的短串
   for (const t of nativeTargets) {
     const parts = t.split('/')
     const kind = parts[2]
     const id = parts.slice(3).join('/')
-    if (parts.length < 4 || !ids[kind] || !ids[kind].has(id)) badNative.push(t)
+    if (parts.length < 4) { badNative.push(t); continue }
+    if (kind === 'search') {
+      if (!/^[\u4e00-\u9fa5A-Za-z0-9]{1,20}$/.test(id)) badNative.push(t)
+      continue
+    }
+    if (!ids[kind] || !ids[kind].has(id)) badNative.push(t)
   }
   if (badNative.length) bad('screens.nativeTargets', `原生详情目标无法解析（kind 或 id 不存在）：${badNative.join(', ')}`)
   else if (nativeTargets.length) ok('screens.nativeTargets', `${nativeTargets.length} 个原生详情目标全部可解析`)
