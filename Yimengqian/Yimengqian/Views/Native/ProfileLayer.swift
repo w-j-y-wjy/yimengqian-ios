@@ -12,9 +12,13 @@
 // - 数字来源统一走 AppStore.collection(filter:)，与收藏页筛选看到的一致 ——
 //   点「器物 1 件」进收藏页就真的是 1 件，不会出现"上面写 128、进去只有 1 张"。
 //
-// 数字包围盒实测（profile.png 852×1846，深色像素 bbox）：
-//   诗词 128 → (140,652)-(187,699)；人物 43 → (541,652)-(581,699)；印章 27 → (742,652)-(782,699)
-//   单位字（篇/件/位/枚）在 y=701 起，所以遮罩必须停在 700 以内，避免把量词也盖掉。
+// 数字包围盒实测（profile.png 852×1846，y 648-700 行内深色像素的列簇）：
+//   诗词 128 → 130-186 ｜ 器物 86 → 340-379 ｜ 人物 43 → 542-580 ｜ 印章 27 → 743-780
+// 每张卡左端还有插画的深色像素（59-111 / 253-309 / 465-507 / 665-710），所以遮罩左边界
+// 必须落在"插画右缘"与"数字左缘"之间的空隙里；单位字（篇/件/位/枚）从 y=701 起，
+// 遮罩下边界必须停在 700 以内，否则量词会被一起盖掉。
+// ⚠️ 第一次实现把遮罩起点定在 135，正好切掉「128」的「1」的左半截，结果 0 画在残字右边，
+//    屏幕上看起来像"10"。所有比例都是从上面这些实测列簇反推的，不要凭感觉改。
 
 import SwiftUI
 
@@ -28,19 +32,19 @@ struct ProfileLayer: View {
     private struct StatSlot {
         let hotspotID: String
         let type: FavoriteType
-        /// 数字行左边界（相对卡片宽度）：避开左侧插画
+        /// 数字行左边界（相对卡片宽度）
         let fx: CGFloat
-        /// 数字行宽度（相对卡片宽度）：留够 3 位数字的余量
+        /// 数字行宽度（相对卡片宽度）
         let fw: CGFloat
     }
 
-    /// fx/fw 是逐卡实测的，不统一取一个值：四张卡的插画宽度不一样，
-    /// 用统一比例会把「器物」卡的首位数字裁掉 7px。
+    /// fx/fw 逐卡实测：四张卡的插画宽度不同（器物卡的鼎最宽），统一比例必然裁字。
+    /// 换算方式：fx = (数字左缘 - 4px) / 卡宽，fw = (卡内右缘 - 数字左缘 + 4px) / 卡宽。
     private let slots: [StatSlot] = [
-        StatSlot(hotspotID: "stat-poetry", type: .poem, fx: 0.545, fw: 0.445),
-        StatSlot(hotspotID: "stat-artifact", type: .artifact, fx: 0.470, fw: 0.475),
-        StatSlot(hotspotID: "stat-character", type: .character, fx: 0.545, fw: 0.375),
-        StatSlot(hotspotID: "stat-stamp", type: .stamp, fx: 0.525, fw: 0.370),
+        StatSlot(hotspotID: "stat-poetry", type: .poem, fx: 0.490, fw: 0.452),
+        StatSlot(hotspotID: "stat-artifact", type: .artifact, fx: 0.572, fw: 0.370),
+        StatSlot(hotspotID: "stat-character", type: .character, fx: 0.558, fw: 0.381),
+        StatSlot(hotspotID: "stat-stamp", type: .stamp, fx: 0.537, fw: 0.405),
     ]
 
     var body: some View {
@@ -74,7 +78,7 @@ struct ProfileLayer: View {
                 .foregroundColor(Theme.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .padding(.leading, 1)
+                .padding(.leading, 2)
         }
         .frame(width: band.width, height: band.height, alignment: .leading)
         .offset(x: band.minX, y: band.minY)
