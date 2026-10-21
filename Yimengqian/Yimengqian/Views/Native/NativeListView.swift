@@ -93,7 +93,7 @@ struct NativeListView: View {
 
     private var subtitle: String {
         switch listID {
-        case "poems": return "共 \(ContentData.poems.count) 首 · 点开可读全文与译解"
+        case "poems": return "共 \(NativeDetail.allPoems().count) 首 · 点开可读全文与译解"
         case "activities": return "共 \(ContentData.activities.count) 项活动 · 点开看玩法"
         default: return ""
         }
@@ -154,13 +154,13 @@ struct NativeListView: View {
     private var rows: [Row] {
         switch listID {
         case "poems":
-            return ContentData.poems
+            return NativeDetail.allPoems()
                 .filter { keyword.isEmpty || matches($0) }
                 .map { p in
                     Row(
                         id: p.id,
                         title: p.title,
-                        subtitle: "\(p.dynasty) · \(p.author)　\(p.content.replacingOccurrences(of: "\n", with: "，"))",
+                        subtitle: "\(p.dynasty) · \(p.author)　\(p.content.replacingOccurrences(of: "\n", with: " "))",
                         image: p.image ?? p.imagery?.first?.image,
                         route: "/native/poem/\(p.id)"
                     )

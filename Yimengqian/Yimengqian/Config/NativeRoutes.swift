@@ -93,6 +93,20 @@ enum NativeDetail: Equatable {
         if case .list = self { return true }
         return false
     }
+
+    /// 全量诗词：ContentData.poems（4 首）+ 各人物 works 里挂的宋词（念奴娇/定风波/水调歌头/
+    /// 如梦令/声声慢 5 首）。
+    /// 为什么要合并：人物页的「作品」卡指向 /native/poem/nian-nu-jiao，而它只存在于
+    /// Character.works 里；只看 poems 数组会让这类跳转解析失败（点了没反应）。
+    static func allPoems() -> [Poem] {
+        var seen = Set<String>()
+        var out: [Poem] = []
+        for p in ContentData.poems + ContentData.characters.flatMap({ $0.works }) where !seen.contains(p.id) {
+            seen.insert(p.id)
+            out.append(p)
+        }
+        return out
+    }
 }
 
 /// 详情页要显示的内容 —— 全部来自 ContentData，查不到就返回 nil（Router 会忽略这次跳转，
@@ -113,7 +127,7 @@ struct NativeDetailContent {
     static func resolve(_ detail: NativeDetail) -> NativeDetailContent? {
         switch detail {
         case .poem(let id):
-            guard let p = ContentData.poems.first(where: { $0.id == id }) else { return nil }
+            guard let p = NativeDetail.allPoems().first(where: { $0.id == id }) else { return nil }
             var sections: [(String, String)] = []
             if let a = p.analysis {
                 sections.append(("译解", a.translation))

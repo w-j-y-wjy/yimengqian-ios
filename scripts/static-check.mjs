@@ -139,6 +139,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
 {
   const cd = stripComments(read(join(SRC, 'Models', 'ContentData.swift')))
   const ids = {
+    // 诗词：ContentData.poems 之外，人物 works 里还挂着一批宋词（念奴娇/定风波…），
+    // NativeDetail.allPoems() 会把两边合并，所以校验也要合并，否则会把合法目标判成悬空。
     poem: new Set([...cd.matchAll(/Poem\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     artifact: new Set([...cd.matchAll(/Artifact\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     character: new Set([...cd.matchAll(/Character\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
