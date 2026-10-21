@@ -205,6 +205,22 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-city.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 原生列表页（S10）：诗库 + 搜索框
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen poetry-home \
+            -nativeDetail /native/list/poems
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-list.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 器物详情（S10）：纹样大图与要素图画廊
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-home \
+            -nativeDetail /native/artifact/qinghua-ping
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-artifact.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"
