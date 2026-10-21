@@ -91,16 +91,21 @@ struct ProfileLayer: View {
                 .offset(x: barX, y: barY)
 
             // 数值：盖掉「1280 / 2000」重画真实值（右对齐，与设计稿一致）
+            // 注意两处细节：
+            // 1) 用 Text(verbatim:) —— SwiftUI 的字符串插值会把 Int 按本地化加千分位（1200 → 1,200），
+            //    设计稿没有逗号，必须用 verbatim 关掉格式化；
+            // 2) 遮罩左缘比文字 bbox 再往左让 0.5% —— 实测旧文字首字符起始于 816px，
+            //    只差 1px 没盖住就会在数字前留下一道细竖线残影。
             ZStack(alignment: .trailing) {
                 Rectangle().fill(Theme.cardCream)
-                Text("\(culture) / 2000")
+                Text(verbatim: "\(culture) / 2000")
                     .font(.custom("SongtiSC-Regular", size: container.height * 0.0135))
                     .foregroundColor(Theme.inkLight)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
-            .frame(width: container.width * 0.1420, height: container.height * 0.0098, alignment: .trailing)
-            .offset(x: container.width * 0.6772, y: container.height * 0.2741)
+            .frame(width: container.width * 0.1520, height: container.height * 0.0104, alignment: .trailing)
+            .offset(x: container.width * 0.6710, y: container.height * 0.2735)
         }
     }
 
