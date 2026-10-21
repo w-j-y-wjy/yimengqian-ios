@@ -20,13 +20,21 @@
       "action": {
         "type": "navigate",
         "target": "/native/poem/niao-ming-jian"
-      }
+      },
+      "x": 35.681,
+      "y": 46.5,
+      "width": 28.779,
+      "height": 27.5
     },
     "rec-jingye": {
       "action": {
         "type": "navigate",
         "target": "/native/poem/jing-ye-si"
-      }
+      },
+      "x": 65.726,
+      "y": 46.5,
+      "width": 30.282,
+      "height": 27.5
     },
     "user-avatar": {
       "action": {
@@ -103,6 +111,34 @@
         "type": "navigate",
         "target": "/native/list/works"
       }
+    },
+    "rec-jiangxue-play": {
+      "action": {
+        "type": "navigate",
+        "target": "/poetry/jiangxue"
+      }
+    },
+    "rec-niaoming-play": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/niao-ming-jian"
+      },
+      "x": 57.6,
+      "y": 46.6,
+      "width": 6.8,
+      "height": 4.5
+    },
+    "rec-jingye-play": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/jing-ye-si"
+      }
+    },
+    "rec-jiangxue": {
+      "x": 2.653,
+      "y": 46.5,
+      "width": 30.939,
+      "height": 27.5
     }
   },
   "jiangxue-scene": {
