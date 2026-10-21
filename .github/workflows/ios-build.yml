@@ -246,6 +246,14 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-poetry-card.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 纹样 tab 原位切换（S16）：预置「寓意象征」，验证正文与选中态一起变
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-pattern \
+            -patternTab symbolism
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-pattern-tabs.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"
