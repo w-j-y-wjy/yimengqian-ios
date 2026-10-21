@@ -263,6 +263,14 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-search.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 汴京城内地点（S22）：书院 / 瓦舍 / 酒肆 / 药坊 / 码头
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen bianjing \
+            -nativeDetail /native/spot/shuyuan
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-spot.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"

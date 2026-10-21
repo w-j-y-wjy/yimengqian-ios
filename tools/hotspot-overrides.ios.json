@@ -317,6 +317,36 @@
         "type": "navigate",
         "target": "/city/dynasties"
       }
+    },
+    "academy": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/spot/shuyuan"
+      }
+    },
+    "wanshe": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/spot/washe"
+      }
+    },
+    "tavern": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/spot/jiusi"
+      }
+    },
+    "pharmacy": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/spot/yaofang"
+      }
+    },
+    "dock": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/spot/matou"
+      }
     }
   },
   "teahouse": {
@@ -576,6 +606,18 @@
       "action": {
         "type": "navigate",
         "target": "/native/search/main"
+      }
+    },
+    "item-yijiangnan": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/yi-jiang-nan"
+      }
+    },
+    "item-family-letter": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/letter/jia-shu"
       }
     }
   },

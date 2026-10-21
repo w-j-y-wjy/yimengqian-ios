@@ -83,6 +83,10 @@ struct CityLocation: Codable, Identifiable, Equatable {
     var y: Double
     var unlocked: Bool
     var description: String
+    /// 此地「在宋代是什么样」—— 给原生地点详情页用（默认空，老数据不用改）
+    var era: String = ""
+    /// 此地「能做点什么」—— 纯说明文案，不假造交互
+    var activity: String = ""
 }
 
 struct Artifact: Codable, Identifiable, Equatable {

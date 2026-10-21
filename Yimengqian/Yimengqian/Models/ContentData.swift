@@ -351,6 +351,15 @@ enum ContentData {
             category: "四季",
             image: "ArtApp/poem-chun-ri.jpg"
         ),
+        // 收藏页「忆江南」卡片原本只弹「诗词详情将在后续开放」——内容库里补上这首诗（白居易《忆江南》其一）
+        Poem(
+            id: "yi-jiang-nan",
+            title: "忆江南",
+            author: "白居易",
+            dynasty: "唐",
+            content: "江南好，\n风景旧曾谙。\n日出江花红胜火，\n春来江水绿如蓝。\n能不忆江南？",
+            category: "山水"
+        ),
     ]
 
     // MARK: - poems.ts：poetryCategories（icon 在 TS 源中均为空串 ""）
@@ -482,14 +491,46 @@ enum ContentData {
         Stamp(id: "gu-wu-yan-ji", name: "古物研习", description: "识别三件以上传物", image: "ArtApp/seal-gu-wu-yan-ji.png", obtained: false),
     ]
 
+    // MARK: - 独立书信（不属于某位人物的往来信件）
+    /// 收藏页「一封家书」原本只弹提示；这里补一封宋人尺牍风格的虚构家书，
+    /// 与人物信札一起被 /native/letter/<id> 解析（见 NativeDetailContent.resolve）。
+    static let extraLetters: [Letter] = [
+        Letter(
+            id: "jia-shu",
+            from: "江南游子",
+            content: "儿自离家，忽已三秋。汴河船行至暮，两岸灯火如昼，儿常思家中灯下之粥。\n今寄俸钱半缗，望母亲添衣。天寒，勿以儿为念。",
+            date: "元丰三年冬"
+        ),
+    ]
+
     // MARK: - rewards.ts：bianjingLocations（6 处）
+    // era / activity 是本轮补的：汴京城内这五处地点在图上可点，原本只弹「将在后续章节开放」。
+    // 文案据宋代史实写成（书院讲学、瓦舍勾栏、正店脚店、惠民和剂局、汴河漕运），不编造交互。
     static let bianjingLocations: [CityLocation] = [
-        CityLocation(id: "shuyuan", name: "书院", x: 25.0, y: 18.0, unlocked: false, description: "藏书万卷，文人雅集之地"),
-        CityLocation(id: "teahouse", name: "茶坊", x: 72.0, y: 15.0, unlocked: true, description: "品茶论道，东坡旧识茶坊"),
-        CityLocation(id: "jiusi", name: "酒肆", x: 15.0, y: 45.0, unlocked: false, description: "美酒飘香，诗兴大发"),
-        CityLocation(id: "yaofang", name: "药坊", x: 45.0, y: 52.0, unlocked: false, description: "悬壶济世，药香四溢"),
-        CityLocation(id: "washe", name: "瓦舍", x: 75.0, y: 42.0, unlocked: false, description: "百戏杂耍，市井繁华"),
-        CityLocation(id: "matou", name: "码头", x: 82.0, y: 68.0, unlocked: false, description: "商船云集，连接南北"),
+        CityLocation(id: "shuyuan", name: "书院", x: 25.0, y: 18.0, unlocked: false,
+                     description: "藏书万卷，文人雅集之地",
+                     era: "宋代书院以讲学、藏书、祭祀并重。汴京除太学与国子监外，私学讲席常有名儒开讲，寒门子弟亦可执经问难。",
+                     activity: "在此可听讲经义，或抄一段《论语》收进梦册。"),
+        CityLocation(id: "teahouse", name: "茶坊", x: 72.0, y: 15.0, unlocked: true,
+                     description: "品茶论道，东坡旧识茶坊",
+                     era: "宋人饮茶已成日常，茶坊遍布汴京街巷，点茶、分茶之技在士庶间流传。",
+                     activity: "可入内与东坡对谈，或看一场点茶。"),
+        CityLocation(id: "jiusi", name: "酒肆", x: 15.0, y: 45.0, unlocked: false,
+                     description: "美酒飘香，诗兴大发",
+                     era: "汴京酒楼分正店与脚店：正店自酿，樊楼最盛，昼夜营业；酒旗招展处，也常是诗人题壁之所。",
+                     activity: "点一盅新酒，与邻座对一句飞花令。"),
+        CityLocation(id: "yaofang", name: "药坊", x: 45.0, y: 52.0, unlocked: false,
+                     description: "悬壶济世，药香四溢",
+                     era: "宋代设太医局与惠民和剂局，官药方刻板印行；民间药坊悬壶济世，药材多经汴河运来。",
+                     activity: "在此可辨药材，或抄一张方子。"),
+        CityLocation(id: "washe", name: "瓦舍", x: 75.0, y: 42.0, unlocked: false,
+                     description: "百戏杂耍，市井繁华",
+                     era: "瓦舍勾栏是宋人消遣之处：讲史、杂剧、傀儡、影戏、相扑轮番上演，一场说书可连讲数月。",
+                     activity: "挑一段讲史听，或看一场傀儡戏。"),
+        CityLocation(id: "matou", name: "码头", x: 82.0, y: 68.0, unlocked: false,
+                     description: "商船云集，连接南北",
+                     era: "汴河是汴京命脉，江淮米粮、茶盐、木材皆由此入城；《清明上河图》画的正是这里的漕船与纤夫。",
+                     activity: "看漕船靠岸，听一段船工号子。"),
     ]
 
     // MARK: - rewards.ts：dailyPoems（5 首）
