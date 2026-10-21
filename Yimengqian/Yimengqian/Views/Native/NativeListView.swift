@@ -69,7 +69,7 @@ struct NativeListView: View {
                     }
 
                     if rows.isEmpty {
-                        Text("没有找到匹配的内容")
+                        Text(emptyText)
                             .font(.custom("SongtiSC-Regular", size: 13))
                             .foregroundColor(Theme.inkMuted)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -109,6 +109,15 @@ struct NativeListView: View {
     private var categoryTitle: String? {
         guard listID == "poems", let raw = selection.value(StorageKeys.poetryCategory) else { return nil }
         return Self.categoryMap[raw]
+    }
+
+    private var emptyText: String {
+        switch listID {
+        case "works": return "还没有生成过诗境卡，去「诗境 · 生成诗境卡」做一张"
+        case "poems": return categoryTitle == nil ? "没有找到匹配的诗句" : "该分类下暂时没有诗词"
+        case "activities": return "暂无活动"
+        default: return "暂无内容"
+        }
     }
 
     /// landscape / seasons / moon / sorrow / frontier → 诗词里的 category 文案
