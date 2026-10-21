@@ -74,6 +74,8 @@ struct ScreenNativeLayer: View {
                 FavoritesLayer(screen: screen, container: containerSize)
             case "profile":
                 ProfileLayer(screen: screen, container: containerSize)
+            case "poetry-card":
+                PoetryCardOptionsLayer(screen: screen, container: containerSize)
             default:
                 EmptyView()
             }
