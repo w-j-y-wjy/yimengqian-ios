@@ -139,6 +139,12 @@
       "y": 46.5,
       "width": 30.939,
       "height": 27.5
+    },
+    "refresh": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/poems"
+      }
     }
   },
   "jiangxue-scene": {
@@ -553,6 +559,18 @@
       "y": 22.061,
       "width": 14.15,
       "height": 5
+    },
+    "item-chunri": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/poem/chun-ri"
+      }
+    },
+    "item-liqingzhao": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/character/liqingzhao"
+      }
     }
   },
   "artifact-pattern": {
@@ -641,6 +659,12 @@
       }
     },
     "view-all": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/activities"
+      }
+    },
+    "calendar": {
       "action": {
         "type": "navigate",
         "target": "/native/list/activities"
