@@ -148,8 +148,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     activity: new Set([...cd.matchAll(/Activity\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     pattern: new Set([...cd.matchAll(/PatternElement\(name: "([^"]+)"/g)].map((m) => m[1])),
     city: new Set([...cd.matchAll(/Dynasty\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
-    // 原生列表页（NativeListView 支持的三类）
-    list: new Set(['poems', 'activities', 'works']),
+    // 原生列表页（NativeListView 支持的四类）
+    list: new Set(['poems', 'activities', 'works', 'dialogues']),
     // 原生设置页（NativeSettingsView，固定 main）
     settings: new Set(['main']),
     // 原生搜索页（NativeSearchView，固定 main）
@@ -162,6 +162,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     note: new Set(['main']),
     // 江雪四意象（取自 ContentData.jiangxueImagery）
     imagery: new Set([...cd.matchAll(/Imagery\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    // 茶坊对谈话题（取自 ContentData.dialogueTopics）
+    dialogue: new Set([...cd.matchAll(/DialogueTopic\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
   }
   const badNative = []
   // 搜索页的 id 就是预填关键词（/native/search/<关键词>）：允许中文/字母/数字的短串

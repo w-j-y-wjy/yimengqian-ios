@@ -51,6 +51,8 @@ struct RootView: View {
                         NativeShareView()
                     } else if case .note = detail {
                         NativeNoteView()
+                    } else if case .dialogue(let topicID) = detail {
+                        NativeDialogueView(topicID: topicID)
                     } else if case .list(let listID) = detail {
                         NativeListView(listID: listID)
                     } else if let content = NativeDetailContent.resolve(detail) {

@@ -90,6 +90,7 @@ struct NativeListView: View {
         case "poems": return "诗库"
         case "activities": return "雅集活动"
         case "works": return "我的作品"
+        case "dialogues": return "对谈记录"
         default: return "列表"
         }
     }
@@ -101,6 +102,7 @@ struct NativeListView: View {
             return "共 \(NativeDetail.allPoems().count) 首 · 点开可读全文与译解"
         case "activities": return "共 \(ContentData.activities.count) 项活动 · 点开看玩法"
         case "works": return "共 \(rows.count) 张诗境卡 · 生成后自动入册"
+        case "dialogues": return "共 \(ContentData.dialogueTopics.count) 个话题 · 点开看苏轼的完整回答"
         default: return ""
         }
     }
@@ -210,6 +212,17 @@ struct NativeListView: View {
                     subtitle: (note?.isEmpty == false ? "题注：\(note!)　" : "") + base,
                     image: poem?.image ?? poem?.imagery?.first?.image,
                     route: "/poetry/card"
+                )
+            }
+        case "dialogues":
+            // 对谈记录：三个话题总览，点开看该话题的完整问答
+            return ContentData.dialogueTopics.map { topic in
+                Row(
+                    id: topic.id,
+                    title: topic.question,
+                    subtitle: topic.responses.first?.text ?? "",
+                    image: nil,
+                    route: "/native/dialogue/\(topic.id)"
                 )
             }
         case "activities":

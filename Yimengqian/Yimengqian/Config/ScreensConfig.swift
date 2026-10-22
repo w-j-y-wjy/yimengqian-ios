@@ -179,11 +179,11 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "teahouse-dialogue", route: "/dialogue/teahouse", image: "Screens/teahouse-dialogue.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 1.219, y: 5.599, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "dialogue-record", label: "对谈记录", x: 75.844, y: 5.425, width: 20.129, height: 5, action: HotspotAction(type: .toast, message: "当前对谈：人生起伏")),
+                Hotspot(id: "dialogue-record", label: "对谈记录", x: 75.844, y: 5.425, width: 20.129, height: 5, action: HotspotAction(type: .navigate, target: "/native/list/dialogues")),
                 Hotspot(id: "voice-1", label: "语音1", x: 18.231, y: 44.1, width: 67.397, height: 8.21, action: HotspotAction(type: .toast, message: "正在播放苏轼回复")),
                 Hotspot(id: "voice-2", label: "语音2", x: 20.199, y: 53.59, width: 61.395, height: 7.386, action: HotspotAction(type: .toast, message: "正在播放苏轼回复")),
-                Hotspot(id: "topic-1", label: "你如何面对人生起伏？", x: 5.657, y: 67.364, width: 88.499, height: 5, action: HotspotAction(type: .storageAndToast, message: "已选择：如何面对人生起伏", storage: [KV(key: "dialogueTopic", value: "life")])),
-                Hotspot(id: "topic-2", label: "黄州给你带来了什么？", x: 6.125, y: 73.373, width: 89.062, height: 5, action: HotspotAction(type: .storageAndToast, message: "已选择：黄州经历", storage: [KV(key: "dialogueTopic", value: "huangzhou")])),
+                Hotspot(id: "topic-1", label: "你如何面对人生起伏？", x: 5.657, y: 67.364, width: 88.499, height: 5, action: HotspotAction(type: .navigate, target: "/native/dialogue/life")),
+                Hotspot(id: "topic-2", label: "黄州给你带来了什么？", x: 6.125, y: 73.373, width: 89.062, height: 5, action: HotspotAction(type: .navigate, target: "/native/dialogue/huangzhou")),
                 Hotspot(id: "topic-3", label: "你最想告诉后人的一句话？", x: 5.188, y: 79.382, width: 89.062, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择：寄语后人", storageKey: "dialogueTopic", storageValue: "words")),
                 Hotspot(id: "continue-btn", label: "继续交谈", x: 16.594, y: 86.208, width: 66.647, height: 5, action: HotspotAction(type: .conditionalNavigate, target: "/task/reward", message: "请先选择一个话题"))
             ]),

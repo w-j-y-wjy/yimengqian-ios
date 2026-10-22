@@ -541,6 +541,24 @@
         "storageKey": "dialogueTopic",
         "storageValue": "words"
       }
+    },
+    "dialogue-record": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/dialogues"
+      }
+    },
+    "topic-1": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/dialogue/life"
+      }
+    },
+    "topic-2": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/dialogue/huangzhou"
+      }
     }
   },
   "artifact-home": {

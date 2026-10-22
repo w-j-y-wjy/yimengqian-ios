@@ -40,6 +40,8 @@ enum NativeDetail: Equatable {
     case share(String)
     /// 诗境卡题注编辑：原本只弹「题注编辑将在后续开放」
     case note
+    /// 茶坊对谈：某一话题的完整问答（对谈记录与话题行点进来）
+    case dialogue(String)
     /// 意象详解（江雪四意象：孤舟/寒江/蓑笠翁/飞雪）：原本点主卡或小卡只是把标签复读一遍
     case imagery(String)
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
@@ -68,6 +70,7 @@ enum NativeDetail: Equatable {
         case "share": return .share(parts[1])
         case "note": return .note
         case "imagery": return .imagery(parts[1])
+        case "dialogue": return .dialogue(parts[1])
         default: return nil
         }
     }
@@ -88,6 +91,7 @@ enum NativeDetail: Equatable {
         case .share(let id): return "\(Self.prefix)share/\(id)"
         case .note: return "\(Self.prefix)note/main"
         case .imagery(let id): return "\(Self.prefix)imagery/\(id)"
+        case .dialogue(let id): return "\(Self.prefix)dialogue/\(id)"
         }
     }
 
@@ -107,13 +111,14 @@ enum NativeDetail: Equatable {
         case .share: return "share"
         case .note: return "note"
         case .imagery: return "imagery"
+        case .dialogue: return "dialogue"
         }
     }
 
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v):
             return v
         case .settings: return "main"
         case .search: return "main"
@@ -130,7 +135,7 @@ enum NativeDetail: Equatable {
     /// 走独立全屏原生页（列表 / 设置），不依赖 NativeDetailContent
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share, .note: return true
+        case .list, .settings, .search, .share, .note, .dialogue: return true
         default: return false
         }
     }
@@ -347,6 +352,9 @@ struct NativeDetailContent {
             return nil
         case .note:
             // 题注编辑走 NativeNoteView，不生成详情内容
+            return nil
+        case .dialogue:
+            // 对谈页走 NativeDialogueView，不生成详情内容
             return nil
         case .list:
             // 列表页走 NativeListView，不生成"详情内容"；这里必须显式返回，
