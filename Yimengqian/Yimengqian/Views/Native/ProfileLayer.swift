@@ -62,10 +62,16 @@ struct ProfileLayer: View {
 
     // MARK: - 昵称 / 身份（个人资料编辑后要能看到变化）
     //
-    // 实测（profile.png，靠 3× 放大截图逐边核对）：
-    // - 「梦客·苏蘅」占 x 318..542、y 277..313（37.32%..63.62%，15.01%..16.96%）
-    // - 身份胶囊里的「江南游学者」文字占 x 378..500、y 355..390
-    // 只在用户改过资料时才覆盖；没改过就完全让位图原样显示，零风险。
+    // 实测（profile.png 852×1846，先 4× 放大截图逐边目视，再用行簇/列簇交叉验证）：
+    // - 昵称「梦客·苏蘅」墨迹 x 318..536、y 282..321 —— 注意「梦」的长撇最低到 321，
+    //   比正文低 8px；上一版按 y 277..313 画遮罩，结果撇尾留在新名字下方变成一道残笔。
+    //   字距实测 44/42px ⇒ 字号≈43px（上一版 38px 偏小 12%）。
+    //   纸底实测 #EEDCC3，与 Theme.cardCream(#EDDBC1) 只差 1–2 级，可直接用。
+    // - 身份胶囊里的「江南游学者」墨迹 x 382..500、y 360..381，字距 25px ⇒ 字号≈25px。
+    //   胶囊内填充实测 #E4CCA8 —— 与 #EDDBC1 差 (9,15,25)，用 cardCream 会在胶囊里浮一块浅方块，
+    //   所以单独加了 Theme.pillTan。
+    // 遮罩 = 墨迹 bbox 四周各外扩 4px（抗锯齿实测外扩 3px 足够，留 4px 富余）；
+    // 文字在遮罩里垂直居中 ⇒ 中线与位图文字一致（301.5 / 370.5px），不会整体上移。
     @ViewBuilder
     private var identityTexts: some View {
         let customName = store.string(StorageKeys.profileName)?.trimmingCharacters(in: .whitespaces)
@@ -75,26 +81,26 @@ struct ProfileLayer: View {
             ZStack(alignment: .leading) {
                 Rectangle().fill(Theme.cardCream)
                 Text(customName)
-                    .font(.custom("KaitiSC-Bold", size: container.height * 0.0205))
+                    .font(.custom("KaitiSC-Bold", size: container.height * 0.0233))
                     .foregroundColor(Theme.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
             }
-            .frame(width: container.width * 0.2680, height: container.height * 0.0218, alignment: .leading)
-            .offset(x: container.width * 0.3700, y: container.height * 0.1480)
+            .frame(width: container.width * 0.2641, height: container.height * 0.0255, alignment: .leading)
+            .offset(x: container.width * 0.3697, y: container.height * 0.1506)
         }
 
         if let customTitle = customTitle, !customTitle.isEmpty {
             ZStack(alignment: .leading) {
-                Rectangle().fill(Theme.cardCream)
+                Rectangle().fill(Theme.pillTan)
                 Text(customTitle)
-                    .font(.custom("SongtiSC-Regular", size: container.height * 0.0122))
+                    .font(.custom("SongtiSC-Regular", size: container.height * 0.0135))
                     .foregroundColor(Theme.inkLight)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
             }
-            .frame(width: container.width * 0.1500, height: container.height * 0.0206, alignment: .leading)
-            .offset(x: container.width * 0.4400, y: container.height * 0.1910)
+            .frame(width: container.width * 0.1479, height: container.height * 0.0157, alignment: .leading)
+            .offset(x: container.width * 0.4437, y: container.height * 0.1929)
         }
     }
 

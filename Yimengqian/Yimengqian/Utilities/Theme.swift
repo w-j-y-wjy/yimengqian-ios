@@ -27,6 +27,9 @@ enum Theme {
     /// 个人中心「身份卡」（头像/等级/文化进度所在的大卡）底色实测值（#eddbc1）。
     /// 进度条与数值就画在这张卡上，覆盖时用纸色会露白，必须用这个。
     static let cardCream = Color(hex: 0xEDDBC1)
+    /// 个人中心「身份胶囊」内部填充实测值（#e4cca8，profile.png 胶囊内多点采样）。
+    /// 胶囊里的身份文字被改写时用它盖旧字 —— 用 cardCream 会亮 15 级，胶囊里浮一块浅方块。
+    static let pillTan = Color(hex: 0xE4CCA8)
     /// 进度条空槽的颜色（实测 #d9c2a0）
     static let barTrack = Color(hex: 0xD9C2A0)
     /// 收藏页顶部四格统计条的底色（实测 #ebd8bc，favorites.png 多点采样）
