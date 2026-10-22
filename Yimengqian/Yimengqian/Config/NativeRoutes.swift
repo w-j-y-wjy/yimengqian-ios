@@ -44,6 +44,8 @@ enum NativeDetail: Equatable {
     case photo
     /// 茶坊对谈：某一话题的完整问答（对谈记录与话题行点进来）
     case dialogue(String)
+    /// 相似纹样（纹样详解页三张对照卡）：原本只弹「相似纹样：缠枝牡丹」，零信息
+    case similar(String)
     /// 印章详情（收藏页/领奖页的印章卡点进来）
     case stamp(String)
     /// 收藏页第 N 个格子：收藏页的卡片是**动态数据**填进静态热区，
@@ -79,6 +81,7 @@ enum NativeDetail: Equatable {
         case "photo": return .photo
         case "imagery": return .imagery(parts[1])
         case "dialogue": return .dialogue(parts[1])
+        case "similar": return .similar(parts[1])
         case "stamp": return .stamp(parts[1])
         case "favorite": return Int(parts[1]).map { .favoriteSlot($0) }
         default: return nil
@@ -103,6 +106,7 @@ enum NativeDetail: Equatable {
         case .photo: return "\(Self.prefix)photo/main"
         case .imagery(let id): return "\(Self.prefix)imagery/\(id)"
         case .dialogue(let id): return "\(Self.prefix)dialogue/\(id)"
+        case .similar(let name): return "\(Self.prefix)similar/\(name)"
         case .stamp(let id): return "\(Self.prefix)stamp/\(id)"
         case .favoriteSlot(let n): return "\(Self.prefix)favorite/\(n)"
         }
@@ -126,6 +130,7 @@ enum NativeDetail: Equatable {
         case .photo: return "photo"
         case .imagery: return "imagery"
         case .dialogue: return "dialogue"
+        case .similar: return "similar"
         case .stamp: return "stamp"
         case .favoriteSlot: return "favorite"
         }
@@ -134,7 +139,7 @@ enum NativeDetail: Equatable {
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v), .similar(let v):
             return v
         case .settings: return "main"
         case .search: return "main"
@@ -282,8 +287,7 @@ struct NativeDetailContent {
             )
 
         case .imagery(let id):
-            guard let im = ContentData.jiangxueImagery.first(where: { $0.id == id }) else { return nil }
-            var sections: [(String, String)] = [
+            guard let im = ContentData.jiangxueImagery.first(where: { $0.id == id }) else { return nil }            var sections: [(String, String)] = [
                 ("意象", im.meaning),
                 ("画面", im.visual),
                 ("情绪", im.emotion),
@@ -299,6 +303,23 @@ struct NativeDetailContent {
                 lines: [],
                 sections: sections,
                 tags: im.keywords,
+                favorite: nil
+            )
+
+        case .similar(let name):
+            guard let pd = ContentData.similarPatterns.first(where: { $0.name == name }) else { return nil }
+            return NativeDetailContent(
+                title: pd.name,
+                subtitle: "相似纹样",
+                // 配图缺失时不借别的纹样图：宁可不显示 hero
+                hero: pd.image.isEmpty ? nil : pd.image,
+                lines: [],
+                sections: [
+                    ("纹样结构", pd.structure),
+                    ("寓意", pd.symbolism),
+                    ("时代风格", pd.eraStyle),
+                ],
+                tags: ["缠枝", "宋代"],
                 favorite: nil
             )
 

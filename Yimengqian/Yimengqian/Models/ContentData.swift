@@ -72,6 +72,19 @@ enum ContentData {
             recommended: false,
             characters: ["sushi"]
         ),
+        // 书院：领奖页「下一段旅程」指向它，但原内容库没有这座城市。
+        // 白鹿洞书院为四大书院之一，作为宋代书院讲学的代表地点是史实；
+        // 配图缺失 → image 留空，不借别的城池图。
+        Dynasty(
+            id: "shu-yuan",
+            name: "书院",
+            city: "白鹿洞",
+            period: "宋代",
+            description: "宋代书院讲学之所，藏书、讲经、祭祀并重；白鹿洞书院为四大书院之一",
+            unlocked: true,
+            recommended: false,
+            characters: ["wangwei"]
+        ),
     ]
 
     // MARK: - characters.ts（2 项：苏轼、李白）
@@ -489,6 +502,37 @@ enum ContentData {
         Stamp(id: "dong-po-zhi-yin", name: "东坡知音", description: "完成茶坊对谈，与苏轼畅谈人生", image: "ArtApp/seal-dong-po-zhi-yin.png", obtained: false),
         Stamp(id: "qing-hui-shan-shui", name: "清辉山水", description: "赏读山水诗词，感受自然之美", image: "ArtApp/seal-qing-hui-shan-shui.png", obtained: false),
         Stamp(id: "gu-wu-yan-ji", name: "古物研习", description: "识别三件以上传物", image: "ArtApp/seal-gu-wu-yan-ji.png", obtained: false),
+    ]
+
+    // MARK: - 相似纹样（纹样详解页三张对照卡）
+    /// 这三张卡原本只弹「相似纹样：缠枝牡丹」，零信息。
+    /// 内容按宋代常见缠枝题材写；配图暂缺（工程里没有这三张图），
+    /// 所以条目本身不带 image —— 详情页会显示无 hero 的文字页，而不是借别的纹样图充数。
+    static let similarPatterns: [PatternDetail] = [
+        PatternDetail(
+            name: "缠枝牡丹",
+            image: "",
+            structure: "以牡丹花头为主体，枝茎作波浪状缠绕，花叶翻转自然。宋代牡丹纹多取「折枝」与「缠枝」两式，缠枝者枝蔓连绵不绝。",
+            symbolism: "牡丹为花王，缠枝取其「连绵不断」，合为富贵绵长之意；宋人多用于织物与瓷器开光。",
+            eraStyle: "宋人画牡丹重「写生」，花瓣层叠有序而不繁乱，与唐代的饱满浓艳相比更清雅。",
+            elements: []
+        ),
+        PatternDetail(
+            name: "缠枝菊花",
+            image: "",
+            structure: "菊瓣细长，层层内卷，枝茎作 S 形延展。宋瓷上常与莲、牡丹并列，作四季花卉之一。",
+            symbolism: "菊傲霜而开，寓「长寿」与「隐逸」；与缠枝合用时，兼取长久不绝之意。",
+            eraStyle: "宋代菊花纹偏瘦劲，瓣尖挺括，受文人画「疏影」趣味影响。",
+            elements: []
+        ),
+        PatternDetail(
+            name: "缠枝灵芝",
+            image: "",
+            structure: "灵芝头作如意状，枝蔓缠绕成连续纹样，常与卷草、云纹相间。",
+            symbolism: "灵芝为瑞草，寓「如意」「长寿」；缠枝化后成为宋元常见的吉祥底纹。",
+            eraStyle: "宋元之际灵芝纹趋于图案化，头部简化成如意云头，便于连续排布。",
+            elements: []
+        ),
     ]
 
     // MARK: - 独立书信（不属于某位人物的往来信件）

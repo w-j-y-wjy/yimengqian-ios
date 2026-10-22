@@ -669,6 +669,12 @@
         "storageKey": "favoriteFilter",
         "storageValue": "stamp"
       }
+    },
+    "main-stamp": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/stamp/chun-ri-ya-shi"
+      }
     }
   },
   "favorites": {
@@ -794,6 +800,24 @@
       "action": {
         "type": "navigate",
         "target": "/native/share/pattern"
+      }
+    },
+    "similar-1": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/similar/缠枝牡丹"
+      }
+    },
+    "similar-2": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/similar/缠枝菊花"
+      }
+    },
+    "similar-3": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/similar/缠枝灵芝"
       }
     }
   },
@@ -992,6 +1016,12 @@
         "target": "/favorites",
         "storageKey": "favoriteFilter",
         "storageValue": "stamp"
+      }
+    },
+    "next-journey": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/city/shu-yuan"
       }
     }
   },

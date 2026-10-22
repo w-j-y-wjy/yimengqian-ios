@@ -194,7 +194,7 @@ enum ScreenCatalog {
                 Hotspot(id: "stamp-dongpo", label: "东坡知音印章", x: 35.235, y: 46.755, width: 27.559, height: 16.874, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "sushi-letter", label: "苏轼来信", x: 65.845, y: 46.831, width: 26.338, height: 16.571, action: HotspotAction(type: .navigate, target: "/native/letter/letter-sushi-1")),
                 Hotspot(id: "progress", label: "汴京探索进度", x: 6.127, y: 64.372, width: 87.371, height: 10.33, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
-                Hotspot(id: "next-journey", label: "下一段旅程", x: 78.803, y: 80.439, width: 10, height: 5, action: HotspotAction(type: .toast, message: "下一站：书院")),
+                Hotspot(id: "next-journey", label: "下一段旅程", x: 78.803, y: 80.439, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/city/shu-yuan")),
                 Hotspot(id: "view-rewards", label: "查看奖励", x: 7.84, y: 87.205, width: 83.709, height: 6.257, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "continue-journey", label: "继续旅程", x: 7.676, y: 93.749, width: 84.46, height: 5, action: HotspotAction(type: .navigate, target: "/city/bianjing"))
             ]),
@@ -359,9 +359,9 @@ enum ScreenCatalog {
                 Hotspot(id: "lotus-card", label: "莲瓣卡", x: 2.934, y: 58.7, width: 30.657, height: 18.911, action: HotspotAction(type: .navigate, target: "/native/pattern/莲瓣")),
                 Hotspot(id: "scroll-card", label: "卷草卡", x: 34.685, y: 59.176, width: 29.531, height: 18.174, action: HotspotAction(type: .navigate, target: "/native/pattern/卷草")),
                 Hotspot(id: "border-card", label: "边饰卡", x: 65.874, y: 58.787, width: 29.624, height: 18.868, action: HotspotAction(type: .navigate, target: "/native/pattern/边饰")),
-                Hotspot(id: "similar-1", label: "相似纹样1", x: 6.126, y: 82.507, width: 28.122, height: 6.69, action: HotspotAction(type: .toast, message: "相似纹样：缠枝牡丹")),
-                Hotspot(id: "similar-2", label: "相似纹样2", x: 36.657, y: 82.247, width: 27.84, height: 7.167, action: HotspotAction(type: .toast, message: "相似纹样：缠枝菊花")),
-                Hotspot(id: "similar-3", label: "相似纹样3", x: 67, y: 82.16, width: 29.531, height: 7.99, action: HotspotAction(type: .toast, message: "相似纹样：缠枝灵芝")),
+                Hotspot(id: "similar-1", label: "相似纹样1", x: 6.126, y: 82.507, width: 28.122, height: 6.69, action: HotspotAction(type: .navigate, target: "/native/similar/缠枝牡丹")),
+                Hotspot(id: "similar-2", label: "相似纹样2", x: 36.657, y: 82.247, width: 27.84, height: 7.167, action: HotspotAction(type: .navigate, target: "/native/similar/缠枝菊花")),
+                Hotspot(id: "similar-3", label: "相似纹样3", x: 67, y: 82.16, width: 29.531, height: 7.99, action: HotspotAction(type: .navigate, target: "/native/similar/缠枝灵芝")),
                 Hotspot(id: "view-piece", label: "查看整器", x: 9.178, y: 91.75, width: 34.789, height: 5, action: HotspotAction(type: .navigate, target: "/artifact/result")),
                 Hotspot(id: "favorite-pattern", label: "收藏纹样", x: 47.488, y: 91.576, width: 44.93, height: 5, action: HotspotAction(type: .toggleStorage, storageKey: "favoriteArtifactPattern", onMessage: "已收藏纹样", offMessage: "已取消收藏纹样"))
             ]),
@@ -395,7 +395,7 @@ enum ScreenCatalog {
         ScreenConfig(id: "stamp-reward", route: "/stamp/reward", image: "Screens/stamp-reward.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 0.26, y: 5.305, width: 12, height: 5, action: HotspotAction(type: .back)),
                 Hotspot(id: "share", label: "分享", x: 86.559, y: 5.066, width: 12, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/stamp")),
-                Hotspot(id: "main-stamp", label: "春日雅士", x: 24.343, y: 24.221, width: 55.54, height: 24.285, action: HotspotAction(type: .toast, message: "获得印章\"春日雅士\"")),
+                Hotspot(id: "main-stamp", label: "春日雅士", x: 24.343, y: 24.221, width: 55.54, height: 24.285, action: HotspotAction(type: .navigate, target: "/native/stamp/chun-ri-ya-shi")),
                 Hotspot(id: "stamp-card", label: "印章奖励", x: 8.38, y: 51.235, width: 26.244, height: 15.964, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "ya-card", label: "雅集值", x: 36.657, y: 51.538, width: 26.995, height: 15.228, action: HotspotAction(type: .navigate, target: "/activities")),
                 Hotspot(id: "petal-card", label: "花瓣", x: 65.122, y: 51.712, width: 26.714, height: 15.098, action: HotspotAction(type: .navigate, target: "/activities/feihualing")),
