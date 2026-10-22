@@ -262,6 +262,14 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-pattern-tabs.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 江雪画风选中态（S31）：预置「青绿」，验证胶囊高亮跟随
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen jiangxue-scene \
+            -jiangxueStyle bluegreen
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-jiangxue-style.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           # 全站搜索（S21）：预填关键词，验证四类内容都能搜到
           xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -initialScreen poetry-home \

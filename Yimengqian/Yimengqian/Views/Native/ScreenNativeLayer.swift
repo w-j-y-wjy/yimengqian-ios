@@ -78,6 +78,8 @@ struct ScreenNativeLayer: View {
                 PoetryCardOptionsLayer(screen: screen, container: containerSize)
             case "artifact-pattern":
                 PatternTabsLayer(screen: screen, container: containerSize)
+            case "jiangxue-scene":
+                JiangxueStyleLayer(screen: screen, container: containerSize)
             default:
                 EmptyView()
             }

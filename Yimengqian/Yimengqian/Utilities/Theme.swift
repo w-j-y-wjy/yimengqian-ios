@@ -31,6 +31,10 @@ enum Theme {
     static let barTrack = Color(hex: 0xD9C2A0)
     /// 收藏页顶部四格统计条的底色（实测 #ebd8bc，favorites.png 多点采样）
     static let statsSand = Color(hex: 0xEBD8BC)
+    /// 江雪诗境页画风胶囊选中底色（实测 #debc85）
+    static let styleChipSel = Color(hex: 0xDEBC85)
+    /// 江雪诗境页画风那一带的纸底（实测 #ebdbc3，用于盖掉位图旧胶囊）
+    static let styleBand = Color(hex: 0xEBDBC3)
     /// 诗境卡工坊「选项面板」底色实测值（#ebdcc5，采样自 poetry-card.png 面板区）
     static let panelCream = Color(hex: 0xEBDCC5)
     /// 分段控件被选中胶囊的底色（实测 #ddba87）
