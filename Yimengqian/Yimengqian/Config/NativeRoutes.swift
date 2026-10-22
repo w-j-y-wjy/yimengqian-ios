@@ -42,6 +42,11 @@ enum NativeDetail: Equatable {
     case note
     /// 茶坊对谈：某一话题的完整问答（对谈记录与话题行点进来）
     case dialogue(String)
+    /// 印章详情（收藏页/领奖页的印章卡点进来）
+    case stamp(String)
+    /// 收藏页第 N 个格子：收藏页的卡片是**动态数据**填进静态热区，
+    /// 所以热区只能记住「我是第几格」，运行到这一页时再按当前筛选结果取实际条目分发。
+    case favoriteSlot(Int)
     /// 意象详解（江雪四意象：孤舟/寒江/蓑笠翁/飞雪）：原本点主卡或小卡只是把标签复读一遍
     case imagery(String)
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
@@ -71,6 +76,8 @@ enum NativeDetail: Equatable {
         case "note": return .note
         case "imagery": return .imagery(parts[1])
         case "dialogue": return .dialogue(parts[1])
+        case "stamp": return .stamp(parts[1])
+        case "favorite": return Int(parts[1]).map { .favoriteSlot($0) }
         default: return nil
         }
     }
@@ -92,6 +99,8 @@ enum NativeDetail: Equatable {
         case .note: return "\(Self.prefix)note/main"
         case .imagery(let id): return "\(Self.prefix)imagery/\(id)"
         case .dialogue(let id): return "\(Self.prefix)dialogue/\(id)"
+        case .stamp(let id): return "\(Self.prefix)stamp/\(id)"
+        case .favoriteSlot(let n): return "\(Self.prefix)favorite/\(n)"
         }
     }
 
@@ -112,17 +121,20 @@ enum NativeDetail: Equatable {
         case .note: return "note"
         case .imagery: return "imagery"
         case .dialogue: return "dialogue"
+        case .stamp: return "stamp"
+        case .favoriteSlot: return "favorite"
         }
     }
 
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v):
             return v
         case .settings: return "main"
         case .search: return "main"
         case .note: return "main"
+        case .favoriteSlot(let n): return String(n)
         }
     }
 
@@ -132,10 +144,11 @@ enum NativeDetail: Equatable {
         return false
     }
 
-    /// 走独立全屏原生页（列表 / 设置），不依赖 NativeDetailContent
+    /// 走独立全屏原生页（列表 / 设置 / 搜索 / 分享 / 题注 / 对谈 / 收藏槽位），
+    /// 这些页面自己解析内容，不经过 NativeDetailContent。
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share, .note, .dialogue: return true
+        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot: return true
         default: return false
         }
     }
@@ -355,6 +368,25 @@ struct NativeDetailContent {
             return nil
         case .dialogue:
             // 对谈页走 NativeDialogueView，不生成详情内容
+            return nil
+        case .stamp(let id):
+            guard let st = ContentData.stamps.first(where: { $0.id == id }) else { return nil }
+            var sections: [(String, String)] = [
+                ("获得条件", st.description),
+                ("状态", st.obtained ? "已获得" : "尚未获得"),
+            ]
+            return NativeDetailContent(
+                title: st.name,
+                subtitle: "印章",
+                hero: st.image,
+                lines: [],
+                sections: sections,
+                tags: ["印章"],
+                favorite: (.stamp, id)
+            )
+        case .favoriteSlot:
+            // 收藏页第 n 格：这一格显示什么由**运行时筛选结果**决定（AppStore.collection），
+            // 静态内容解析层拿不到 store，所以由 RootView 交给 FavoriteSlotResolver 处理。
             return nil
         case .list:
             // 列表页走 NativeListView，不生成"详情内容"；这里必须显式返回，

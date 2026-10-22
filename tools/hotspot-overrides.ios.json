@@ -663,13 +663,13 @@
     "item-chunri": {
       "action": {
         "type": "navigate",
-        "target": "/native/poem/chun-ri"
+        "target": "/native/favorite/5"
       }
     },
     "item-liqingzhao": {
       "action": {
         "type": "navigate",
-        "target": "/native/character/liqingzhao"
+        "target": "/native/favorite/7"
       }
     },
     "search": {
@@ -681,19 +681,43 @@
     "item-yijiangnan": {
       "action": {
         "type": "navigate",
-        "target": "/native/poem/yi-jiang-nan"
+        "target": "/native/favorite/0"
       }
     },
     "item-family-letter": {
       "action": {
         "type": "navigate",
-        "target": "/native/letter/jia-shu"
+        "target": "/native/favorite/8"
       }
     },
     "item-letter": {
       "action": {
         "type": "navigate",
-        "target": "/native/letter/yu-you-ren-shu"
+        "target": "/native/favorite/3"
+      }
+    },
+    "item-qingyou": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/favorite/1"
+      }
+    },
+    "item-sushi": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/favorite/2"
+      }
+    },
+    "item-stamp-qinghui": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/favorite/4"
+      }
+    },
+    "item-maogong": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/favorite/6"
       }
     }
   },

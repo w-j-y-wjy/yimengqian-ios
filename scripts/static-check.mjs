@@ -164,6 +164,10 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     imagery: new Set([...cd.matchAll(/Imagery\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     // 茶坊对谈话题（取自 ContentData.dialogueTopics）
     dialogue: new Set([...cd.matchAll(/DialogueTopic\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    // 印章（取自 ContentData.stamps）
+    stamp: new Set([...cd.matchAll(/Stamp\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
+    // 收藏页格子：0..8（9 个 item-* 槽位），运行时按筛选结果取条目
+    favorite: new Set(['0', '1', '2', '3', '4', '5', '6', '7', '8']),
   }
   const badNative = []
   // 搜索页的 id 就是预填关键词（/native/search/<关键词>）：允许中文/字母/数字的短串
