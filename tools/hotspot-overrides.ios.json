@@ -719,6 +719,14 @@
         "type": "navigate",
         "target": "/native/favorite/6"
       }
+    },
+    "edit-btn": {
+      "action": {
+        "type": "toggleStorage",
+        "storageKey": "favoritesEditing",
+        "onMessage": "编辑中：点卡片可取消收藏",
+        "offMessage": "已退出编辑"
+      }
     }
   },
   "artifact-pattern": {

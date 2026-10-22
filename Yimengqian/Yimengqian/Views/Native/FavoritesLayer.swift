@@ -162,9 +162,28 @@ struct FavoritesLayer: View {
                 .font(.system(size: 10))
                 .foregroundColor(Theme.vermilion)
                 .offset(x: rect.width - 18, y: rect.height - 18)
+
+            // 编辑模式：右上角出现移除标记，提示「这一格现在点下去是取消收藏」
+            if isEditing {
+                ZStack {
+                    Circle().fill(Theme.vermilion)
+                    Image(systemName: "minus")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Theme.paperWarm)
+                }
+                .frame(width: 18, height: 18)
+                .offset(x: rect.width - 24, y: 6)
+            }
         }
         .frame(width: rect.width, height: rect.height)
         .offset(x: rect.minX, y: rect.minY)
+    }
+
+    /// 编辑模式（edit-btn 切换）。收藏页的卡片是叠层绘制的（`.allowsHitTesting(false)`），
+    /// 所以「点卡片取消收藏」由热区动作完成（见 ActionExecutor.favoriteSlotTap），
+    /// 本层只负责把「处于编辑模式」这件事画出来 —— 否则用户不知道点下去会发生什么。
+    private var isEditing: Bool {
+        selection.value(StorageKeys.favoritesEditing) == "true"
     }
 
     @ViewBuilder

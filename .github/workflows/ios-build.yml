@@ -184,6 +184,14 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-favorites-filtered.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 收藏编辑模式（S29）：卡片右上角应出现移除标记
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen favorites \
+            -favoritesEditing true
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-favorites-editing.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           # 个人中心（A-6）：四张统计卡的数字应来自真实收藏计数，不是设计稿里烤死的 128/86/43/27
           xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen profile
           sleep 6

@@ -410,7 +410,7 @@ enum ScreenCatalog {
                 Hotspot(id: "filter-character", label: "人物", x: 53.371, y: 21.781, width: 15.634, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：人物收藏", storageKey: "favoriteFilter", storageValue: "character")),
                 Hotspot(id: "filter-letter", label: "书信", x: 69.869, y: 22.388, width: 15.352, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：书信收藏", storageKey: "favoriteFilter", storageValue: "letter")),
                 Hotspot(id: "filter-stamp", label: "印章", x: 85.85, y: 22.061, width: 14.15, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "查看：印章收藏", storageKey: "favoriteFilter", storageValue: "stamp")),
-                Hotspot(id: "edit-btn", label: "编辑", x: 85.562, y: 27.718, width: 10, height: 2.833, action: HotspotAction(type: .toast, message: "收藏编辑模式已开启")),
+                Hotspot(id: "edit-btn", label: "编辑", x: 85.562, y: 27.718, width: 10, height: 2.833, action: HotspotAction(type: .toggleStorage, storageKey: "favoritesEditing", onMessage: "编辑中：点卡片可取消收藏", offMessage: "已退出编辑")),
                 Hotspot(id: "item-yijiangnan", label: "忆江南", x: 3.122, y: 30.147, width: 31.221, height: 20.948, action: HotspotAction(type: .navigate, target: "/native/favorite/0")),
                 Hotspot(id: "item-qingyou", label: "青釉瓶", x: 34.911, y: 30.147, width: 29.906, height: 21.121, action: HotspotAction(type: .navigate, target: "/native/favorite/1")),
                 Hotspot(id: "item-sushi", label: "苏轼", x: 65.376, y: 30.836, width: 31.033, height: 20.471, action: HotspotAction(type: .navigate, target: "/native/favorite/2")),

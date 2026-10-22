@@ -36,7 +36,16 @@ final class ActionExecutor {
     func execute(_ action: HotspotAction, screenID: String) {
         switch action.type {
         case .navigate:
-            if let target = action.target { router.navigate(route: target) }
+            guard let target = action.target else { return }
+            // 收藏页编辑模式：同一批 item-* 热区在编辑态下语义变成「取消收藏」。
+            // 为什么放在这里拦截而不是给热区换动作：热区动作是生成物（静态配置），
+            // 而「是否处于编辑模式」是运行期状态；在唯一入口分流一次，配置不用改动。
+            if selection?.value(StorageKeys.favoritesEditing) == "true",
+               favoriteSlotIndex(from: target) != nil {
+                removeFavorite(at: target)
+                return
+            }
+            router.navigate(route: target)
 
         case .back:
             router.back()
@@ -182,5 +191,40 @@ final class ActionExecutor {
                 if let target = action.target { router.navigate(route: target) }
             }
         }
+    }
+
+    // MARK: - 收藏页编辑模式
+
+    /// `/native/favorite/<序号>` → 序号；其它路由返回 nil
+    private func favoriteSlotIndex(from target: String) -> Int? {
+        guard target.hasPrefix("/native/favorite/") else { return nil }
+        return Int(target.replacingOccurrences(of: "/native/favorite/", with: ""))
+    }
+
+    /// 取消收藏第 N 格（编辑模式下点卡片）。
+    /// 与打开详情同样的取数口径：先按当前筛选取列表，再取第 N 条 —— 保证「点哪取消哪」。
+    ///
+    /// 陷阱：`collection` 里印章栏是「已获得 + 已收藏」的合并结果，
+    /// 已获得的印章**并不在 snapshot.favorites 里**。若直接 toggleFavorite，
+    /// 会把它当成「新增收藏」——于是编辑模式下点印章，收藏只增不减。
+    /// 所以印章单独处理：不在收藏列表里就明确告知「印章不可移除」。
+    private func removeFavorite(at target: String) {
+        guard let index = favoriteSlotIndex(from: target) else { return }
+        let filter = selection?.value(StorageKeys.favoriteFilter)
+        let items = store.collection(filter: filter)
+        guard index < items.count else {
+            toast.show("这一格现在是空的")
+            return
+        }
+        let item = items[index]
+        let isFavorited = store.isFavorite(type: item.type, itemId: item.itemId)
+        if !isFavorited {
+            // 已获得的印章走这条路：它是成就，不是收藏
+            toast.show(item.type == .stamp ? "印章是成就，不可移除" : "这一格现在是空的")
+            return
+        }
+        _ = store.toggleFavorite(type: item.type, itemId: item.itemId)
+        store.applyReward(RewardRule(culture: -5))
+        toast.show("已取消收藏")
     }
 }

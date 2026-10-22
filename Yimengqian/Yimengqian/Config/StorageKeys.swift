@@ -55,6 +55,8 @@ enum StorageKeys {
     static let patternTab = "patternTab"
     /// 诗境卡题注（NativeNoteView 写入，「我的作品」列表展示）
     static let cardNote = "cardNote"
+    /// 收藏页编辑模式（edit-btn 切换；编辑态下点卡片 = 取消收藏）
+    static let favoritesEditing = "favoritesEditing"
     static let dreambookOpened = "dreambookOpened"
     static let currentCity = "currentCity"
     static let initialStamp = "initialStamp"
@@ -108,6 +110,7 @@ enum StorageKeys {
         poetryCategory,
         patternTab,
         cardNote,
+        favoritesEditing,
         dreambookOpened,
         currentCity,
         initialStamp,
