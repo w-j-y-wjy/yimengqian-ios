@@ -10,15 +10,16 @@
 import AVFoundation
 import Foundation
 
-final class SpeechCenter: ObservableObject {
+final class SpeechCenter: NSObject, ObservableObject {
     static let shared = SpeechCenter()
 
     private let synthesizer = AVSpeechSynthesizer()
 
-    /// 当前是否在朗读（供 UI 可选地显示状态；目前主要用于避免叠层误显示）
+    /// 当前是否在朗读（供 UI 可选地显示状态）
     @Published private(set) var isSpeaking = false
 
-    private init() {
+    private override init() {
+        super.init()
         // 静音键打开时也要能听见朗读：AVSpeechSynthesizer 默认遵守静音开关，
         // 这里用 playback 类别让朗读在静音下仍然发声（与系统「朗读屏幕」一致）。
         do {
@@ -27,13 +28,9 @@ final class SpeechCenter: ObservableObject {
         } catch {
             // 会话配置失败不影响朗读本身，最坏情况是静音键下听不到
         }
-        NotificationCenter.default.addObserver(
-            forName: AVSpeechSynthesizer.didFinishSpeechUtteranceNotification,
-            object: synthesizer,
-            queue: .main
-        ) { [weak self] _ in
-            self?.isSpeaking = false
-        }
+        // 用 delegate 而不是通知：Swift 侧没有 AVSpeechSynthesizer.didFinishSpeechUtteranceNotification
+        // 这个静态成员（CI 第一次就报 no member），delegate 是稳定可用的公开 API。
+        synthesizer.delegate = self
     }
 
     /// 朗读一段中文文本。空文本直接忽略。
@@ -48,7 +45,7 @@ final class SpeechCenter: ObservableObject {
 
         let utterance = AVSpeechUtterance(string: trimmed)
         utterance.voice = AVSpeechSynthesisVoice(language: "zh-CN")
-        // 略慢于默认，古诗词念得清楚一些；音调略低更接近"讲述"
+        // 略慢于默认，古诗词念得清楚一些；音调略低更接近「讲述」
         utterance.rate = 0.46
         utterance.pitchMultiplier = 0.95
         utterance.postUtteranceDelay = 0.1
@@ -61,6 +58,16 @@ final class SpeechCenter: ObservableObject {
         if synthesizer.isSpeaking {
             synthesizer.stopSpeaking(at: .immediate)
         }
+        isSpeaking = false
+    }
+}
+
+extension SpeechCenter: AVSpeechSynthesizerDelegate {
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        isSpeaking = false
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
         isSpeaking = false
     }
 }
