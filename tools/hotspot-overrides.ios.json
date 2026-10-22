@@ -951,6 +951,12 @@
         "type": "navigate",
         "target": "/native/artifact/qinghua-ping"
       }
+    },
+    "gallery": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/photo/main"
+      }
     }
   },
   "task-reward": {

@@ -160,6 +160,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     share: new Set(['card', 'pattern', 'stamp']),
     // 题注编辑页（NativeNoteView，固定 main）
     note: new Set(['main']),
+    // 相册选图页（NativePhotoPickView，固定 main）
+    photo: new Set(['main']),
     // 江雪四意象（取自 ContentData.jiangxueImagery）
     imagery: new Set([...cd.matchAll(/Imagery\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     // 茶坊对谈话题（取自 ContentData.dialogueTopics）

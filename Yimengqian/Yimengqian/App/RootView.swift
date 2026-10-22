@@ -51,6 +51,8 @@ struct RootView: View {
                         NativeShareView()
                     } else if case .note = detail {
                         NativeNoteView()
+                    } else if case .photo = detail {
+                        NativePhotoPickView()
                     } else if case .dialogue(let topicID) = detail {
                         NativeDialogueView(topicID: topicID)
                     } else if case .favoriteSlot(let index) = detail {

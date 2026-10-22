@@ -347,7 +347,7 @@ enum ScreenCatalog {
                 Hotspot(id: "usage", label: "用途", x: 59.207, y: 75.174, width: 15.634, height: 5, action: HotspotAction(type: .toast, message: "主要用于陈设与储藏")),
                 Hotspot(id: "detail-btn", label: "查看详情", x: 30.61, y: 80.199, width: 40.235, height: 5.823, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
                 Hotspot(id: "flash", label: "闪光灯", x: 8.192, y: 89.079, width: 13.944, height: 5.65, action: HotspotAction(type: .toast, message: "闪光灯模拟")),
-                Hotspot(id: "gallery", label: "相册", x: 78.38, y: 89.123, width: 12.629, height: 5.52, action: HotspotAction(type: .navigate, target: "/artifact")),
+                Hotspot(id: "gallery", label: "相册", x: 78.38, y: 89.123, width: 12.629, height: 5.52, action: HotspotAction(type: .navigate, target: "/native/photo/main")),
                 Hotspot(id: "bottom-shoot", label: "拍摄", x: 40.47, y: 88.462, width: 18.732, height: 8.034, action: HotspotAction(type: .navigate, target: "/artifact"))
             ]),
         ScreenConfig(id: "artifact-pattern", route: "/artifact/pattern", image: "Screens/artifact-pattern.png", hotspots: [
