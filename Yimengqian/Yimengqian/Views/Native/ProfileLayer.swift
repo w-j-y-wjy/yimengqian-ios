@@ -50,6 +50,7 @@ struct ProfileLayer: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             cultureProgress
+            identityTexts
             ForEach(slots, id: \.hotspotID) { slot in
                 if let card = screen.hotspots.first(where: { $0.id == slot.hotspotID }) {
                     numberPatch(slot: slot, card: card.rect(in: container))
@@ -57,6 +58,44 @@ struct ProfileLayer: View {
             }
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
+    }
+
+    // MARK: - 昵称 / 身份（个人资料编辑后要能看到变化）
+    //
+    // 实测（profile.png，靠 3× 放大截图逐边核对）：
+    // - 「梦客·苏蘅」占 x 318..542、y 277..313（37.32%..63.62%，15.01%..16.96%）
+    // - 身份胶囊里的「江南游学者」文字占 x 378..500、y 355..390
+    // 只在用户改过资料时才覆盖；没改过就完全让位图原样显示，零风险。
+    @ViewBuilder
+    private var identityTexts: some View {
+        let customName = store.string(StorageKeys.profileName)?.trimmingCharacters(in: .whitespaces)
+        let customTitle = store.string(StorageKeys.profileTitle)?.trimmingCharacters(in: .whitespaces)
+
+        if let customName = customName, !customName.isEmpty {
+            ZStack(alignment: .leading) {
+                Rectangle().fill(Theme.cardCream)
+                Text(customName)
+                    .font(.custom("KaitiSC-Bold", size: container.height * 0.0205))
+                    .foregroundColor(Theme.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+            .frame(width: container.width * 0.2680, height: container.height * 0.0218, alignment: .leading)
+            .offset(x: container.width * 0.3700, y: container.height * 0.1480)
+        }
+
+        if let customTitle = customTitle, !customTitle.isEmpty {
+            ZStack(alignment: .leading) {
+                Rectangle().fill(Theme.cardCream)
+                Text(customTitle)
+                    .font(.custom("SongtiSC-Regular", size: container.height * 0.0122))
+                    .foregroundColor(Theme.inkLight)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+            .frame(width: container.width * 0.1500, height: container.height * 0.0206, alignment: .leading)
+            .offset(x: container.width * 0.4400, y: container.height * 0.1910)
+        }
     }
 
     // MARK: - 文化进度（第 3 轮：这次先把锚点量准再画）

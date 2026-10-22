@@ -443,7 +443,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "profile", route: "/profile", image: "Screens/profile.png", hotspots: [
                 Hotspot(id: "settings", label: "设置", x: 87.16, y: 6.59, width: 11, height: 6, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
-                Hotspot(id: "avatar", label: "头像", x: 6.784, y: 13.287, width: 26.714, height: 13.277, action: HotspotAction(type: .toast, message: "头像修改为原型模拟")),
+                Hotspot(id: "avatar", label: "头像", x: 6.784, y: 13.287, width: 26.714, height: 13.277, action: HotspotAction(type: .navigate, target: "/native/profile/main")),
                 Hotspot(id: "identity", label: "用户身份", x: 35.23, y: 17.664, width: 28.592, height: 5.043, action: HotspotAction(type: .toast, message: "梦客·苏蘅，江南游学者")),
                 Hotspot(id: "culture-progress", label: "文化进度", x: 82.934, y: 25.417, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
                 Hotspot(id: "stat-poetry", label: "诗词", x: 5, y: 30, width: 20, height: 10, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "poetry")),

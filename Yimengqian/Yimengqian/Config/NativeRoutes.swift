@@ -40,6 +40,8 @@ enum NativeDetail: Equatable {
     case share(String)
     /// 诗境卡题注编辑：原本只弹「题注编辑将在后续开放」
     case note
+    /// 个人资料编辑（昵称/身份）：原本铅笔徽标只弹「头像修改为原型模拟」
+    case profileEdit
     /// 相册选图（器物识别）：原本只跳回器物首页
     case photo
     /// 茶坊对谈：某一话题的完整问答（对谈记录与话题行点进来）
@@ -78,6 +80,7 @@ enum NativeDetail: Equatable {
         case "spot": return .spot(parts[1])
         case "share": return .share(parts[1])
         case "note": return .note
+        case "profile": return .profileEdit
         case "photo": return .photo
         case "imagery": return .imagery(parts[1])
         case "dialogue": return .dialogue(parts[1])
@@ -103,6 +106,7 @@ enum NativeDetail: Equatable {
         case .spot(let id): return "\(Self.prefix)spot/\(id)"
         case .share(let id): return "\(Self.prefix)share/\(id)"
         case .note: return "\(Self.prefix)note/main"
+        case .profileEdit: return "\(Self.prefix)profile/main"
         case .photo: return "\(Self.prefix)photo/main"
         case .imagery(let id): return "\(Self.prefix)imagery/\(id)"
         case .dialogue(let id): return "\(Self.prefix)dialogue/\(id)"
@@ -127,6 +131,7 @@ enum NativeDetail: Equatable {
         case .spot: return "spot"
         case .share: return "share"
         case .note: return "note"
+        case .profileEdit: return "profile"
         case .photo: return "photo"
         case .imagery: return "imagery"
         case .dialogue: return "dialogue"
@@ -144,6 +149,7 @@ enum NativeDetail: Equatable {
         case .settings: return "main"
         case .search: return "main"
         case .note: return "main"
+        case .profileEdit: return "main"
         case .photo: return "main"
         case .favoriteSlot(let n): return String(n)
         }
@@ -159,7 +165,7 @@ enum NativeDetail: Equatable {
     /// 这些页面自己解析内容，不经过 NativeDetailContent。
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo: return true
+        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit: return true
         default: return false
         }
     }
@@ -393,6 +399,9 @@ struct NativeDetailContent {
             return nil
         case .note:
             // 题注编辑走 NativeNoteView，不生成详情内容
+            return nil
+        case .profileEdit:
+            // 个人资料编辑走 NativeProfileEditView，不生成详情内容
             return nil
         case .photo:
             // 相册选图走 NativePhotoPickView，不生成详情内容

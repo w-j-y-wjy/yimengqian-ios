@@ -973,6 +973,12 @@
         "type": "navigate",
         "target": "/native/settings/main"
       }
+    },
+    "avatar": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/profile/main"
+      }
     }
   },
   "artifact-result": {

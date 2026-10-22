@@ -57,6 +57,9 @@ enum StorageKeys {
     static let cardNote = "cardNote"
     /// 收藏页编辑模式（edit-btn 切换；编辑态下点卡片 = 取消收藏）
     static let favoritesEditing = "favoritesEditing"
+    /// 个人资料（NativeProfileEditView 写入；留空则用设计稿里的默认值）
+    static let profileName = "profileName"
+    static let profileTitle = "profileTitle"
     static let dreambookOpened = "dreambookOpened"
     static let currentCity = "currentCity"
     static let initialStamp = "initialStamp"
@@ -111,6 +114,8 @@ enum StorageKeys {
         patternTab,
         cardNote,
         favoritesEditing,
+        profileName,
+        profileTitle,
         dreambookOpened,
         currentCity,
         initialStamp,

@@ -198,6 +198,22 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-profile.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 个人资料编辑（S35）：预置自定义昵称/身份，验证个人中心文字跟着变
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen profile \
+            -profileName "听雨客" \
+            -profileTitle "山水闲人"
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-profile-edited.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen profile \
+            -nativeDetail /native/profile/main
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-profile-edit.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           # 原生详情页（大整改 S1）：设计稿里没有的详情改由原生页承载
           xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -initialScreen poetry-home \

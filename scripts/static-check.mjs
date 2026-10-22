@@ -162,6 +162,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     note: new Set(['main']),
     // 相册选图页（NativePhotoPickView，固定 main）
     photo: new Set(['main']),
+    // 个人资料编辑页（NativeProfileEditView，固定 main）
+    profile: new Set(['main']),
     // 相似纹样（取自 ContentData.similarPatterns，按 name 索引）
     similar: new Set(
       [...cd.matchAll(/static let similarPatterns[\s\S]*?\n    \]/g)]
