@@ -45,6 +45,8 @@ const actionCases = [
   'navigate', 'back', 'toast', 'storage', 'storageAndToast', 'conditionalNavigate',
   'setStorageAndToast', 'toggleStorage', 'storageAndNavigate', 'conditionalStorageNavigate',
   'incrementOnce', 'delayedNavigate', 'conditionalJump', 'setDefaultsAndNavigate', 'checkAnswer',
+  // 朗读：用系统 AVSpeechSynthesizer 念出指定文本（不需要音频素材）
+  'speakText',
 ];
 const isCase = (t) => actionCases.includes(t);
 
@@ -178,6 +180,8 @@ function emitAction(a) {
   if (a.defaultValue != null) parts.push(`defaultValue: ${swStr(a.defaultValue)}`);
   if (a.delay != null) parts.push(`delay: ${swNum(a.delay)}`);
   if (a.correctAnswer != null) parts.push(`correctAnswer: ${swStr(a.correctAnswer)}`);
+  // speakText 用 message 承载要朗读的文本（不再另造字段，保持 HotspotAction 结构不变）
+  if (type === 'speakText' && a.text != null) parts.push(`message: ${swStr(a.text)}`);
   if (Array.isArray(a.storage) && a.storage.length) {
     parts.push(`storage: [${a.storage.map((kv) => `KV(key: ${swStr(kv.key)}, value: ${swStr(kv.value)})`).join(', ')}]`);
   }
@@ -228,6 +232,7 @@ struct HotspotAction: Codable, Equatable {
         case conditionalJump
         case setDefaultsAndNavigate
         case checkAnswer
+        case speakText
     }
     var type: Kind
     var target: String?

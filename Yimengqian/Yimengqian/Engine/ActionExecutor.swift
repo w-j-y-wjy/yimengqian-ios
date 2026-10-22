@@ -47,6 +47,13 @@ final class ActionExecutor {
             }
             router.navigate(route: target)
 
+        case .speakText:
+            // 朗读：文本放在 message 里（生成器把 speakText 的 text 写进 message）。
+            // 工程内没有音频素材，用系统语音合成 —— 但这是**真的会出声**，不再是假反馈。
+            if let text = action.message {
+                SpeechCenter.shared.speak(text)
+            }
+
         case .back:
             router.back()
 

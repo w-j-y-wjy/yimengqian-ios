@@ -15,6 +15,7 @@
 		225E13A81E501C49380F0A99 /* ActionExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 362BDCEC015656B86C598818 /* ActionExecutor.swift */; };
 		D4E4A839C5F6C062949A00F1 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DD71D42D6736C09C03797F /* Router.swift */; };
 		930B3C8A5849C8CFE8FF8A55 /* SelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4FD1ED8A96EE1326F514C50 /* SelectionStore.swift */; };
+		C32F7F331FC9BA52AC7708CB /* SpeechCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53FD0719A74ACDEDECD87E34 /* SpeechCenter.swift */; };
 		3B6EDCB564B703D7BA0518AC /* ToastCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADC8B87871CEE970220912C9 /* ToastCenter.swift */; };
 		47656225A31E745E88EC4EFC /* ContentData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A66F7C98ACD01016C42FEB /* ContentData.swift */; };
 		2457253E58741AB61787C474 /* DomainModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189767A1CBB4925C28E5162A /* DomainModels.swift */; };
@@ -55,6 +56,7 @@
 		362BDCEC015656B86C598818 /* ActionExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionExecutor.swift; sourceTree = "<group>"; };
 		35DD71D42D6736C09C03797F /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		A4FD1ED8A96EE1326F514C50 /* SelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionStore.swift; sourceTree = "<group>"; };
+		53FD0719A74ACDEDECD87E34 /* SpeechCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechCenter.swift; sourceTree = "<group>"; };
 		ADC8B87871CEE970220912C9 /* ToastCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastCenter.swift; sourceTree = "<group>"; };
 		D4A66F7C98ACD01016C42FEB /* ContentData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentData.swift; sourceTree = "<group>"; };
 		189767A1CBB4925C28E5162A /* DomainModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainModels.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				362BDCEC015656B86C598818 /* ActionExecutor.swift */,
 				35DD71D42D6736C09C03797F /* Router.swift */,
 				A4FD1ED8A96EE1326F514C50 /* SelectionStore.swift */,
+				53FD0719A74ACDEDECD87E34 /* SpeechCenter.swift */,
 				ADC8B87871CEE970220912C9 /* ToastCenter.swift */,
 			);
 			path = Engine;
@@ -297,6 +300,7 @@
 				225E13A81E501C49380F0A99 /* in Sources */,
 				D4E4A839C5F6C062949A00F1 /* in Sources */,
 				930B3C8A5849C8CFE8FF8A55 /* in Sources */,
+				C32F7F331FC9BA52AC7708CB /* in Sources */,
 				3B6EDCB564B703D7BA0518AC /* in Sources */,
 				47656225A31E745E88EC4EFC /* in Sources */,
 				2457253E58741AB61787C474 /* in Sources */,

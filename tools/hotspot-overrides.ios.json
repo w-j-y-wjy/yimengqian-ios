@@ -531,6 +531,12 @@
         "type": "navigate",
         "target": "/native/city/huang-zhou"
       }
+    },
+    "voice": {
+      "action": {
+        "type": "speakText",
+        "text": "人生如逆旅，我亦是行人。不必为一时得失而耿耿于怀，且将新火试新茶，诗酒趁年华。"
+      }
     }
   },
   "teahouse-dialogue": {
@@ -558,6 +564,18 @@
       "action": {
         "type": "navigate",
         "target": "/native/dialogue/huangzhou"
+      }
+    },
+    "voice-1": {
+      "action": {
+        "type": "speakText",
+        "text": "人生如逆旅，我亦是行人。"
+      }
+    },
+    "voice-2": {
+      "action": {
+        "type": "speakText",
+        "text": "起落本无常，且喜杯中有清欢。"
       }
     }
   },

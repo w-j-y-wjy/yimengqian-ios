@@ -28,6 +28,7 @@ struct HotspotAction: Codable, Equatable {
         case conditionalJump
         case setDefaultsAndNavigate
         case checkAnswer
+        case speakText
     }
     var type: Kind
     var target: String?
@@ -159,7 +160,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "sushi", route: "/character/sushi", image: "Screens/sushi.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 3.845, y: 5.425, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "voice", label: "苏轼语音", x: 66.026, y: 14.638, width: 10, height: 5, action: HotspotAction(type: .storageAndToast, message: "正在播放苏轼人物介绍", storage: [KV(key: "sushiVoicePlaying", value: "true")])),
+                Hotspot(id: "voice", label: "苏轼语音", x: 66.026, y: 14.638, width: 10, height: 5, action: HotspotAction(type: .speakText, message: "人生如逆旅，我亦是行人。不必为一时得失而耿耿于怀，且将新火试新茶，诗酒趁年华。")),
                 Hotspot(id: "tag-huoda", label: "豁达", x: 50.674, y: 21.436, width: 10, height: 5, action: HotspotAction(type: .toast, message: "豁达：历经起伏仍保持从容")),
                 Hotspot(id: "tag-kuangda", label: "旷达", x: 63.358, y: 21.479, width: 10, height: 5, action: HotspotAction(type: .toast, message: "旷达：不困于一时得失")),
                 Hotspot(id: "tag-caiqing", label: "才情", x: 77.729, y: 21.306, width: 10, height: 5, action: HotspotAction(type: .toast, message: "才情：诗词书画皆有成就")),
@@ -180,8 +181,8 @@ enum ScreenCatalog {
         ScreenConfig(id: "teahouse-dialogue", route: "/dialogue/teahouse", image: "Screens/teahouse-dialogue.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 1.219, y: 5.599, width: 10, height: 5, action: HotspotAction(type: .back)),
                 Hotspot(id: "dialogue-record", label: "对谈记录", x: 75.844, y: 5.425, width: 20.129, height: 5, action: HotspotAction(type: .navigate, target: "/native/list/dialogues")),
-                Hotspot(id: "voice-1", label: "语音1", x: 18.231, y: 44.1, width: 67.397, height: 8.21, action: HotspotAction(type: .toast, message: "正在播放苏轼回复")),
-                Hotspot(id: "voice-2", label: "语音2", x: 20.199, y: 53.59, width: 61.395, height: 7.386, action: HotspotAction(type: .toast, message: "正在播放苏轼回复")),
+                Hotspot(id: "voice-1", label: "语音1", x: 18.231, y: 44.1, width: 67.397, height: 8.21, action: HotspotAction(type: .speakText, message: "人生如逆旅，我亦是行人。")),
+                Hotspot(id: "voice-2", label: "语音2", x: 20.199, y: 53.59, width: 61.395, height: 7.386, action: HotspotAction(type: .speakText, message: "起落本无常，且喜杯中有清欢。")),
                 Hotspot(id: "topic-1", label: "你如何面对人生起伏？", x: 5.657, y: 67.364, width: 88.499, height: 5, action: HotspotAction(type: .navigate, target: "/native/dialogue/life")),
                 Hotspot(id: "topic-2", label: "黄州给你带来了什么？", x: 6.125, y: 73.373, width: 89.062, height: 5, action: HotspotAction(type: .navigate, target: "/native/dialogue/huangzhou")),
                 Hotspot(id: "topic-3", label: "你最想告诉后人的一句话？", x: 5.188, y: 79.382, width: 89.062, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择：寄语后人", storageKey: "dialogueTopic", storageValue: "words")),

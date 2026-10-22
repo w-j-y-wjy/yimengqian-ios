@@ -214,6 +214,8 @@ private struct HotspotButton: View {
             return "领取一次"
         case .checkAnswer:
             return "提交答案"
+        case .speakText:
+            return "朗读这段文字"
         case .conditionalNavigate, .conditionalJump:
             return "继续"
         }
