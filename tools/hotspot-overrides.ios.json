@@ -463,6 +463,12 @@
         "type": "navigate",
         "target": "/native/activity/tea-ceremony"
       }
+    },
+    "search": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/search/main"
+      }
     }
   },
   "sushi": {

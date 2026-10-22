@@ -142,7 +142,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "teahouse", route: "/city/teahouse", image: "Screens/teahouse.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 1.69, y: 3.99, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "search", label: "搜索", x: 87.347, y: 4.337, width: 10, height: 5, action: HotspotAction(type: .toast, message: "搜索茶坊与城内地点")),
+                Hotspot(id: "search", label: "搜索", x: 87.347, y: 4.337, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/search/main")),
                 Hotspot(id: "hero-image", label: "东坡旧识茶坊", x: 3.874, y: 36.596, width: 92.347, height: 13.234, action: HotspotAction(type: .toast, message: "东坡旧识茶坊")),
                 Hotspot(id: "tea-ceremony", label: "宋代点茶", x: 62.746, y: 19.706, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/activity/tea-ceremony")),
                 Hotspot(id: "literati", label: "文人雅集", x: 31.775, y: 17.583, width: 19.671, height: 5, action: HotspotAction(type: .navigate, target: "/activities")),
