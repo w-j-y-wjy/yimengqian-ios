@@ -287,7 +287,8 @@ struct NativeDetailContent {
             )
 
         case .imagery(let id):
-            guard let im = ContentData.jiangxueImagery.first(where: { $0.id == id }) else { return nil }            var sections: [(String, String)] = [
+            guard let im = ContentData.jiangxueImagery.first(where: { $0.id == id }) else { return nil }
+            var sections: [(String, String)] = [
                 ("意象", im.meaning),
                 ("画面", im.visual),
                 ("情绪", im.emotion),
