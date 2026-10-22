@@ -29,6 +29,8 @@ enum Theme {
     static let cardCream = Color(hex: 0xEDDBC1)
     /// 进度条空槽的颜色（实测 #d9c2a0）
     static let barTrack = Color(hex: 0xD9C2A0)
+    /// 收藏页顶部四格统计条的底色（实测 #ebd8bc，favorites.png 多点采样）
+    static let statsSand = Color(hex: 0xEBD8BC)
     /// 诗境卡工坊「选项面板」底色实测值（#ebdcc5，采样自 poetry-card.png 面板区）
     static let panelCream = Color(hex: 0xEBDCC5)
     /// 分段控件被选中胶囊的底色（实测 #ddba87）
