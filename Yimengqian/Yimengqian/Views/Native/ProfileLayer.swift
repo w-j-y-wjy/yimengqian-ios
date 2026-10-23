@@ -51,6 +51,7 @@ struct ProfileLayer: View {
         ZStack(alignment: .topLeading) {
             cultureProgress
             identityTexts
+            avatarImage
             ForEach(slots, id: \.hotspotID) { slot in
                 if let card = screen.hotspots.first(where: { $0.id == slot.hotspotID }) {
                     numberPatch(slot: slot, card: card.rect(in: container))
@@ -58,6 +59,32 @@ struct ProfileLayer: View {
             }
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
+    }
+
+    // MARK: - 头像（换过才覆盖）
+    //
+    // 圆心与半径不是估的：把 profile.png 沿 120 个方向从圆外往里扫，
+    // 取"从卡片底色突变为画面"的边界点，再做代数圆拟合，得
+    //   圆心 (197.3, 302.2)  半径 122.8（852×1846 坐标）
+    // 换算百分比：cx 23.159%、cy 16.370%、r 14.411%（按宽）。
+    // 半径只按宽度算 —— 按宽高各算一次会被拉成椭圆。
+    //
+    // 只在用户真的选过头像时才画：没选就完全让位图原样显示，零风险。
+    @ViewBuilder
+    private var avatarImage: some View {
+        if AvatarStore.hasCustomAvatar, let img = AvatarStore.load() {
+            let cx = container.width * 0.23159
+            let cy = container.height * 0.16370
+            let r = container.width * 0.14411
+            Image(uiImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: r * 2, height: r * 2)
+                .clipShape(Circle())
+                // 细描边盖住位图圆环内侧的抗锯齿边，避免出现"双圈"
+                .overlay(Circle().strokeBorder(Theme.goldBorder.opacity(0.55), lineWidth: 1.2))
+                .position(x: cx, y: cy)
+        }
     }
 
     // MARK: - 昵称 / 身份（个人资料编辑后要能看到变化）

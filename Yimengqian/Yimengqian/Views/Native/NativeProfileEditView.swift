@@ -15,6 +15,9 @@ struct NativeProfileEditView: View {
 
     @State private var name: String = ""
     @State private var title: String = ""
+    @State private var showAvatarPicker = false
+    /// 头像变更计数：用来强制刷新（UIImge 不是 @Published，靠它触发重绘）
+    @State private var avatarVersion = 0
 
     private let nameLimit = 8
     private let titleLimit = 10
@@ -54,10 +57,8 @@ struct NativeProfileEditView: View {
                         }
                     }
 
-                    Text("头像仍使用设计稿里的形象；替换头像需要像素层，暂未开放。")
-                        .font(.custom("SongtiSC-Regular", size: 11.5))
-                        .foregroundColor(Theme.inkMuted)
-                        .lineSpacing(3)
+                    // 头像：可以真的换一张（PHPicker，无需相册权限）
+                    avatarRow
 
                     Button(action: save) {
                         Text("保存")
@@ -88,6 +89,73 @@ struct NativeProfileEditView: View {
         .onAppear {
             name = store.string(StorageKeys.profileName) ?? ""
             title = store.string(StorageKeys.profileTitle) ?? ""
+        }
+        .sheet(isPresented: $showAvatarPicker) {
+            AvatarPicker { image in
+                if AvatarStore.save(image) {
+                    avatarVersion += 1
+                    store.setString(StorageKeys.profileAvatarFile, "avatar.png")
+                    toast.show("头像已更新")
+                } else {
+                    toast.show("头像保存失败，请重试")
+                }
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    /// 头像一行：左侧预览圆 + 右侧"更换/恢复"
+    private var avatarRow: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("头像")
+                .font(.custom("SongtiSC-Regular", size: 12.5))
+                .foregroundColor(Theme.inkMuted)
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle().fill(Theme.paperLight)
+                    if let img = AvatarStore.load() {
+                        Image(uiImage: img)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(Circle())
+                    } else {
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 26))
+                            .foregroundColor(Theme.goldBorder)
+                    }
+                }
+                .frame(width: 66, height: 66)
+                .overlay(Circle().strokeBorder(Theme.goldBorder.opacity(0.6), lineWidth: 1))
+                .id(avatarVersion)   // 换图后强制重建，避免 UIImage 引用相同导致不刷新
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Button(action: { showAvatarPicker = true }) {
+                        Text("从相册选择")
+                            .font(.custom("SongtiSC-Regular", size: 13.5))
+                            .foregroundColor(Theme.ink)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Capsule().fill(Theme.paperLight))
+                            .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.5), lineWidth: 0.8))
+                    }
+                    .buttonStyle(.plain)
+
+                    if AvatarStore.hasCustomAvatar {
+                        Button(action: {
+                            AvatarStore.clear()
+                            store.remove(StorageKeys.profileAvatarFile)
+                            avatarVersion += 1
+                            toast.show("已恢复默认头像")
+                        }) {
+                            Text("恢复默认头像")
+                                .font(.custom("SongtiSC-Regular", size: 12))
+                                .foregroundColor(Theme.inkMuted)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                Spacer()
+            }
         }
     }
 
