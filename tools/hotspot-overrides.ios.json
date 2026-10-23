@@ -1081,6 +1081,12 @@
         "storageKey": "favoriteFilter",
         "storageValue": "stamp"
       }
+    },
+    "identity": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/identity/main"
+      }
     }
   },
   "poetry-card": {

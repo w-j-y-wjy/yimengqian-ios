@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		1AA5FC508D424BFEAC51C754 /* PatternPainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9617566BF3D606A29FC4F7E9 /* PatternPainter.swift */; };
+		EC3F8EF93D5ACAB2E6722710 /* NativeIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77FC4385290E5D1BA46D6BC9 /* NativeIdentityView.swift */; };
 		2DA2141B3904B77FC52D64BC /* IdentityLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0C7F37F4E651F67E4ED1E /* IdentityLayer.swift */; };
 		9CD242D7F5D6DC34E930AB8E /* NativePoetryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */; };
 		A977C9A7888C4D19E526D59D /* PoetryCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */; };
@@ -57,6 +59,8 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		9617566BF3D606A29FC4F7E9 /* PatternPainter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatternPainter.swift; sourceTree = "<group>"; };
+		77FC4385290E5D1BA46D6BC9 /* NativeIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeIdentityView.swift; sourceTree = "<group>"; };
 		9DA0C7F37F4E651F67E4ED1E /* IdentityLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityLayer.swift; sourceTree = "<group>"; };
 		B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativePoetryCardView.swift; sourceTree = "<group>"; };
 		880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoetryCardRenderer.swift; sourceTree = "<group>"; };
@@ -231,6 +235,8 @@
 							880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */,
 				B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */,
 				9DA0C7F37F4E651F67E4ED1E /* IdentityLayer.swift */,
+				77FC4385290E5D1BA46D6BC9 /* NativeIdentityView.swift */,
+				9617566BF3D606A29FC4F7E9 /* PatternPainter.swift */,
 );
 			path = Views/Native;
 			sourceTree = "<group>";
@@ -316,6 +322,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AA5FC508D424BFEAC51C754 /* PatternPainter.swift in Sources */,
+				EC3F8EF93D5ACAB2E6722710 /* NativeIdentityView.swift in Sources */,
 				2DA2141B3904B77FC52D64BC /* IdentityLayer.swift in Sources */,
 				9CD242D7F5D6DC34E930AB8E /* NativePoetryCardView.swift in Sources */,
 				A977C9A7888C4D19E526D59D /* PoetryCardRenderer.swift in Sources */,

@@ -56,6 +56,9 @@ enum NativeDetail: Equatable {
     /// 诗境卡作品详情：按 id 从本地作品集取那一张，画真实卡面（诗句 / 题注 / 画风 / 印章）。
     /// 之前「我的作品」点进去只会回到诗境卡工坊，看不到自己生成的那张卡。
     case card(String)
+    /// 古典身份详情：按 4 项偏好算出称号/标签/释义。
+    /// 不做像素叠层的原因：身份结果卡的底色带纸纹与花瓣，纯色遮罩会留下可见方块。
+    case identity
     /// 意象详解（江雪四意象：孤舟/寒江/蓑笠翁/飞雪）：原本点主卡或小卡只是把标签复读一遍
     case imagery(String)
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
@@ -91,6 +94,7 @@ enum NativeDetail: Equatable {
         case "stamp": return .stamp(parts[1])
         case "favorite": return Int(parts[1]).map { .favoriteSlot($0) }
         case "card": return .card(parts[1])
+        case "identity": return .identity
         default: return nil
         }
     }
@@ -118,6 +122,7 @@ enum NativeDetail: Equatable {
         case .stamp(let id): return "\(Self.prefix)stamp/\(id)"
         case .favoriteSlot(let n): return "\(Self.prefix)favorite/\(n)"
         case .card(let id): return "\(Self.prefix)card/\(id)"
+        case .identity: return "\(Self.prefix)identity/main"
         }
     }
 
@@ -144,6 +149,7 @@ enum NativeDetail: Equatable {
         case .stamp: return "stamp"
         case .favoriteSlot: return "favorite"
         case .card: return "card"
+        case .identity: return "identity"
         }
     }
 
@@ -158,6 +164,7 @@ enum NativeDetail: Equatable {
         case .profileEdit: return "main"
         case .photo: return "main"
         case .favoriteSlot(let n): return String(n)
+        case .identity: return "main"
         }
     }
 
@@ -171,7 +178,7 @@ enum NativeDetail: Equatable {
     /// 这些页面自己解析内容，不经过 NativeDetailContent。
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit, .card: return true
+        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit, .card, .identity: return true
         default: return false
         }
     }
@@ -205,6 +212,9 @@ struct NativeDetailContent {
     /// 附加插图（如器物详情里的纹样图）。纹样大图 pattern-chanzhilian.jpg 此前从未被渲染，
     /// 放进器物详情的「纹样」段落下是最省事、也不会破坏位图的做法。
     var gallery: [String] = []
+    /// 没有配图时改画程序化纹样（传纹样名，PatternPainter 据此绘制）。
+    /// 相似纹样三条本来就缺图，与其留一块空白 hero，不如按纹样类型画出可辨识的形态。
+    var paintedPattern: String? = nil
 
     static func resolve(_ detail: NativeDetail) -> NativeDetailContent? {
         switch detail {
@@ -325,7 +335,10 @@ struct NativeDetailContent {
                 title: pd.name,
                 subtitle: "相似纹样",
                 // 配图缺失时不借别的纹样图：宁可不显示 hero
+                // 配图缺失时不再留空 —— 改用程序化绘制的纹样（PatternPainter），
+                // 三条相似纹样各自画出可辨识的形态，详情页 hero 不再是空白
                 hero: pd.image.isEmpty ? nil : pd.image,
+                paintedPattern: pd.image.isEmpty ? pd.name : nil,
                 lines: [],
                 sections: [
                     ("纹样结构", pd.structure),
@@ -440,6 +453,9 @@ struct NativeDetailContent {
             return nil
         case .card:
             // 诗境卡作品走 NativePoetryCardView（自绘卡面），同样不经过详情排版
+            return nil
+        case .identity:
+            // 身份详情走 NativeIdentityView（自绘），不经过详情排版
             return nil
         }
     }

@@ -137,6 +137,17 @@ struct NativeDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 )
                 .padding(.horizontal, 20)
+        } else if let patternName = content.paintedPattern {
+            // 没有配图的纹样：程序化绘制（相似纹样三条走这里）。
+            // 比留一块空白 hero 好 —— 用户点进「缠枝菊花」应该看到菊花，而不是空白。
+            PatternPainter(name: patternName, tint: Theme.goldBorder, lineWidth: 1.8)
+                .frame(height: 220)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(Theme.goldBorder.opacity(0.4), lineWidth: 0.8)
+                )
+                .padding(.horizontal, 20)
         } else {
             Rectangle().fill(Theme.paperWarm).frame(height: 8)
         }

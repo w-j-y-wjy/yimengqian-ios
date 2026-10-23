@@ -323,7 +323,7 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "identity-result", route: "/onboarding/result", image: "Screens/identity-result.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 2.72, y: 5.208, width: 10, height: 5, action: HotspotAction(type: .back)),
-                Hotspot(id: "identity", label: "身份画像", x: 8.311, y: 12.744, width: 35.791, height: 18.623, action: HotspotAction(type: .toast, message: "梦客·苏蘅，江南游学者")),
+                Hotspot(id: "identity", label: "身份画像", x: 8.311, y: 12.744, width: 35.791, height: 18.623, action: HotspotAction(type: .navigate, target: "/native/identity/main")),
                 Hotspot(id: "recommend-city", label: "推荐汴京", x: 3.435, y: 59.197, width: 93.751, height: 12.983, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "initial-stamp", label: "初始印章", x: 2.556, y: 72.456, width: 93.939, height: 11.768, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "stamp")),
                 Hotspot(id: "enter-dream", label: "进入我的梦境", x: 10.246, y: 85.466, width: 79.965, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/home", storageKey: "onboardingComplete", storageValue: "true")),

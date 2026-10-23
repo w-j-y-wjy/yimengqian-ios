@@ -63,6 +63,8 @@ struct RootView: View {
                         NativeListView(listID: listID)
                     } else if case .card(let cardID) = detail {
                         NativePoetryCardView(cardID: cardID)
+                    } else if case .identity = detail {
+                        NativeIdentityView()
                     } else if let content = NativeDetailContent.resolve(detail) {
                         NativeDetailView(detail: detail, content: content)
                     }

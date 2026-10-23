@@ -80,8 +80,12 @@ struct ScreenNativeLayer: View {
                 PatternTabsLayer(screen: screen, container: containerSize)
             case "jiangxue-scene":
                 JiangxueStyleLayer(screen: screen, container: containerSize)
-            case "identity-result":
-                IdentityLayer(screen: screen, container: containerSize)
+            // identity-result 不做像素叠层：
+            // 这张卡的底色是**带纸纹与花瓣的渐变**，不是纯色。纯色遮罩会在卡面上留下
+            // 一块可见的方块边界（CI 截图实测：称号与 bio 两块都能看出接缝），
+            // 而按行逐块贴遮罩又会把花瓣描边切断。
+            // 按"宁可回退也不要留可见瑕疵"的规矩，这块改成原生页承载（/native/identity/main），
+            // 位图保持原样 —— 点身份卡进原生页看按偏好算出的称号/标签/bio。
             default:
                 EmptyView()
             }
