@@ -177,6 +177,11 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     stamp: new Set([...cd.matchAll(/Stamp\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     // 收藏页格子：0..8（9 个 item-* 槽位），运行时按筛选结果取条目
     favorite: new Set(['0', '1', '2', '3', '4', '5', '6', '7', '8']),
+    // 诗境卡作品：id 是运行时生成的 "card-<时间戳>"，静态配置里不该出现；
+    // 这里放行任意 id，实际解析由 NativePoetryCardView 按本地作品集查表（查不到显示空态）。
+    card: null,
+    // 古典身份详情（NativeIdentityView，固定 main）
+    identity: new Set(['main']),
   }
   const badNative = []
   // 搜索页的 id 就是预填关键词（/native/search/<关键词>）：允许中文/字母/数字的短串
@@ -189,6 +194,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
       if (!/^[\u4e00-\u9fa5A-Za-z0-9]{1,20}$/.test(id)) badNative.push(t)
       continue
     }
+    // 值为 null 的 kind 表示 id 由运行时决定（如诗境卡 card-<时间戳>），只校验 kind 存在
+    if (ids[kind] === null) continue
     if (!ids[kind] || !ids[kind].has(id)) badNative.push(t)
   }
   if (badNative.length) bad('screens.nativeTargets', `原生详情目标无法解析（kind 或 id 不存在）：${badNative.join(', ')}`)
