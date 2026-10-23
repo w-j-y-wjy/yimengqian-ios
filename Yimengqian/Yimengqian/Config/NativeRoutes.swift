@@ -53,6 +53,9 @@ enum NativeDetail: Equatable {
     /// 收藏页第 N 个格子：收藏页的卡片是**动态数据**填进静态热区，
     /// 所以热区只能记住「我是第几格」，运行到这一页时再按当前筛选结果取实际条目分发。
     case favoriteSlot(Int)
+    /// 诗境卡作品详情：按 id 从本地作品集取那一张，画真实卡面（诗句 / 题注 / 画风 / 印章）。
+    /// 之前「我的作品」点进去只会回到诗境卡工坊，看不到自己生成的那张卡。
+    case card(String)
     /// 意象详解（江雪四意象：孤舟/寒江/蓑笠翁/飞雪）：原本点主卡或小卡只是把标签复读一遍
     case imagery(String)
     /// 原生列表页：诗库/搜索（poems）、雅集活动列表（activities）。
@@ -87,6 +90,7 @@ enum NativeDetail: Equatable {
         case "similar": return .similar(parts[1])
         case "stamp": return .stamp(parts[1])
         case "favorite": return Int(parts[1]).map { .favoriteSlot($0) }
+        case "card": return .card(parts[1])
         default: return nil
         }
     }
@@ -113,6 +117,7 @@ enum NativeDetail: Equatable {
         case .similar(let name): return "\(Self.prefix)similar/\(name)"
         case .stamp(let id): return "\(Self.prefix)stamp/\(id)"
         case .favoriteSlot(let n): return "\(Self.prefix)favorite/\(n)"
+        case .card(let id): return "\(Self.prefix)card/\(id)"
         }
     }
 
@@ -138,13 +143,14 @@ enum NativeDetail: Equatable {
         case .similar: return "similar"
         case .stamp: return "stamp"
         case .favoriteSlot: return "favorite"
+        case .card: return "card"
         }
     }
 
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v), .similar(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v), .similar(let v), .card(let v):
             return v
         case .settings: return "main"
         case .search: return "main"
@@ -165,7 +171,7 @@ enum NativeDetail: Equatable {
     /// 这些页面自己解析内容，不经过 NativeDetailContent。
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit: return true
+        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit, .card: return true
         default: return false
         }
     }

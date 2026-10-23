@@ -29,6 +29,8 @@ struct HotspotAction: Codable, Equatable {
         case setDefaultsAndNavigate
         case checkAnswer
         case speakText
+        case toggleTorch
+        case aiGenerate
     }
     var type: Kind
     var target: String?
@@ -43,12 +45,16 @@ struct HotspotAction: Codable, Equatable {
     var delay: Double?
     var defaults: [KV]?
     var correctAnswer: String?
+    /// 多正确答案集合。飞花令的判据是字面含令字，一题可能有多个选项都成立；
+    /// 非空时以它为准，correctAnswer 退化为兼容旧配置的兜底。
+    var correctAnswers: [String]?
     var storageFlags: [KV]?
 
     init(type: Kind, target: String? = nil, message: String? = nil, storage: [KV]? = nil,
          storageKey: String? = nil, storageValue: String? = nil, onMessage: String? = nil,
          offMessage: String? = nil, flagKey: String? = nil, defaultValue: String? = nil,
          delay: Double? = nil, defaults: [KV]? = nil, correctAnswer: String? = nil,
+         correctAnswers: [String]? = nil,
          storageFlags: [KV]? = nil) {
         self.type = type
         self.target = target
@@ -63,6 +69,7 @@ struct HotspotAction: Codable, Equatable {
         self.delay = delay
         self.defaults = defaults
         self.correctAnswer = correctAnswer
+        self.correctAnswers = correctAnswers
         self.storageFlags = storageFlags
     }
 }
@@ -210,11 +217,11 @@ enum ScreenCatalog {
                 Hotspot(id: "cat-sorrow", label: "离愁", x: 59.836, y: 36.061, width: 17.324, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/native/list/poems", storageKey: "poetryCategory", storageValue: "sorrow")),
                 Hotspot(id: "cat-border", label: "边塞", x: 78.521, y: 36.297, width: 18.169, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/native/list/poems", storageKey: "poetryCategory", storageValue: "frontier")),
                 Hotspot(id: "rec-jiangxue", label: "推荐《江雪》", x: 2.653, y: 46.5, width: 30.939, height: 27.5, action: HotspotAction(type: .navigate, target: "/poetry/jiangxue")),
-                Hotspot(id: "rec-jiangxue-play", label: "江雪朗读", x: 23.221, y: 46.774, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/poetry/jiangxue")),
+                Hotspot(id: "rec-jiangxue-play", label: "江雪朗读", x: 23.221, y: 46.774, width: 10, height: 5, action: HotspotAction(type: .speakText, message: "千山鸟飞绝，万径人踪灭。孤舟蓑笠翁，独钓寒江雪。")),
                 Hotspot(id: "rec-niaoming", label: "推荐《鸟鸣涧》", x: 35.681, y: 46.5, width: 28.779, height: 27.5, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian")),
-                Hotspot(id: "rec-niaoming-play", label: "鸟鸣涧朗读", x: 57.6, y: 46.6, width: 6.8, height: 4.5, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian")),
+                Hotspot(id: "rec-niaoming-play", label: "鸟鸣涧朗读", x: 57.6, y: 46.6, width: 6.8, height: 4.5, action: HotspotAction(type: .speakText, message: "人闲桂花落，夜静春山空。月出惊山鸟，时鸣春涧中。")),
                 Hotspot(id: "rec-jingye", label: "推荐《静夜思》", x: 65.726, y: 46.5, width: 30.282, height: 27.5, action: HotspotAction(type: .navigate, target: "/native/poem/jing-ye-si")),
-                Hotspot(id: "rec-jingye-play", label: "静夜思朗读", x: 86.507, y: 47.212, width: 7.559, height: 3.397, action: HotspotAction(type: .navigate, target: "/native/poem/jing-ye-si")),
+                Hotspot(id: "rec-jingye-play", label: "静夜思朗读", x: 86.507, y: 47.212, width: 7.559, height: 3.397, action: HotspotAction(type: .speakText, message: "床前明月光，疑是地上霜。举头望明月，低头思故乡。")),
                 Hotspot(id: "refresh", label: "换一批", x: 79.131, y: 41.48, width: 18.075, height: 3.57, action: HotspotAction(type: .navigate, target: "/native/list/poems")),
                 Hotspot(id: "card-1", label: "最近卡片一", x: 4.812, y: 78.15, width: 43.221, height: 11.547, action: HotspotAction(type: .navigate, target: "/native/list/works")),
                 Hotspot(id: "card-2", label: "最近卡片二", x: 51.531, y: 78.713, width: 44.347, height: 11.287, action: HotspotAction(type: .navigate, target: "/native/list/works")),
@@ -289,14 +296,14 @@ enum ScreenCatalog {
                 Hotspot(id: "seal-red", label: "朱印", x: 31.385, y: 63.876, width: 29.249, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已添加朱印", storageKey: "poetryCardSeal", storageValue: "red")),
                 Hotspot(id: "seal-none", label: "无印", x: 62.136, y: 63.703, width: 30.563, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已取消印章", storageKey: "poetryCardSeal", storageValue: "none")),
                 Hotspot(id: "add-note", label: "添加题注", x: 3.403, y: 71.142, width: 46.62, height: 11.327, action: HotspotAction(type: .navigate, target: "/native/note/main")),
-                Hotspot(id: "select-border", label: "选择边框", x: 50.915, y: 71.516, width: 45.211, height: 11.284, action: HotspotAction(type: .toast, message: "已打开边框选择")),
+                Hotspot(id: "select-border", label: "选择边框", x: 50.915, y: 71.516, width: 45.211, height: 11.284, action: HotspotAction(type: .navigate, target: "/native/list/works")),
                 Hotspot(id: "save-card", label: "保存诗境卡", x: 4.789, y: 84.761, width: 43.521, height: 5, action: HotspotAction(type: .incrementOnce, message: "已保存至\"我的作品\"", storageKey: "poetryCardCount", flagKey: "jiangxueCardCreated")),
                 Hotspot(id: "share", label: "分享给朋友", x: 50.164, y: 84.397, width: 44.46, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/card"))
             ]),
         ScreenConfig(id: "onboarding-intro", route: "/onboarding/intro", image: "Screens/onboarding-intro.png", hotspots: [
-                Hotspot(id: "card-city", label: "漫游古城", x: 4.437, y: 33.348, width: 91.315, height: 13.711, action: HotspotAction(type: .toast, message: "漫游古城，探索不同朝代的文化记忆")),
-                Hotspot(id: "card-people", label: "邂逅古人", x: 2.652, y: 48.684, width: 93.005, height: 14.231, action: HotspotAction(type: .toast, message: "与历史人物相遇，聆听他们的故事")),
-                Hotspot(id: "card-dreambook", label: "收集梦册", x: 4.906, y: 64.369, width: 91.69, height: 14.534, action: HotspotAction(type: .toast, message: "收藏诗词、器物、人物与旅程")),
+                Hotspot(id: "card-city", label: "漫游古城", x: 4.437, y: 33.348, width: 91.315, height: 13.711, action: HotspotAction(type: .navigate, target: "/city/dynasties")),
+                Hotspot(id: "card-people", label: "邂逅古人", x: 2.652, y: 48.684, width: 93.005, height: 14.231, action: HotspotAction(type: .navigate, target: "/native/character/sushi")),
+                Hotspot(id: "card-dreambook", label: "收集梦册", x: 4.906, y: 64.369, width: 91.69, height: 14.534, action: HotspotAction(type: .navigate, target: "/dreambook")),
                 Hotspot(id: "start-btn", label: "开启入梦之旅", x: 12.394, y: 81.078, width: 74.601, height: 5, action: HotspotAction(type: .navigate, target: "/onboarding/preferences")),
                 Hotspot(id: "skip-btn", label: "稍后再看", x: 39.671, y: 86.824, width: 21.455, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/home", storageKey: "onboardingSkipped", storageValue: "true"))
             ]),
@@ -346,7 +353,7 @@ enum ScreenCatalog {
                 Hotspot(id: "pattern", label: "纹样", x: 41.728, y: 75.217, width: 16.573, height: 5, action: HotspotAction(type: .navigate, target: "/artifact/pattern")),
                 Hotspot(id: "usage", label: "用途", x: 59.207, y: 75.174, width: 15.634, height: 5, action: HotspotAction(type: .toast, message: "主要用于陈设与储藏")),
                 Hotspot(id: "detail-btn", label: "查看详情", x: 30.61, y: 80.199, width: 40.235, height: 5.823, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
-                Hotspot(id: "flash", label: "闪光灯", x: 8.192, y: 89.079, width: 13.944, height: 5.65, action: HotspotAction(type: .toast, message: "闪光灯模拟")),
+                Hotspot(id: "flash", label: "闪光灯", x: 8.192, y: 89.079, width: 13.944, height: 5.65, action: HotspotAction(type: .toggleTorch)),
                 Hotspot(id: "gallery", label: "相册", x: 78.38, y: 89.123, width: 12.629, height: 5.52, action: HotspotAction(type: .navigate, target: "/native/photo/main")),
                 Hotspot(id: "bottom-shoot", label: "拍摄", x: 40.47, y: 88.462, width: 18.732, height: 8.034, action: HotspotAction(type: .navigate, target: "/artifact"))
             ]),
@@ -390,7 +397,7 @@ enum ScreenCatalog {
                 Hotspot(id: "answer-b", label: "答案B", x: 8.564, y: 60.286, width: 82.778, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择 B", storageKey: "feihualingAnswer", storageValue: "B")),
                 Hotspot(id: "answer-c", label: "答案C", x: 7.814, y: 66.69, width: 85.967, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择 C", storageKey: "feihualingAnswer", storageValue: "C")),
                 Hotspot(id: "answer-d", label: "答案D", x: 8.939, y: 73.007, width: 83.529, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择 D", storageKey: "feihualingAnswer", storageValue: "D")),
-                Hotspot(id: "submit-btn", label: "提交答案", x: 21.501, y: 79.852, width: 57.268, height: 5, action: HotspotAction(type: .checkAnswer, target: "/stamp/reward", message: "请先选择答案", storageKey: "feihualingAnswer", correctAnswer: "A", storageFlags: [KV(key: "feihualingCompleted", value: "true")]))
+                Hotspot(id: "submit-btn", label: "提交答案", x: 21.501, y: 79.852, width: 57.268, height: 5, action: HotspotAction(type: .checkAnswer, target: "/stamp/reward", message: "请先选择答案", storageKey: "feihualingAnswer", correctAnswer: "A", correctAnswers: ["A", "C"], storageFlags: [KV(key: "feihualingCompleted", value: "true")]))
             ]),
         ScreenConfig(id: "stamp-reward", route: "/stamp/reward", image: "Screens/stamp-reward.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 0.26, y: 5.305, width: 12, height: 5, action: HotspotAction(type: .back)),
@@ -444,7 +451,7 @@ enum ScreenCatalog {
         ScreenConfig(id: "profile", route: "/profile", image: "Screens/profile.png", hotspots: [
                 Hotspot(id: "settings", label: "设置", x: 87.16, y: 6.59, width: 11, height: 6, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
                 Hotspot(id: "avatar", label: "头像", x: 6.784, y: 13.287, width: 26.714, height: 13.277, action: HotspotAction(type: .navigate, target: "/native/profile/main")),
-                Hotspot(id: "identity", label: "用户身份", x: 35.23, y: 17.664, width: 28.592, height: 5.043, action: HotspotAction(type: .toast, message: "梦客·苏蘅，江南游学者")),
+                Hotspot(id: "identity", label: "用户身份", x: 35.23, y: 17.664, width: 28.592, height: 5.043, action: HotspotAction(type: .navigate, target: "/native/profile/main")),
                 Hotspot(id: "culture-progress", label: "文化进度", x: 82.934, y: 25.417, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
                 Hotspot(id: "stat-poetry", label: "诗词", x: 5, y: 30, width: 20, height: 10, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "poetry")),
                 Hotspot(id: "stat-artifact", label: "器物", x: 28, y: 30, width: 20, height: 10, action: HotspotAction(type: .storageAndNavigate, target: "/favorites", storageKey: "favoriteFilter", storageValue: "artifact")),

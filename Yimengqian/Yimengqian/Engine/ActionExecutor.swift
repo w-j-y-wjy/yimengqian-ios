@@ -54,6 +54,25 @@ final class ActionExecutor {
                 SpeechCenter.shared.speak(text)
             }
 
+        case .toggleTorch:
+            // 真·闪光灯：有摄像头就开/关 torch，没有就如实说明原因（旧实现只弹「闪光灯模拟」）
+            if let failure = TorchCenter.shared.toggle() {
+                toast.show(failure)
+            } else {
+                toast.show(TorchCenter.shared.isOn ? "闪光灯已开" : "闪光灯已关")
+            }
+
+        case .aiGenerate:
+            // AI 通道：有 key 走在线，没 key 走本地规则 —— 两种情况都一定有结果，
+            // 且结果会标注来源（本地规则 / 在线生成），不把规则引擎说成语言模型。
+            let intent = AIIntent(rawValue: action.storageValue ?? "") ?? .cardNote
+            let prompt = action.message ?? ""
+            AIBridge.shared.generate(intent: intent, prompt: prompt) { result in
+                self.store.setString(StorageKeys.aiResult, result.text)
+                self.store.setString(StorageKeys.aiResultSource, result.sourceLabel)
+                self.toast.show("\(result.sourceLabel)：\(result.text)")
+            }
+
         case .back:
             router.back()
 
@@ -139,10 +158,11 @@ final class ActionExecutor {
                 if let stampId = AppStore.stampClaimMap[flag] {
                     store.grantStamp(id: stampId)
                 }
-                // 保存诗境卡：记账 + 记进作品列表（不然「我的作品/最近生成」永远是死的）
+                // 保存诗境卡：记账 + 真正生成一张卡面存进作品集
+                // （旧实现只 addGeneratedCard 一个 id，作品页画不出卡，等于"存了个编号"）
                 if flag == StorageKeys.jiangxueCardCreated {
                     store.applyReward(RewardRules.savePoetryCard)
-                    store.addGeneratedCard("jiangxue-card")
+                    savePoetryCardSnapshot()
                 }
             }
             if let m = action.message { toast.show(m) }
@@ -179,9 +199,21 @@ final class ActionExecutor {
 
         case .checkAnswer:
             let answer = action.storageKey.flatMap { store.string($0) }
+            // 判对口径：correctAnswers 非空则以集合为准，否则回落到单值 correctAnswer。
+            // 为什么必须有集合：飞花令第 1 题令字是「春」，A「春眠不觉晓」与 C「春风得意马蹄疾」
+            // 都真的含「春」，单值判题会把选 C 的人判错 —— 现场只要有人说「C 也含春」，
+            // 「真实判题」当场失去可信度。
+            let accepted: [String]
+            if let set = action.correctAnswers, !set.isEmpty {
+                accepted = set
+            } else if let single = action.correctAnswer {
+                accepted = [single]
+            } else {
+                accepted = []
+            }
             if answer == nil {
                 toast.show(action.message ?? "请先选择答案")
-            } else if answer != action.correctAnswer {
+            } else if !accepted.contains(answer!) {
                 // 让叠层把"选中的这一项"标成错，而不是只弹一句提示就没了下文
                 selection?.noteWrongAnswer(screenID: screenID)
                 toast.show("回答错误，请重新选择")
@@ -198,6 +230,45 @@ final class ActionExecutor {
                 if let target = action.target { router.navigate(route: target) }
             }
         }
+    }
+
+    // MARK: - 诗境卡：保存真实卡面
+    //
+    // 保存那一刻把「诗句 + 题注 + 画风 + 版式 + 印章」冻结成一张 PoetryCard。
+    // 为什么冻结：用户存完继续调选项，旧卡不该跟着变 —— 作品集里每张都应是那一次的结果。
+    private func savePoetryCardSnapshot() {
+        let poems = NativeDetail.allPoems()
+        // 默认取《江雪》：诗境卡的入口就是江雪诗境页；找不到就取第一首
+        let poem = poems.first(where: { $0.id == "jiangxue" }) ?? poems.first(where: { $0.title == "江雪" })
+        let title = poem?.title ?? "江雪"
+        let line = poem.map { Self.firstTwoLines($0.content) } ?? "千山鸟飞绝，万径人踪灭"
+
+        let card = PoetryCard(
+            id: "card-\(Int(Date().timeIntervalSince1970))",
+            poemLine: line,
+            poemTitle: title,
+            note: store.string(StorageKeys.cardNote) ?? "",
+            style: store.string(StorageKeys.poetryCardStyle) ?? "ink",
+            layout: store.string(StorageKeys.poetryCardLayout) ?? "horizontal",
+            seal: store.string(StorageKeys.poetryCardSeal) ?? "red",
+            image: poem?.image ?? "ArtApp/poem-niao-ming-jian.jpg",
+            date: AppSnapshot.dateString()
+        )
+        if store.savePoetryCard(card) {
+            toast.show("已保存到「我的作品」")
+        } else {
+            toast.show("这张卡已经保存过了")
+        }
+    }
+
+    /// 卡面正文取前两句：整首诗排进 3:5 的卡里会挤成一行小字，前两句最像"题画诗"
+    private static func firstTwoLines(_ content: String) -> String {
+        let parts = content
+            .replacingOccurrences(of: "。", with: "。\n")
+            .components(separatedBy: "\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        return parts.prefix(2).joined(separator: "\n")
     }
 
     // MARK: - 收藏页编辑模式

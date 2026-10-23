@@ -292,6 +292,57 @@ final class AppStore: ObservableObject {
         snapshot.generatedCards.append(id)
     }
 
+    // MARK: - 诗境卡（真卡面）
+
+    /// 诗境卡作品列表 —— 用**独立存储键**而不是塞进 AppSnapshot。
+    ///
+    /// 为什么不进快照：AppSnapshot 是 Codable 且整体解码，加字段会让**旧版本存档解码失败**，
+    /// 一失败就会静默回落到 .default —— 用户已有的收藏/文化值全丢。
+    /// 独立键 + 单独解码可以把风险限制在"这一项读不出来"，其它状态不受影响。
+    private static let poetryCardsKey = "yimeng-poetry-cards"
+
+    var poetryCards: [PoetryCard] {
+        guard let data = UserDefaults.standard.data(forKey: Self.poetryCardsKey),
+              let list = try? JSONDecoder().decode([PoetryCard].self, from: data) else {
+            return []
+        }
+        return list
+    }
+
+    private func persistPoetryCards(_ list: [PoetryCard]) {
+        if let data = try? JSONEncoder().encode(list) {
+            UserDefaults.standard.set(data, forKey: Self.poetryCardsKey)
+        }
+        // 通知界面刷新（@Published 的 snapshot 没变，需要显式发信号）
+        objectWillChange.send()
+    }
+
+    /// 保存一张诗境卡：把当时的诗句/题注/画风/版式/印章一起冻结下来。
+    /// 为什么必须冻结而不是保存时再去读当前选择：用户保存后继续调整选项，
+    /// 旧卡不该跟着变 —— 作品集里的每一张应该是"那一次生成的结果"。
+    @discardableResult
+    func savePoetryCard(_ card: PoetryCard) -> Bool {
+        var list = poetryCards
+        guard !list.contains(where: { $0.id == card.id }) else { return false }
+        list.append(card)
+        persistPoetryCards(list)
+        // generatedCards 保留给旧逻辑（设置页张数统计）读，两者同步维护
+        addGeneratedCard(card.id)
+        return true
+    }
+
+    /// 作品列表按时间倒序（最近生成的排最前，符合"我的作品"直觉）
+    var poetryCardsNewestFirst: [PoetryCard] {
+        poetryCards.sorted { $0.date > $1.date || ($0.date == $1.date && $0.id > $1.id) }
+    }
+
+    func deletePoetryCard(id: String) {
+        var list = poetryCards
+        list.removeAll { $0.id == id }
+        persistPoetryCards(list)
+        snapshot.generatedCards.removeAll { $0 == id }
+    }
+
     /// 老版本升级迁移：过去只有离散键、快照 favorites 恒为空。
     /// 快照里还没有任何收藏时，把已置位的离散键补成收藏项，避免升级后收藏全丢。
     /// 注意：init 内的赋值不触发 didSet（属性观察器在初始化阶段不回调），所以这里显式落盘。
@@ -317,6 +368,10 @@ final class AppStore: ObservableObject {
     func resetAll() {
         StorageKeys.all.forEach { remove($0) }
         UserDefaults.standard.removeObject(forKey: StorageKeys.snapshotKey)
+        // 诗境卡存在独立键里（见 poetryCardsKey 的注释），resetAll 必须一起清，
+        // 否则"重置全部数据"后作品集里还留着上一轮的卡。
+        UserDefaults.standard.removeObject(forKey: Self.poetryCardsKey)
+        // 用户自选头像也要清（它是 Documents 下的文件 + 一个键，键清了就回默认头像）
         snapshot = .default
     }
 }

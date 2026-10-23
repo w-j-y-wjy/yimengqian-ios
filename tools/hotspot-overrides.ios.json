@@ -114,14 +114,14 @@
     },
     "rec-jiangxue-play": {
       "action": {
-        "type": "navigate",
-        "target": "/poetry/jiangxue"
+        "type": "speakText",
+        "text": "千山鸟飞绝，万径人踪灭。孤舟蓑笠翁，独钓寒江雪。"
       }
     },
     "rec-niaoming-play": {
       "action": {
-        "type": "navigate",
-        "target": "/native/poem/niao-ming-jian"
+        "type": "speakText",
+        "text": "人闲桂花落，夜静春山空。月出惊山鸟，时鸣春涧中。"
       },
       "x": 57.6,
       "y": 46.6,
@@ -130,8 +130,8 @@
     },
     "rec-jingye-play": {
       "action": {
-        "type": "navigate",
-        "target": "/native/poem/jing-ye-si"
+        "type": "speakText",
+        "text": "床前明月光，疑是地上霜。举头望明月，低头思故乡。"
       }
     },
     "rec-jiangxue": {
@@ -629,6 +629,25 @@
       "y": 5.186,
       "width": 35,
       "height": 5
+    },
+    "submit-btn": {
+      "action": {
+        "type": "checkAnswer",
+        "target": "/stamp/reward",
+        "message": "请先选择答案",
+        "storageKey": "feihualingAnswer",
+        "correctAnswer": "A",
+        "correctAnswers": [
+          "A",
+          "C"
+        ],
+        "storageFlags": [
+          {
+            "key": "feihualingCompleted",
+            "value": "true"
+          }
+        ]
+      }
     }
   },
   "stamp-reward": {
@@ -979,6 +998,12 @@
         "type": "navigate",
         "target": "/native/profile/main"
       }
+    },
+    "identity": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/profile/main"
+      }
     }
   },
   "artifact-result": {
@@ -992,6 +1017,11 @@
       "action": {
         "type": "navigate",
         "target": "/native/photo/main"
+      }
+    },
+    "flash": {
+      "action": {
+        "type": "toggleTorch"
       }
     }
   },
@@ -1058,6 +1088,32 @@
       "action": {
         "type": "navigate",
         "target": "/native/note/main"
+      }
+    },
+    "select-border": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
+    }
+  },
+  "onboarding-intro": {
+    "card-city": {
+      "action": {
+        "type": "navigate",
+        "target": "/city/dynasties"
+      }
+    },
+    "card-people": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/character/sushi"
+      }
+    },
+    "card-dreambook": {
+      "action": {
+        "type": "navigate",
+        "target": "/dreambook"
       }
     }
   }

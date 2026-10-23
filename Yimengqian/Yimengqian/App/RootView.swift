@@ -61,6 +61,8 @@ struct RootView: View {
                         NativeFavoriteSlotView(index: index)
                     } else if case .list(let listID) = detail {
                         NativeListView(listID: listID)
+                    } else if case .card(let cardID) = detail {
+                        NativePoetryCardView(cardID: cardID)
                     } else if let content = NativeDetailContent.resolve(detail) {
                         NativeDetailView(detail: detail, content: content)
                     }

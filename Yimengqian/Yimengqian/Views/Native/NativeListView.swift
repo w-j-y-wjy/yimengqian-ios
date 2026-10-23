@@ -200,18 +200,20 @@ struct NativeListView: View {
                     )
                 }
         case "works":
-            // 诗境卡作品：快照里记的是生成记录 id（保存时写入），这里翻成可读行
-            let note = store.string(StorageKeys.cardNote)
-            return store.snapshot.generatedCards.enumerated().map { index, raw in
-                let poemID = raw.replacingOccurrences(of: "-card", with: "")
-                let poem = NativeDetail.allPoems().first(where: { $0.id == poemID })
-                let base = "已在诗境卡工坊生成并保存"
+            // 诗境卡作品：直接读真实卡面快照（诗句/题注/画风都在里面）。
+            // 旧实现只存一个 id、再从诗句库反推标题 —— 画不出用户生成的那张卡。
+            return store.poetryCardsNewestFirst.map { card in
+                let styleName = Self.styleNames[card.style] ?? card.style
+                let layoutName = Self.layoutNames[card.layout] ?? card.layout
+                var subtitle = "\(styleName) · \(layoutName)"
+                if !card.note.isEmpty { subtitle += "　题注：\(card.note)" }
+                subtitle += "　\(card.date)"
                 return Row(
-                    id: raw,
-                    title: poem.map { "《\($0.title)》诗境卡" } ?? "诗境卡 \(index + 1)",
-                    subtitle: (note?.isEmpty == false ? "题注：\(note!)　" : "") + base,
-                    image: poem?.image ?? poem?.imagery?.first?.image,
-                    route: "/poetry/card"
+                    id: card.id,
+                    title: "《\(card.poemTitle)》诗境卡",
+                    subtitle: subtitle,
+                    image: card.image,
+                    route: "/native/card/\(card.id)"
                 )
             }
         case "dialogues":
@@ -244,6 +246,10 @@ struct NativeListView: View {
         let k = keyword.trimmingCharacters(in: .whitespaces)
         return p.title.contains(k) || p.author.contains(k) || p.content.contains(k) || p.dynasty.contains(k)
     }
+
+    /// 画风 / 版式的中文名（列表副标题用；与诗境卡工坊的胶囊文案保持一致）
+    static let styleNames = ["ink": "水墨", "gongbi": "工笔", "bluegreen": "青绿", "song": "宋画"]
+    static let layoutNames = ["horizontal": "横版", "vertical": "竖版", "whitespace": "留白"]
 
     @ViewBuilder
     private func thumbnail(_ path: String?) -> some View {

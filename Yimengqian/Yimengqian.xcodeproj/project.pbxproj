@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		9CD242D7F5D6DC34E930AB8E /* NativePoetryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */; };
+		A977C9A7888C4D19E526D59D /* PoetryCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */; };
+		770812B81C53920E7C93B508 /* AIBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF3E973A5CBBA87BAA1715D /* AIBridge.swift */; };
+		C05536A107A0F1DDCB7A4BC9 /* TorchCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B4F82CE5FBCBF0687C53E76 /* TorchCenter.swift */; };
 		E521634B06FACFFAA33DFF89 /* YimengqianApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA5651D8F516DBDACCA58498 /* YimengqianApp.swift */; };
 		07DA3C03DAFC945CE0869518 /* NativeRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E758DCA970802688FD46C078 /* NativeRoutes.swift */; };
 		D05DAFF34B411B864F117BAE /* ScreensConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2CD72FA750121F7D2CA13B /* ScreensConfig.swift */; };
@@ -52,6 +56,10 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativePoetryCardView.swift; sourceTree = "<group>"; };
+		880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoetryCardRenderer.swift; sourceTree = "<group>"; };
+		4FF3E973A5CBBA87BAA1715D /* AIBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIBridge.swift; sourceTree = "<group>"; };
+		4B4F82CE5FBCBF0687C53E76 /* TorchCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorchCenter.swift; sourceTree = "<group>"; };
 		DA5651D8F516DBDACCA58498 /* YimengqianApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YimengqianApp.swift; sourceTree = "<group>"; };
 		E758DCA970802688FD46C078 /* NativeRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeRoutes.swift; sourceTree = "<group>"; };
 		DA2CD72FA750121F7D2CA13B /* ScreensConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreensConfig.swift; sourceTree = "<group>"; };
@@ -154,7 +162,9 @@
 				A4FD1ED8A96EE1326F514C50 /* SelectionStore.swift */,
 				53FD0719A74ACDEDECD87E34 /* SpeechCenter.swift */,
 				ADC8B87871CEE970220912C9 /* ToastCenter.swift */,
-			);
+							4B4F82CE5FBCBF0687C53E76 /* TorchCenter.swift */,
+				4FF3E973A5CBBA87BAA1715D /* AIBridge.swift */,
+);
 			path = Engine;
 			sourceTree = "<group>";
 		};
@@ -216,7 +226,9 @@
 				78D52E5AB297DC26B4CEA3B2 /* PreferenceTestLayer.swift */,
 				9D0C53540E3148F400CE0F48 /* ProfileLayer.swift */,
 				3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */,
-			);
+							880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */,
+				B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */,
+);
 			path = Views/Native;
 			sourceTree = "<group>";
 		};
@@ -301,6 +313,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CD242D7F5D6DC34E930AB8E /* NativePoetryCardView.swift in Sources */,
+				A977C9A7888C4D19E526D59D /* PoetryCardRenderer.swift in Sources */,
+				770812B81C53920E7C93B508 /* AIBridge.swift in Sources */,
+				C05536A107A0F1DDCB7A4BC9 /* TorchCenter.swift in Sources */,
 				3EF49115FF5066CCA097B146 /* in Sources */,
 				E521634B06FACFFAA33DFF89 /* in Sources */,
 				07DA3C03DAFC945CE0869518 /* in Sources */,

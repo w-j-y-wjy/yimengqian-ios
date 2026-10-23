@@ -60,6 +60,14 @@ enum StorageKeys {
     /// 个人资料（NativeProfileEditView 写入；留空则用设计稿里的默认值）
     static let profileName = "profileName"
     static let profileTitle = "profileTitle"
+    /// 用户自选头像（PHPicker 选图后存为 PNG 到 Documents，这里只存文件名）。
+    /// 只存文件名而不是绝对路径：iOS 沙盒路径每次安装都会变，存绝对路径下次启动就失效。
+    static let profileAvatarFile = "profileAvatarFile"
+    /// AI 通道最近一次结果与来源（AIBridge 写入；来源用于如实标注「本地规则 / 在线生成」）
+    static let aiResult = "aiResult"
+    static let aiResultSource = "aiResultSource"
+    /// 飞花令当前题号（多轮推进用；0-based，对应 ContentData.feihualingQuestions）
+    static let feihualingRound = "feihualingRound"
     static let dreambookOpened = "dreambookOpened"
     static let currentCity = "currentCity"
     static let initialStamp = "initialStamp"
@@ -116,6 +124,10 @@ enum StorageKeys {
         favoritesEditing,
         profileName,
         profileTitle,
+        profileAvatarFile,
+        aiResult,
+        aiResultSource,
+        feihualingRound,
         dreambookOpened,
         currentCity,
         initialStamp,

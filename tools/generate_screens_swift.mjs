@@ -47,6 +47,10 @@ const actionCases = [
   'incrementOnce', 'delayedNavigate', 'conditionalJump', 'setDefaultsAndNavigate', 'checkAnswer',
   // 朗读：用系统 AVSpeechSynthesizer 念出指定文本（不需要音频素材）
   'speakText',
+  // 闪光灯：真调 AVCaptureDevice.torchMode（器物识别页那颗按钮原本只弹「闪光灯模拟」）
+  'toggleTorch',
+  // AI 能力：可留空 key 的通道；无 key 时走本地规则降级（见 Engine/AIBridge.swift）
+  'aiGenerate',
 ];
 const isCase = (t) => actionCases.includes(t);
 
@@ -180,6 +184,12 @@ function emitAction(a) {
   if (a.defaultValue != null) parts.push(`defaultValue: ${swStr(a.defaultValue)}`);
   if (a.delay != null) parts.push(`delay: ${swNum(a.delay)}`);
   if (a.correctAnswer != null) parts.push(`correctAnswer: ${swStr(a.correctAnswer)}`);
+  // 多正确答案：飞花令的判据是「诗句里含令字」，一题天然可能有多个选项都成立
+  // （第 1 题 A「春眠不觉晓」与 C「春风得意马蹄疾」都含「春」）。
+  // 旧的单值 correctAnswer 会把 C 误判成错，所以补一个集合字段；未配置时仍回落到 correctAnswer。
+  if (Array.isArray(a.correctAnswers) && a.correctAnswers.length) {
+    parts.push(`correctAnswers: [${a.correctAnswers.map((v) => swStr(v)).join(', ')}]`);
+  }
   // speakText 用 message 承载要朗读的文本（不再另造字段，保持 HotspotAction 结构不变）
   if (type === 'speakText' && a.text != null) parts.push(`message: ${swStr(a.text)}`);
   if (Array.isArray(a.storage) && a.storage.length) {
@@ -233,6 +243,8 @@ struct HotspotAction: Codable, Equatable {
         case setDefaultsAndNavigate
         case checkAnswer
         case speakText
+        case toggleTorch
+        case aiGenerate
     }
     var type: Kind
     var target: String?
@@ -247,12 +259,16 @@ struct HotspotAction: Codable, Equatable {
     var delay: Double?
     var defaults: [KV]?
     var correctAnswer: String?
+    /// 多正确答案集合。飞花令的判据是字面含令字，一题可能有多个选项都成立；
+    /// 非空时以它为准，correctAnswer 退化为兼容旧配置的兜底。
+    var correctAnswers: [String]?
     var storageFlags: [KV]?
 
     init(type: Kind, target: String? = nil, message: String? = nil, storage: [KV]? = nil,
          storageKey: String? = nil, storageValue: String? = nil, onMessage: String? = nil,
          offMessage: String? = nil, flagKey: String? = nil, defaultValue: String? = nil,
          delay: Double? = nil, defaults: [KV]? = nil, correctAnswer: String? = nil,
+         correctAnswers: [String]? = nil,
          storageFlags: [KV]? = nil) {
         self.type = type
         self.target = target
@@ -267,6 +283,7 @@ struct HotspotAction: Codable, Equatable {
         self.delay = delay
         self.defaults = defaults
         self.correctAnswer = correctAnswer
+        self.correctAnswers = correctAnswers
         self.storageFlags = storageFlags
     }
 }
