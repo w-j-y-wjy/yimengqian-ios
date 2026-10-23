@@ -334,19 +334,19 @@ struct NativeDetailContent {
             return NativeDetailContent(
                 title: pd.name,
                 subtitle: "相似纹样",
-                // 配图缺失时不借别的纹样图：宁可不显示 hero
                 // 配图缺失时不再留空 —— 改用程序化绘制的纹样（PatternPainter），
                 // 三条相似纹样各自画出可辨识的形态，详情页 hero 不再是空白
                 hero: pd.image.isEmpty ? nil : pd.image,
-                paintedPattern: pd.image.isEmpty ? pd.name : nil,
                 lines: [],
+
                 sections: [
                     ("纹样结构", pd.structure),
                     ("寓意", pd.symbolism),
                     ("时代风格", pd.eraStyle),
                 ],
                 tags: ["缠枝", "宋代"],
-                favorite: nil
+                favorite: nil,
+                paintedPattern: pd.image.isEmpty ? pd.name : nil
             )
 
         case .spot(let id):
