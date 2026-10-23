@@ -12,6 +12,9 @@
 
 import UIKit
 import SwiftUI
+// PHPicker* 全部定义在 PhotosUI 里：只 import UIKit 会报 "cannot find type PHPickerViewController"。
+// NativePhotoPickView 之所以没踩到，是因为它本来就 import 了 PhotosUI。
+import PhotosUI
 
 enum AvatarStore {
     /// Documents 下的固定文件名（覆盖写，不累积占位文件）
