@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		2DA2141B3904B77FC52D64BC /* IdentityLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DA0C7F37F4E651F67E4ED1E /* IdentityLayer.swift */; };
 		9CD242D7F5D6DC34E930AB8E /* NativePoetryCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */; };
 		A977C9A7888C4D19E526D59D /* PoetryCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */; };
 		770812B81C53920E7C93B508 /* AIBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF3E973A5CBBA87BAA1715D /* AIBridge.swift */; };
@@ -56,6 +57,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		9DA0C7F37F4E651F67E4ED1E /* IdentityLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityLayer.swift; sourceTree = "<group>"; };
 		B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativePoetryCardView.swift; sourceTree = "<group>"; };
 		880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoetryCardRenderer.swift; sourceTree = "<group>"; };
 		4FF3E973A5CBBA87BAA1715D /* AIBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIBridge.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				3E26E192A497BA9B70CB0D14 /* ScreenNativeLayer.swift */,
 							880FD7D3912444C1EAE6B6E3 /* PoetryCardRenderer.swift */,
 				B3BB28EA320F35FDDAF9505A /* NativePoetryCardView.swift */,
+				9DA0C7F37F4E651F67E4ED1E /* IdentityLayer.swift */,
 );
 			path = Views/Native;
 			sourceTree = "<group>";
@@ -313,6 +316,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DA2141B3904B77FC52D64BC /* IdentityLayer.swift in Sources */,
 				9CD242D7F5D6DC34E930AB8E /* NativePoetryCardView.swift in Sources */,
 				A977C9A7888C4D19E526D59D /* PoetryCardRenderer.swift in Sources */,
 				770812B81C53920E7C93B508 /* AIBridge.swift in Sources */,

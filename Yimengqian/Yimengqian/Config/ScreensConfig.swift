@@ -235,7 +235,7 @@ enum ScreenCatalog {
         ScreenConfig(id: "jiangxue-scene", route: "/poetry/jiangxue", image: "Screens/jiangxue-scene.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 0.78, y: 5.305, width: 12, height: 5, action: HotspotAction(type: .back)),
                 Hotspot(id: "poetry-lib", label: "诗库", x: 83.181, y: 5.664, width: 12, height: 5, action: HotspotAction(type: .navigate, target: "/poetry")),
-                Hotspot(id: "play-btn", label: "播放按钮", x: 40.939, y: 36.197, width: 17.606, height: 6.907, action: HotspotAction(type: .toggleStorage, storageKey: "jiangxueVideoPlaying", onMessage: "正在播放《江雪》诗境", offMessage: "已暂停诗境")),
+                Hotspot(id: "play-btn", label: "播放按钮", x: 40.939, y: 36.197, width: 17.606, height: 6.907, action: HotspotAction(type: .speakText, message: "千山鸟飞绝，万径人踪灭。孤舟蓑笠翁，独钓寒江雪。")),
                 Hotspot(id: "style-ink", label: "水墨画风", x: 5.845, y: 55.72, width: 20.329, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择水墨画风", storageKey: "jiangxueStyle", storageValue: "ink")),
                 Hotspot(id: "style-gongbi", label: "工笔画风", x: 28.69, y: 55.937, width: 21.362, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择工笔画风", storageKey: "jiangxueStyle", storageValue: "gongbi")),
                 Hotspot(id: "style-bluegreen", label: "青绿画风", x: 50.751, y: 55.72, width: 20.892, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择青绿画风", storageKey: "jiangxueStyle", storageValue: "bluegreen")),

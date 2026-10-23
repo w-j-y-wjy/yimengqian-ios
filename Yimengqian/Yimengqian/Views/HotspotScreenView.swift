@@ -216,6 +216,10 @@ private struct HotspotButton: View {
             return "提交答案"
         case .speakText:
             return "朗读这段文字"
+        case .toggleTorch:
+            return "切换闪光灯"
+        case .aiGenerate:
+            return "生成文字"
         case .conditionalNavigate, .conditionalJump:
             return "继续"
         }

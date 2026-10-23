@@ -80,6 +80,8 @@ struct ScreenNativeLayer: View {
                 PatternTabsLayer(screen: screen, container: containerSize)
             case "jiangxue-scene":
                 JiangxueStyleLayer(screen: screen, container: containerSize)
+            case "identity-result":
+                IdentityLayer(screen: screen, container: containerSize)
             default:
                 EmptyView()
             }
