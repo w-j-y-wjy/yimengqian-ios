@@ -149,6 +149,7 @@ final class AIBridge {
 
     /// 题注：按诗句里的意象词挑一句模板，并附上原句里的关键词，保证"看着像针对这句"
     private static func localCardNote(from poem: String) -> String {
+        let trimmed = poem.trimmingCharacters(in: .whitespacesAndNewlines)
         let lexicon: [(keys: [String], note: String)] = [
             (["雪", "江", "寒", "孤", "舟"], "寒江一叶，雪意无声"),
             (["月", "夜", "影", "霜"], "月到中天，影落空阶"),
