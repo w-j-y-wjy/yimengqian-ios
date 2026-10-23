@@ -312,6 +312,32 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-note.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 相册选图（PHPicker 在模拟器里也能弹，有内置示例照片）
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-home \
+            -nativeDetail /native/photo/main
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-photo-pick.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 原生分享（UIActivityViewController 系统面板）
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen stamp-reward \
+            -nativeDetail /native/share/stamp
+          sleep 7
+          xcrun simctl io "$UDID" screenshot overlay-native-share.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 古典身份详情：按 4 项偏好算出的称号 / 标签 / 释义（预置南宋 + 清幽）
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen identity-result \
+            -nativeDetail /native/identity/main \
+            -preferenceDynasty southern \
+            -preferenceMood quiet
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-identity.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           ls -l overlay-*.png
           if ls ~/Library/Logs/DiagnosticReports/Yimengqian* >/dev/null 2>&1; then
             echo "::error::叠层截图阶段产生了崩溃日志"
