@@ -71,38 +71,44 @@ struct FavoritesLayer: View {
     // 位图里烤死的是 32 篇 / 18 件 / 12 位 / 24 枚，而实际收藏只有几条 ——
     // 个人中心那四张卡早就改成真实计数了，收藏页不跟上就会自相矛盾。
     //
-    // 实测（favorites.png 852×1846）：四个数字的墨色列簇分别落在
-    //   265..317（诗词）、351..387（器物）、537..571（人物）、714..752（印章），
-    //   纵向 296..358；条底色 #EBD8BC。
-    // 只盖数字本身，图标、"篇/件/位/枚" 量词与分隔线都保留位图。
+    // 2026-10-28 二次审查重测（favorites.png 852×1846）。上一版的三个数值都错了：
+    //   · 数字墨迹其实只有 **y 296..323（高 28px）**，上一版按 296..358 去盖 ——
+    //     结果把下面 y 340..359 的「篇/件/位/枚」量词整块盖掉了；
+    //   · 字号按槽高 ×1.02 ≈ 65px 画，比设计稿的 28px 墨迹高出一倍多，四个数字明显偏大；
+    //   · 槽位宽度只按"数字左缘 + 固定宽"估，没有按真实墨迹盒。
+    // 现在四个槽位全部取**实测墨迹盒**（x 与 y 各自量），补丁上下都留 4px：
+    //   诗词 265..317 / 器物 351..386 / 人物 536..572 / 印章 713..752，纵向 296..323。
+    // 只盖数字本身，图标、量词与分隔线都保留位图。
     private struct StatCell {
         let type: FavoriteType
-        let x: CGFloat      // 数字左边界（百分比）
-        let w: CGFloat      // 槽宽（百分比）
+        let x: CGFloat      // 补丁左边界（百分比）
+        let w: CGFloat      // 补丁宽度（百分比）
     }
 
     private let statCells: [StatCell] = [
-        StatCell(type: .poem, x: 0.3105, w: 0.0645),
-        StatCell(type: .artifact, x: 0.4110, w: 0.0450),
-        StatCell(type: .character, x: 0.6290, w: 0.0450),
-        StatCell(type: .stamp, x: 0.8375, w: 0.0460),
+        StatCell(type: .poem, x: 0.306338, w: 0.070423),      // 261..321
+        StatCell(type: .artifact, x: 0.407277, w: 0.050469),  // 347..390
+        StatCell(type: .character, x: 0.624413, w: 0.051643), // 532..576
+        StatCell(type: .stamp, x: 0.832160, w: 0.055164),     // 709..756
     ]
 
     private var statsBand: some View {
         ForEach(Array(statCells.enumerated()), id: \.offset) { _, cell in
             let count = store.collection(filter: cell.type.rawValue).count
             let slotW = container.width * cell.w
-            let slotH = container.height * 0.0345
+            let slotH = container.height * 0.020585       // 38px：数字墨迹 28px + 上下各 5px
+            // 字号照着**墨迹高度**给，不是照着槽高给：KaitiSC 的数字字高≈字号的 0.72
+            let fontSize = container.height * 0.021127    // 39px ≈ 28 / 0.72
             ZStack(alignment: .leading) {
                 Rectangle().fill(Theme.statsSand)
                 Text(verbatim: "\(count)")
-                    .font(.custom("KaitiSC-Bold", size: slotH * 1.02))
+                    .font(.custom("KaitiSC-Bold", size: fontSize))
                     .foregroundColor(Theme.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.55)
             }
             .frame(width: slotW, height: slotH, alignment: .leading)
-            .offset(x: container.width * cell.x, y: container.height * 0.1598)
+            .offset(x: container.width * cell.x, y: container.height * 0.158181)  // 292/1846
         }
     }
 
