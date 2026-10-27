@@ -9,12 +9,12 @@
 | 项 | 值 |
 |---|---|
 | 设计稿屏数 | **25 屏**（`Content/Screens/*.png`，852×1846） |
-| 热区 | **324 个**（百分比矩形，定义在 `Config/ScreensConfig.swift`） |
+| 热区 | **330 个**（百分比矩形，定义在 `Config/ScreensConfig.swift`） |
 | 动作类型 | **18 种**（`Engine/ActionExecutor.swift`） |
-| 原生路由 | **22 类**（`Config/NativeRoutes.swift`），68 个静态目标 |
+| 原生路由 | **23 类**（`Config/NativeRoutes.swift`），68 个静态目标 |
 | needs | **0**（原江雪播放键已改真朗读） |
 | 最低系统 | **iOS 15.0**，Bundle ID `com.yimeng.qiannian` |
-| 代码基线 | `main` @ `c134ca5`（第 30 轮） |
+| 代码基线 | `main` @ `09828da`（第 31–32 轮） |
 
 ## 截图
 
@@ -27,7 +27,9 @@
 | 江雪诗境 | [`jiangxue-scene.png`](Yimengqian/Yimengqian/Content/Screens/jiangxue-scene.png) |
 | 个人中心 | [`profile.png`](Yimengqian/Yimengqian/Content/Screens/profile.png) |
 
-其余 21 屏同目录；真机/模拟器实拍（含叠层与原生页）见 GitHub Actions 每次运行的 artifact `build-evidence-<run_number>`（`splash.png` + `overlay-*.png` + `sweep/*.png` + `build.log`，保留 7 天）。
+其余 21 屏同目录；真机/模拟器实拍（含叠层与原生页）见 GitHub Actions 每次运行的 artifact：
+日常目检下 **`review-thumbs-<run_number>`**（900px JPEG，约 5 MB，快）；需要像素级比对再下
+`build-evidence-<run_number>`（`splash.png` + `overlay-*.png` + `sweep/*.png` + `build.log`，160+ MB，保留 7 天）。
 
 ## 构建
 
@@ -58,11 +60,14 @@
 ```powershell
 cd ios
 node scripts/static-check.mjs              # 结构检查：18 通过 / 1 已知警告 / 0 失败
-node ..\_overhaul\metrics.mjs              # 324 热区 | 10 纯提示 | 107 指向原生 | needs 0
+node ..\_overhaul\metrics.mjs              # 330 热区 | 11 纯提示 | 120 指向原生 | needs 0
 node tools/generate_screens_swift.mjs      # 重新生成 ScreensConfig.swift（改了热区配置才需要）
 node tools/preview.mjs                     # 本地浏览器预览 25 屏 + 热区（Windows 可用）
 node tools/add-swift-to-pbxproj.mjs Engine/Foo.swift   # 新 Swift 文件登记进 pbxproj 四处
 ```
+
+> 生成器默认找 `../安卓/一梦千年App`，本机实际目录是 `安卓\一梦千年-App`，重跑前先设：
+> `$env:YIMENG_ANDROID = 'D:\wij\桌面\移动应用比赛\安卓\一梦千年-App'`
 
 > 生成物不要手改：`ScreensConfig.swift` 会被 `generate_screens_swift.mjs` 覆盖。要改热区请编辑 `tools/hotspot-overrides.ios.json` / `hotspot-additions.ios.json`。
 
@@ -77,18 +82,22 @@ node tools/add-swift-to-pbxproj.mjs Engine/Foo.swift   # 新 Swift 文件登记�
 | 收藏数据闭环 | 收藏/取消 → 计数、进度条、等级、四格统计全部联动 |
 | 诗境卡卡面 | 保存时冻结 `PoetryCard`，作品页重绘真卡面（诗句/题注/画风/版式/印章），可分享/删除 |
 | 闪光灯 | `Engine/TorchCenter.swift` 用 `AVCaptureDevice.torchMode` 真开关 |
-| 头像 | `Engine/AvatarStore.swift`：PHPicker 选图 → 居中裁方 → 512px PNG 存 Documents |
-| 相册选图 | 系统 `PHPickerViewController`，无需相册权限声明 |
+| 头像 | `Engine/AvatarStore.swift`：PHPicker 选图 → 居中裁方 → 512px PNG 存 Documents；个人中心的圆按实测几何 (171.5, 369.5)/r=108 覆盖，不会错位 |
+| 相册选图 | 系统 `PHPickerViewController`，无需相册权限声明；器物首页「相册上传」进页面即弹 |
+| 拍摄识别 | 系统相机（`UIImagePickerController(.camera)`，需 `NSCameraUsageDescription`）；无摄像头设备如实说明并给相册退路 |
+| 器物识别 | `Engine/ArtifactRecognizer.swift`：Vision 特征指纹 + 颜色直方图，与本机 4 件参照器物做**离线**相似度排序；相似度不足时明说「未能可靠识别」 |
+| 最近足迹 | 进首页/汴京/茶坊/城池详情都会记一笔；「我的」底部三张卡与 `/native/list/footprints` 同源，可空态、可去重 |
 | AI 本地规则 | `Engine/AIBridge.swift` 未配 key 时走本地规则引擎（模板 + 意象库 + 押韵校验） |
 
 **模拟 / 未做**
 
 | 项 | 现状 |
 |---|---|
-| 相机识别模型 | 只有相册选图是真的；相机与识别模型未接，识别结果仍是写死的示例 |
+| 器物识别精度 | 参照库只有工程里那 4 张器物插画，**不是训练过的器物分类器**；给的是相对相似度排序，不是"识别准确率" |
 | 江雪视频 | 无视频素材，播放键用朗读替代（有声音，无画面） |
 | 四画风原图 | 工程只有一张江雪图；四种画风是 Core Image **滤镜风格化**，不是 AI 生成的同构图原图 |
 | AI 在线生成 | key 留空 ⇒ 只有本地规则；要在线需自备 `YimengAIKey`（Info.plist）或 `YIMENG_AI_KEY`（环境变量）并联网 |
+| 位图里的静态状态栏 | 25 屏顶部烤着 `9:41`，而系统状态栏被全局隐藏（另有 22 个原生页本来就没状态栏）。改它要给 25 张图重新对齐全部像素叠层，本轮未做 |
 
 > 三条硬原则：不把规则引擎说成语言模型、断网演示不塞联网功能、没有评测集不报准确率。
 

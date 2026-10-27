@@ -214,6 +214,20 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-profile-edit.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 自定义头像（S35 b）：直接把一张图塞进 App 沙盒 Documents/avatar.png，
+          # 验证"换过头像后头像仍在原位、铅笔徽标没被裁掉"。
+          # 为什么要走文件而不是 UI：PHPicker 需要人手点，模拟器里没法脚本化选图。
+          DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)
+          echo "沙盒：$DATA"
+          sips -Z 512 -s format png \
+            Yimengqian/Yimengqian/Content/ArtApp/character-liqingzhao.jpg \
+            --out "$DATA/Documents/avatar.png" >/dev/null
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen profile
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-profile-avatar.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+          rm -f "$DATA/Documents/avatar.png"   # 别把定制头像带进后面的扫屏
+
           # 原生详情页（大整改 S1）：设计稿里没有的详情改由原生页承载
           xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -initialScreen poetry-home \
@@ -344,8 +358,10 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-profile-footprints.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
-          # 足迹空态：没有任何足迹时应是「还没有足迹」而不是三张假卡
-          xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen profile
+          # 足迹空态：没有任何足迹时应是「还没有足迹」而不是三张假卡。
+          # ⚠️ 必须带 -resetProgress：simctl 每次 launch 不会重置 UserDefaults，
+          # 上一步预置的足迹会一路留着（第一版就因此拍到了"空态却仍有 3 张卡"）。
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen profile -resetProgress 1
           sleep 6
           xcrun simctl io "$UDID" screenshot overlay-profile-footprints-empty.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true

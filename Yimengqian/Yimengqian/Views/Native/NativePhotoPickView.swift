@@ -91,7 +91,9 @@ struct ArtifactRecognizeView: View {
                     sourceButtons
 
                     if picked == nil && !isAnalyzing {
-                        emptyHint
+                        referenceRow
+                        howToSteps
+                        exampleRow
                     }
 
                     disclaimer
@@ -228,18 +230,18 @@ struct ArtifactRecognizeView: View {
     }
 
     @ViewBuilder
-    private func thumbnail(_ path: String) -> some View {
+    private func thumbnail(_ path: String, side: CGFloat = 54) -> some View {
         if let img = AssetLoader.image(path) {
             Image(uiImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 54, height: 54)
+                .frame(width: side, height: side)
                 .clipped()
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         } else {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(Theme.paperWarm)
-                .frame(width: 54, height: 54)
+                .frame(width: side, height: side)
         }
     }
 
@@ -278,11 +280,88 @@ struct ArtifactRecognizeView: View {
         }
     }
 
-    private var emptyHint: some View {
-        Text("没有照片也可以先去「示例体验」看看识别结果长什么样。")
-            .font(.custom("SongtiSC-Regular", size: 11.5))
-            .foregroundColor(Theme.inkMuted)
+    /// 本机参照库：把要比对的 4 件器物直接摆出来。
+    /// 这一块不是为了好看 —— 它让"识别"这件事变得可解释：用户看得到比对基准，
+    /// 也就明白为什么结果只可能是这 4 件里的一件，而不会以为是通用识物模型。
+    private var referenceRow: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Rectangle().fill(Theme.vermilion).frame(width: 3, height: 13)
+                Text("本机参照库 · \(ContentData.artifacts.count) 件")
+                    .font(.custom("KaitiSC-Bold", size: 15))
+                    .foregroundColor(Theme.ink)
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(ContentData.artifacts) { artifact in
+                        Button(action: { router.navigate(route: "/native/artifact/\(artifact.id)") }) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                thumbnail(artifact.image, side: 96)
+                                    .frame(width: 96, height: 96)
+                                Text(artifact.name)
+                                    .font(.custom("SongtiSC-Regular", size: 11))
+                                    .foregroundColor(Theme.inkLight)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.75)
+                            }
+                            .frame(width: 96, alignment: .leading)
+                        }
+                        .buttonStyle(PressableStyle())
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+        }
     }
+
+    /// 三步说明：写"会发生什么"，比写"请对准器物"有用
+    private var howToSteps: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Rectangle().fill(Theme.vermilion).frame(width: 3, height: 13)
+                Text("怎么用")
+                    .font(.custom("KaitiSC-Bold", size: 15))
+                    .foregroundColor(Theme.ink)
+            }
+            ForEach(Array(Self.steps.enumerated()), id: \.offset) { pair in
+                HStack(alignment: .top, spacing: 8) {
+                    Text(verbatim: "\(pair.offset + 1)")
+                        .font(.custom("SongtiSC-Regular", size: 11))
+                        .foregroundColor(Theme.paperLight)
+                        .frame(width: 17, height: 17)
+                        .background(Circle().fill(Theme.vermilion.opacity(0.85)))
+                    Text(pair.element)
+                        .font(.custom("SongtiSC-Regular", size: 12.5))
+                        .foregroundColor(Theme.inkLight)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+    }
+
+    /// 没照片也能先看结果长什么样（走原本的示例结果页，页面上有「示例体验」的牌子）
+    private var exampleRow: some View {
+        Button(action: { router.navigate(route: "/artifact/result") }) {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles").font(.system(size: 12, weight: .semibold))
+                Text("先看一份示例结果")
+                    .font(.custom("SongtiSC-Regular", size: 13.5))
+            }
+            .foregroundColor(Theme.ink)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(Capsule().fill(Theme.paperLight))
+            .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.55), lineWidth: 0.8))
+        }
+        .buttonStyle(PressableStyle())
+    }
+
+    private static let steps: [String] = [
+        "拍下或选一张器物照片（整体入镜更准）",
+        "在本机与 4 件参照器物比对视觉特征",
+        "得到最接近的几件，点开看详情与纹样",
+    ]
 
     private var disclaimer: some View {
         Text("识别方式：在本机与 \(ArtifactRecognizer.shared.referenceCount) 件参照器物做视觉特征比对（Vision 特征指纹 + 颜色分布），不联网、不上传照片。相似度是相对排序，不是训练模型给出的概率。")

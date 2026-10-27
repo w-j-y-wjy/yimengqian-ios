@@ -295,15 +295,25 @@ final class AppStore: ObservableObject {
         recordVisit("place:\(placeID)", date: date)
     }
 
-    /// 个人中心「最近足迹」的真实数据：只取 `place:` 前缀的记录，按最近到访排序
+    /// 个人中心「最近足迹」的真实数据：只取 `place:` 前缀的记录，按**到访日期倒序**。
+    ///
+    /// 为什么还要按日期排：recordVisit 是"插到最前"，正常使用时插序就等于时间序；
+    /// 但一旦出现补记（比如 CI 预置、或者从旧存档迁移），插序就和真实到访顺序不一致了，
+    /// 界面却写着"按最近到访排序"。这里显式按 yyyy-MM-dd 倒序，同一天保持插入顺序。
     var recentFootprints: [FootprintRecord] {
-        snapshot.recentViews.compactMap { raw -> FootprintRecord? in
+        let list = snapshot.recentViews.compactMap { raw -> FootprintRecord? in
             let parts = raw.split(separator: "|", maxSplits: 1).map(String.init)
             guard parts.count == 2, parts[1].hasPrefix("place:") else { return nil }
             let pid = String(parts[1].dropFirst("place:".count))
             guard let place = PlaceCatalog.place(id: pid) else { return nil }
             return FootprintRecord(place: place, date: parts[0])
         }
+        return list.enumerated()
+            .sorted { a, b in
+                if a.element.date != b.element.date { return a.element.date > b.element.date }
+                return a.offset < b.offset
+            }
+            .map { $0.element }
     }
 
 

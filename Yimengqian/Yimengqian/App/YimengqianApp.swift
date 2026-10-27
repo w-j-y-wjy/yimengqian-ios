@@ -35,6 +35,13 @@ struct YimengqianApp: App {
            let detail = NativeDetail.parse(raw) {
             router.openNative(detail)
         }
+        // 调试 / CI 用：`-resetProgress 1` 先把进度清干净再截图。
+        // 为什么需要：simctl 每次 launch 不会重置 UserDefaults，前面截图预置过的足迹/头像
+        // 会一直留着 —— 想验证"空态"就必须先清一次。
+        if UserDefaults.standard.bool(forKey: "resetProgress") {
+            store.resetAll()
+            AvatarStore.clear()
+        }
         // 调试 / CI 用：`-seedFootprints "bianjing@0,linan@1,jinling@3"`
         // 预置「最近足迹」（@ 后面是天数），这样截图能验证叠层在 1 条 / 3 条 / 空态下的样子，
         // 而不必在模拟器里真的点进三座城。不传就完全不影响正常流程。
