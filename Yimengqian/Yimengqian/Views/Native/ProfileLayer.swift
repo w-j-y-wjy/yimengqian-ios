@@ -133,20 +133,24 @@ struct ProfileLayer: View {
     // 这里把整条卡片带擦掉再按真数据重画，最多 3 张；一条都没有时给空态，不再展示假卡片。
     //
     // 几何全部来自 profile.png 的实测（852×1846）：
-    //   · 卡片带 x 51..797、y 1372..1603；三张卡等宽 241.3、间距 11（末卡右缘 797）
-    //   · 缩略图占卡片上部 155px（1372..1527），下面 76px 是名称与日期
+    //   · 卡片带 x 51..797、y 1372..**1623**（三张卡等宽 241.3、间距 11，末卡右缘 797）
+    //   · 缩略图占卡片上部 155px（1372..1527），下面 96px 是名称与日期
     //   · 名称墨迹 y 1550..1571（字高 22px）、日期墨迹 y 1585..1601（字高 17px）
     //   · 名称/日期文字左缘 x=88，定位钉中心 x=75、y≈1558
+    //   · 这一整块的**外层分区卡**底边在 y≈1642
+    // ⚠️ 第一版把卡片下界当成 1603（其实是标签行附近的一条内框线），于是擦除带只到 1610，
+    //    CI 截图里能清楚看到三张旧卡的**底部圆角弧线**从补丁下沿露出来。
+    //    正确做法：擦到 1641（分区卡边框上一行），卡高按 1623-1372=251 算。
     // 区块底色实测 #EDDBC1，与 Theme.cardCream 完全一致，所以擦除后看不出补丁。
     private enum FootprintGeom {
         // 擦除带（比卡片带略大一圈，确保旧卡的描边与阴影一并盖掉）
         static let stripeX: CGFloat = 0.052817   // 45 / 852
         static let stripeY: CGFloat = 0.739978   // 1366 / 1846
         static let stripeW: CGFloat = 0.886150   // 755 / 852
-        static let stripeH: CGFloat = 0.132178   // 244 / 1846
+        static let stripeH: CGFloat = 0.148970   // 275 / 1846（1366..1641）
         // 卡片
         static let cardTop: CGFloat = 0.743229   // 1372 / 1846
-        static let cardH: CGFloat = 0.125136     // 231 / 1846
+        static let cardH: CGFloat = 0.135968     // 251 / 1846（1372..1623）
         static let firstLeft: CGFloat = 0.059859 // 51 / 852
         static let cardW: CGFloat = 0.283251     // 241.3 / 852
         static let stride: CGFloat = 0.296129    // 252.3 / 852
