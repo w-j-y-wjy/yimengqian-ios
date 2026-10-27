@@ -52,10 +52,10 @@
     {
       "id": "home-daily-refresh",
       "label": "换一句",
-      "x": 69.5,
-      "y": 83.4,
-      "width": 24,
-      "height": 4.6,
+      "x": 63.5,
+      "y": 86,
+      "width": 23,
+      "height": 3.8,
       "action": {
         "type": "navigate",
         "target": "/native/list/poems"

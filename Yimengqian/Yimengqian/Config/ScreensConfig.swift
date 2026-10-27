@@ -115,7 +115,7 @@ enum ScreenCatalog {
                 Hotspot(id: "home-feihualing-card", label: "今日雅集·飞花令", x: 3.8, y: 55.5, width: 92.4, height: 17.6, action: HotspotAction(type: .navigate, target: "/activities/feihualing")),
                 Hotspot(id: "home-daily-poem", label: "今日诗签", x: 3.8, y: 76.4, width: 66, height: 11.5, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian")),
                 Hotspot(id: "home-search", label: "搜索", x: 88.5, y: 6.5, width: 9, height: 5, action: HotspotAction(type: .navigate, target: "/native/search/main")),
-                Hotspot(id: "home-daily-refresh", label: "换一句", x: 69.5, y: 83.4, width: 24, height: 4.6, action: HotspotAction(type: .navigate, target: "/native/list/poems"))
+                Hotspot(id: "home-daily-refresh", label: "换一句", x: 63.5, y: 86, width: 23, height: 3.8, action: HotspotAction(type: .navigate, target: "/native/list/poems"))
             ]),
         ScreenConfig(id: "dynasties", route: "/city/dynasties", image: "Screens/dynasties.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 3.005, y: 5.377, width: 10, height: 5, action: HotspotAction(type: .back)),
