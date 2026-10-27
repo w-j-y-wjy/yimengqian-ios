@@ -225,6 +225,6 @@ struct NativeDetailView: View {
                 Capsule().strokeBorder(Theme.vermilion.opacity(on ? 0 : 0.7), lineWidth: 1)
             )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableStyle())
     }
 }

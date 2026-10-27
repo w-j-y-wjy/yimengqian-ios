@@ -136,7 +136,7 @@ struct NativeIdentityView: View {
                     .padding(.vertical, 13)
                     .background(Capsule().fill(Theme.vermilion))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
 
             Button(action: {
                 // 把画像念出来：与"苏轼语音"同一套系统语音，真出声
@@ -151,7 +151,7 @@ struct NativeIdentityView: View {
                     .background(Capsule().fill(Theme.paperLight))
                     .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.5), lineWidth: 0.9))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
         }
     }
 

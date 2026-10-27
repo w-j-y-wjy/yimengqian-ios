@@ -81,7 +81,7 @@ struct NativeSearchView: View {
                         .font(.system(size: 13))
                         .foregroundColor(Theme.inkMuted)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableStyle())
             }
         }
         .padding(.horizontal, 12)
@@ -118,7 +118,7 @@ struct NativeSearchView: View {
                             .background(Capsule().fill(Theme.paperLight))
                             .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.4), lineWidth: 0.8))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
                 }
             }
         }
@@ -165,7 +165,7 @@ struct NativeSearchView: View {
                         .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Theme.paperLight))
                         .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
                 }
             }
             .padding(.vertical, 6)

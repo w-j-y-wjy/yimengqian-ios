@@ -115,7 +115,7 @@ struct NativePoetryCardView: View {
                     .padding(.vertical, 13)
                     .background(Capsule().fill(Theme.vermilion))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
 
             Button(action: { showDeleteConfirm = true }) {
                 Text("删除这张卡")
@@ -125,7 +125,7 @@ struct NativePoetryCardView: View {
                     .padding(.vertical, 11)
                     .background(Capsule().strokeBorder(Theme.goldBorder.opacity(0.5), lineWidth: 0.9))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
         }
     }
 

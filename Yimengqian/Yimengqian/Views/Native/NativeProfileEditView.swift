@@ -52,7 +52,7 @@ struct NativeProfileEditView: View {
                                         .background(Capsule().fill(isOn ? Theme.chipTan : Theme.paperLight))
                                         .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(isOn ? 0 : 0.45), lineWidth: 0.8))
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(PressableStyle())
                             }
                         }
                     }
@@ -68,7 +68,7 @@ struct NativeProfileEditView: View {
                             .padding(.vertical, 13)
                             .background(Capsule().fill(Theme.vermilion))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
 
                     Button(action: reset) {
                         Text("恢复默认")
@@ -77,7 +77,7 @@ struct NativeProfileEditView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
 
                     Spacer(minLength: 40)
                 }
@@ -138,7 +138,7 @@ struct NativeProfileEditView: View {
                             .background(Capsule().fill(Theme.paperLight))
                             .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.5), lineWidth: 0.8))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
 
                     if AvatarStore.hasCustomAvatar {
                         Button(action: {
@@ -151,7 +151,7 @@ struct NativeProfileEditView: View {
                                 .font(.custom("SongtiSC-Regular", size: 12))
                                 .foregroundColor(Theme.inkMuted)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressableStyle())
                     }
                 }
                 Spacer()

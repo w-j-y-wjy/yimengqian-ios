@@ -80,7 +80,7 @@ struct NativeShareView: View {
                     .padding(.vertical, 13)
                     .background(Capsule().fill(Theme.vermilion))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableStyle())
 
                 Text("会拉起系统分享面板，可发到任意已安装的应用。")
                     .font(.custom("SongtiSC-Regular", size: 11.5))

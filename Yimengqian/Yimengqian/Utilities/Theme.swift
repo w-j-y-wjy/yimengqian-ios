@@ -94,3 +94,21 @@ extension Color {
                   opacity: alpha)
     }
 }
+
+// MARK: - 按下反馈
+
+/// 原生按钮的按下态：极轻的明度变化（120ms），不缩放、不弹跳、不加阴影。
+///
+/// 为什么必须有：全工程 25 处按钮原本都是 `.buttonStyle(.plain)`，而 plain 样式按下时
+/// 什么都不变 —— 手指按住屏幕，界面毫无反应的直接后果就是"这像一张图，不像一个软件"。
+/// 这里只做 14% 的透明度变化，属于"能感觉到但不抢眼"的量级，符合本项目的静态优先原则。
+struct PressableStyle: ButtonStyle {
+    /// 按下时的透明度；默认 0.86
+    var pressedOpacity: Double = 0.86
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? pressedOpacity : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}

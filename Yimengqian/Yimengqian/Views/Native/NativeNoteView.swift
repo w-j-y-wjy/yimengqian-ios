@@ -61,7 +61,7 @@ struct NativeNoteView: View {
                                 .font(.custom("SongtiSC-Regular", size: 12.5))
                                 .foregroundColor(Theme.inkMuted)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressableStyle())
                     }
                 }
 
@@ -73,7 +73,7 @@ struct NativeNoteView: View {
                         .padding(.vertical, 13)
                         .background(Capsule().fill(Theme.vermilion))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableStyle())
 
                 Spacer(minLength: 0)
             }

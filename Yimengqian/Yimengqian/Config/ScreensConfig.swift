@@ -448,7 +448,10 @@ enum ScreenCatalog {
                 Hotspot(id: "poetry-card-1", label: "诗境留痕1", x: 10.54, y: 72.226, width: 25.117, height: 15.531, action: HotspotAction(type: .navigate, target: "/native/list/works")),
                 Hotspot(id: "poetry-card-2", label: "诗境留痕2", x: 36.563, y: 72.355, width: 27.089, height: 15.704, action: HotspotAction(type: .navigate, target: "/native/list/works")),
                 Hotspot(id: "poetry-card-3", label: "诗境留痕3", x: 64.183, y: 72.095, width: 24.46, height: 15.964, action: HotspotAction(type: .navigate, target: "/native/list/works")),
-                Hotspot(id: "continue-btn", label: "继续补全梦册", x: 13.239, y: 88.938, width: 73.005, height: 5, action: HotspotAction(type: .navigate, target: "/home"))
+                Hotspot(id: "continue-btn", label: "继续补全梦册", x: 13.239, y: 88.938, width: 73.005, height: 5, action: HotspotAction(type: .navigate, target: "/home")),
+                Hotspot(id: "dreambook-trace-more", label: "城市足迹 · 查看全部", x: 74.5, y: 29.47, width: 20, height: 2.49, action: HotspotAction(type: .navigate, target: "/native/list/footprints")),
+                Hotspot(id: "dreambook-people-more", label: "相逢古人 · 查看全部", x: 74.5, y: 50.38, width: 20, height: 2.49, action: HotspotAction(type: .navigate, target: "/native/list/characters")),
+                Hotspot(id: "dreambook-ink-more", label: "诗境留痕 · 查看全部", x: 74.5, y: 69.66, width: 20, height: 2.49, action: HotspotAction(type: .navigate, target: "/native/list/works"))
             ]),
         ScreenConfig(id: "profile", route: "/profile", image: "Screens/profile.png", hotspots: [
                 Hotspot(id: "settings", label: "设置", x: 87.16, y: 6.59, width: 11, height: 6, action: HotspotAction(type: .navigate, target: "/native/settings/main")),

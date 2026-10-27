@@ -167,7 +167,7 @@ struct ArtifactRecognizeView: View {
                             .padding(.vertical, 11)
                             .background(Capsule().fill(Theme.vermilion))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
 
                     Button(action: { toggleFavorite(top) }) {
                         HStack(spacing: 5) {
@@ -181,7 +181,7 @@ struct ArtifactRecognizeView: View {
                         .padding(.vertical, 11)
                         .overlay(Capsule().strokeBorder(Theme.vermilion.opacity(0.7), lineWidth: 1))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
                 }
                 .padding(.top, 2)
             }
@@ -259,7 +259,7 @@ struct ArtifactRecognizeView: View {
                 .background(Capsule().fill(Theme.paperLight))
                 .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.6), lineWidth: 0.8))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
 
             if cameraAvailable {
                 Button(action: { sheet = .camera }) {
@@ -273,7 +273,7 @@ struct ArtifactRecognizeView: View {
                     .padding(.vertical, 11)
                     .background(Capsule().fill(Theme.vermilion))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableStyle())
             }
         }
     }
@@ -307,7 +307,7 @@ struct ArtifactRecognizeView: View {
                 .background(Capsule().fill(Theme.paperLight))
                 .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.5), lineWidth: 0.8))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(PressableStyle())
             Spacer()
         }
         .padding(.horizontal, 16)

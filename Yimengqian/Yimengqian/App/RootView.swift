@@ -73,6 +73,20 @@ struct RootView: View {
                     }
                 }
                 .zIndex(2)
+                // 左缘右滑返回：系统 App 的肌肉记忆。用 simultaneousGesture 而不是在页面上
+                // 盖一层透明手势区 —— 后者会吃掉左边缘（返回键就在那儿）的点击。
+                // 触发条件同时要求「起点在左侧 44pt 内」与「横向位移 > 80 且明显大于纵向」，
+                // 所以不会和页面里的竖向滚动、卡片点击打架。
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 24)
+                        .onEnded { value in
+                            let dx = value.translation.width
+                            let dy = value.translation.height
+                            if value.startLocation.x < 44, dx > 80, abs(dy) < dx * 0.6 {
+                                router.closeNative()
+                            }
+                        }
+                )
             }
         }
         .alert("重置全部旅程数据？", isPresented: $showResetConfirm) {

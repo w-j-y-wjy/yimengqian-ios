@@ -413,6 +413,25 @@ jobs:
             exit 1
           fi
 
+      # 缩略图：原始 PNG 一共 160+ MB，从国内拉下来往往要半小时以上。
+      # 这里额外出一套 900px 宽的 JPEG（约 5 MB），日常目检看这一份就够；
+      # 需要做像素级比对（compare-sweep）时再去下完整 PNG。
+      - name: 生成目检缩略图（900px JPEG）
+        if: always()
+        run: |
+          set -o pipefail
+          mkdir -p thumbs
+          for f in overlay-*.png splash.png; do
+            [ -f "$f" ] || continue
+            sips -Z 900 -s format jpeg -s formatOptions 78 "$f" --out "thumbs/$(basename "${f%.png}").jpg" >/dev/null 2>&1 || true
+          done
+          for f in sweep/*.png; do
+            [ -f "$f" ] || continue
+            sips -Z 900 -s format jpeg -s formatOptions 78 "$f" --out "thumbs/$(basename "${f%.png}")-screen.jpg" >/dev/null 2>&1 || true
+          done
+          echo "缩略图 $(ls thumbs/*.jpg 2>/dev/null | wc -l | tr -d ' ') 张"
+          du -sh thumbs || true
+
       - name: 上传证据（截图 + 编译日志）
         if: always()
         uses: actions/upload-artifact@v4
@@ -422,6 +441,16 @@ jobs:
             splash.png
             overlay-*.png
             sweep/*.png
+            thumbs/*.jpg
             build.log
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: 上传目检缩略图（体积小，优先下这一份）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-thumbs-${{ github.run_number }}
+          path: thumbs/*.jpg
           retention-days: 7
           if-no-files-found: warn

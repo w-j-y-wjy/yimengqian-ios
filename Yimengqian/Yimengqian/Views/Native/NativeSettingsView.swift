@@ -59,7 +59,7 @@ struct NativeSettingsView: View {
                             .background(Capsule().fill(Theme.paperLight))
                             .overlay(Capsule().strokeBorder(Theme.vermilion.opacity(0.6), lineWidth: 1))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
                     .padding(.top, 6)
 
                     Text("重置会清空收藏、印章、进度与偏好，且不可撤销。")

@@ -149,7 +149,7 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     pattern: new Set([...cd.matchAll(/PatternElement\(name: "([^"]+)"/g)].map((m) => m[1])),
     city: new Set([...cd.matchAll(/Dynasty\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     // 原生列表页（NativeListView 支持的五类；footprints = 真实「最近足迹」列表）
-    list: new Set(['poems', 'activities', 'works', 'dialogues', 'footprints']),
+    list: new Set(['poems', 'activities', 'works', 'dialogues', 'footprints', 'characters']),
     // 原生设置页（NativeSettingsView，固定 main）
     settings: new Set(['main']),
     // 原生搜索页（NativeSearchView，固定 main）

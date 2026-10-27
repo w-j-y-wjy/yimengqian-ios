@@ -35,6 +35,7 @@ struct NativeListView: View {
 
                     if listID == "poems" {
                         searchField
+                        categoryResetRow
                     }
 
                     ForEach(rows, id: \.id) { row in
@@ -65,7 +66,7 @@ struct NativeListView: View {
                                     .strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8)
                             )
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressableStyle())
                     }
 
                     if rows.isEmpty {
@@ -92,6 +93,7 @@ struct NativeListView: View {
         case "works": return "我的作品"
         case "dialogues": return "对谈记录"
         case "footprints": return "我的足迹"
+        case "characters": return "相逢古人"
         default: return "列表"
         }
     }
@@ -105,7 +107,33 @@ struct NativeListView: View {
         case "works": return "共 \(rows.count) 张诗境卡 · 生成后自动入册"
         case "dialogues": return "共 \(ContentData.dialogueTopics.count) 个话题 · 点开看苏轼的完整回答"
         case "footprints": return "共 \(rows.count) 处 · 按最近到访排序，点开重游"
+        case "characters": return "共 \(ContentData.characters.count) 位 · 点开看生平、作品与足迹"
         default: return ""
+        }
+    }
+
+    /// 空分类的退路：诗库数据里没有「离愁」「边塞」这两类诗，
+    /// 从诗境首页点进去就是一张空列表，而页面上原本没有任何"回到全部"的入口 —— 死路。
+    /// 这里给一颗「全部」胶囊：写 poetryCategory = all（categoryMap 查不到 ⇒ 不筛）。
+    @ViewBuilder
+    private var categoryResetRow: some View {
+        if categoryTitle != nil {
+            Button(action: {
+                store.setString(StorageKeys.poetryCategory, "all")
+                selection.note(key: StorageKeys.poetryCategory, value: "all", screenID: "poems")
+            }) {
+                HStack(spacing: 5) {
+                    Image(systemName: "xmark").font(.system(size: 10, weight: .bold))
+                    Text("看全部 \(NativeDetail.allPoems().count) 首")
+                        .font(.custom("SongtiSC-Regular", size: 12))
+                }
+                .foregroundColor(Theme.inkLight)
+                .padding(.horizontal, 11)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(Theme.paperLight))
+                .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.5), lineWidth: 0.8))
+            }
+            .buttonStyle(PressableStyle())
         }
     }
 
@@ -167,7 +195,7 @@ struct NativeListView: View {
                         .font(.system(size: 13))
                         .foregroundColor(Theme.inkMuted)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableStyle())
             }
         }
         .padding(.horizontal, 12)
@@ -238,6 +266,18 @@ struct NativeListView: View {
                     subtitle: a.description,
                     image: a.image,
                     route: "/native/activity/\(a.id)"
+                )
+            }
+        case "characters":
+            // 梦册「相逢古人 · 查看全部」的落点：人物库本来就在 ContentData 里，
+            // 之前只有三个人的入口，其余（李白/王维）藏在朝代页里，没有统一列表。
+            return ContentData.characters.map { c in
+                Row(
+                    id: c.id,
+                    title: "\(c.name) · \(c.title)",
+                    subtitle: "\(c.dynasty) · " + c.works.prefix(2).map { "《\($0.title)》" }.joined(),
+                    image: c.image,
+                    route: "/native/character/\(c.id)"
                 )
             }
         case "footprints":

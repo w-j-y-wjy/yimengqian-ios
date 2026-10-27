@@ -113,5 +113,43 @@
         "target": "/native/list/footprints"
       }
     }
+  ],
+  "dreambook": [
+    {
+      "id": "dreambook-trace-more",
+      "label": "城市足迹 · 查看全部",
+      "x": 74.5,
+      "y": 29.47,
+      "width": 20,
+      "height": 2.49,
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/footprints"
+      }
+    },
+    {
+      "id": "dreambook-people-more",
+      "label": "相逢古人 · 查看全部",
+      "x": 74.5,
+      "y": 50.38,
+      "width": 20,
+      "height": 2.49,
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/characters"
+      }
+    },
+    {
+      "id": "dreambook-ink-more",
+      "label": "诗境留痕 · 查看全部",
+      "x": 74.5,
+      "y": 69.66,
+      "width": 20,
+      "height": 2.49,
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/works"
+      }
+    }
   ]
 }

@@ -291,7 +291,9 @@ struct NativeDetailContent {
             guard let act = ContentData.activities.first(where: { $0.id == id }) else { return nil }
             return NativeDetailContent(
                 title: act.name,
-                subtitle: act.unlocked ? "已解锁 · \(act.participants ?? 0) 人参与" : "未解锁",
+                // 不再显示"12345 人参与"这类数字：App 没有联网也没有任何统计，
+                // 那个数字是写在 ContentData 里的常量。改成有据可依的说明。
+                subtitle: act.unlocked ? "已解锁 · 本地演示活动" : "未解锁",
                 hero: act.image,
                 lines: [],
                 sections: [("玩法", act.description)],

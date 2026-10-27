@@ -70,7 +70,7 @@ struct NativeFavoriteSlotView: View {
                             .padding(.vertical, 10)
                             .background(Capsule().fill(Theme.vermilion))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableStyle())
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Theme.paperWarm.ignoresSafeArea())
