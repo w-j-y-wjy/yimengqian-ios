@@ -110,8 +110,8 @@ jobs:
           # 内容配图守卫：ContentData 里 23 处 image 指向 ArtApp/，若目录没进包就会静默白屏
           ART=$(find "$APP" \( -name '*.jpg' -o -name '*.png' \) -path '*ArtApp*' | wc -l | tr -d ' ')
           echo "配图数量：$ART"
-          [ "$ART" -eq 30 ] || {
-            echo "::error::ArtApp 应为 30 个文件（26 jpg + 4 png），实际 $ART"
+          [ "$ART" -eq 31 ] || {
+            echo "::error::ArtApp 应为 31 个文件（27 jpg + 4 png），实际 $ART"
             find "$APP" -maxdepth 4 -type d | head -20
             exit 1
           }
@@ -320,6 +320,45 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-photo-pick.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
+          # 器物识别页（新增）：相册入口 / 拍摄入口都落到这一页，含本地特征比对说明
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-home \
+            -nativeDetail /native/recognize/manual
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-recognize.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 拍摄识别入口：模拟器没有相机，应看到"这台设备没有可用摄像头 + 给相册退路"的说明
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-home \
+            -nativeDetail /native/recognize/camera
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-recognize-camera.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 最近足迹（真实数据叠层）：预置三条足迹，验证位图里烤死的「杭州/南京」被真数据替换
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen profile \
+            -seedFootprints "bianjing@0,linan@1,jinling@3"
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-profile-footprints.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 足迹空态：没有任何足迹时应是「还没有足迹」而不是三张假卡
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen profile
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-profile-footprints-empty.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
+          # 足迹列表（原生页）：与我页三张卡同源
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen profile \
+            -nativeDetail /native/list/footprints \
+            -seedFootprints "bianjing@0,linan@1"
+          sleep 6
+          xcrun simctl io "$UDID" screenshot overlay-native-footprints.png
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+
           # 原生分享（UIActivityViewController 系统面板）
           xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -initialScreen stamp-reward \
@@ -328,11 +367,13 @@ jobs:
           xcrun simctl io "$UDID" screenshot overlay-native-share.png
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
 
-          # 古典身份详情：按 4 项偏好算出的称号 / 标签 / 释义（预置南宋 + 清幽）
+          # 古典身份详情：按 4 项偏好算出的称号 / 标签 / 释义
+          # 朝代这里故意传 **northernSong** —— 偏好测试页真实写进 UserDefaults 的就是这个值，
+          # 而规则表认的是 northern；不归一化就会算成 default 身份（北宋/南宋一模一样）。
           xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -initialScreen identity-result \
             -nativeDetail /native/identity/main \
-            -preferenceDynasty southern \
+            -preferenceDynasty northernSong \
             -preferenceMood quiet
           sleep 6
           xcrun simctl io "$UDID" screenshot overlay-native-identity.png

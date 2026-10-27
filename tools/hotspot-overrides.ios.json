@@ -568,14 +568,18 @@
     },
     "topic-1": {
       "action": {
-        "type": "navigate",
-        "target": "/native/dialogue/life"
+        "type": "storageAndNavigate",
+        "target": "/native/dialogue/life",
+        "storageKey": "dialogueTopic",
+        "storageValue": "life"
       }
     },
     "topic-2": {
       "action": {
-        "type": "navigate",
-        "target": "/native/dialogue/huangzhou"
+        "type": "storageAndNavigate",
+        "target": "/native/dialogue/huangzhou",
+        "storageKey": "dialogueTopic",
+        "storageValue": "huangzhou"
       }
     },
     "voice-1": {
@@ -614,6 +618,36 @@
       "action": {
         "type": "navigate",
         "target": "/native/artifact/yu-pei"
+      }
+    },
+    "upload": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/recognize/album"
+      }
+    },
+    "camera": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/recognize/camera"
+      }
+    },
+    "hot-qinghua": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/qinghua-ping"
+      }
+    },
+    "recent-qinghua": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/qinghua-ping"
+      }
+    },
+    "recent-detail": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/qinghua-ping"
       }
     }
   },
@@ -850,6 +884,12 @@
         "type": "navigate",
         "target": "/native/similar/缠枝灵芝"
       }
+    },
+    "view-piece": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/artifact/qinghua-ping"
+      }
     }
   },
   "home": {
@@ -966,13 +1006,13 @@
     "trace-hangzhou": {
       "action": {
         "type": "navigate",
-        "target": "/native/city/nan-song"
+        "target": "/native/list/footprints"
       }
     },
     "trace-nanjing": {
       "action": {
         "type": "navigate",
-        "target": "/native/city/ming"
+        "target": "/native/list/footprints"
       }
     },
     "settings": {
@@ -1010,6 +1050,12 @@
         "type": "navigate",
         "target": "/native/profile/main"
       }
+    },
+    "trace-bianjing": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/list/footprints"
+      }
     }
   },
   "artifact-result": {
@@ -1022,12 +1068,18 @@
     "gallery": {
       "action": {
         "type": "navigate",
-        "target": "/native/photo/main"
+        "target": "/native/recognize/manual"
       }
     },
     "flash": {
       "action": {
         "type": "toggleTorch"
+      }
+    },
+    "bottom-shoot": {
+      "action": {
+        "type": "navigate",
+        "target": "/native/recognize/camera"
       }
     }
   },
@@ -1104,8 +1156,8 @@
     },
     "select-border": {
       "action": {
-        "type": "navigate",
-        "target": "/native/list/works"
+        "type": "toast",
+        "message": "边框样式将在下个版本开放"
       }
     }
   },

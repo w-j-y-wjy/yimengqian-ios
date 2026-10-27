@@ -91,6 +91,7 @@ struct NativeListView: View {
         case "activities": return "雅集活动"
         case "works": return "我的作品"
         case "dialogues": return "对谈记录"
+        case "footprints": return "我的足迹"
         default: return "列表"
         }
     }
@@ -103,6 +104,7 @@ struct NativeListView: View {
         case "activities": return "共 \(ContentData.activities.count) 项活动 · 点开看玩法"
         case "works": return "共 \(rows.count) 张诗境卡 · 生成后自动入册"
         case "dialogues": return "共 \(ContentData.dialogueTopics.count) 个话题 · 点开看苏轼的完整回答"
+        case "footprints": return "共 \(rows.count) 处 · 按最近到访排序，点开重游"
         default: return ""
         }
     }
@@ -118,6 +120,7 @@ struct NativeListView: View {
         case "works": return "还没有生成过诗境卡，去「诗境 · 生成诗境卡」做一张"
         case "poems": return categoryTitle == nil ? "没有找到匹配的诗句" : "该分类下暂时没有诗词"
         case "activities": return "暂无活动"
+        case "footprints": return "还没有足迹。进「古城」逛一逛，这里就会记下你去过的地方"
         default: return "暂无内容"
         }
     }
@@ -235,6 +238,18 @@ struct NativeListView: View {
                     subtitle: a.description,
                     image: a.image,
                     route: "/native/activity/\(a.id)"
+                )
+            }
+        case "footprints":
+            // 真实足迹：与个人中心底部三张卡同源（AppStore.recentFootprints），
+            // 点开重游那座城。没有专属配图的地点显示占位图，不借用别的城池。
+            return store.recentFootprints.map { record in
+                Row(
+                    id: record.place.id,
+                    title: record.place.name,
+                    subtitle: "\(record.place.subtitle)　·　\(record.whenText)到访",
+                    image: record.place.image,
+                    route: record.place.route
                 )
             }
         default:

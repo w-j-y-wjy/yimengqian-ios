@@ -3,6 +3,7 @@
 // 来源：移植自 React 原型 src/pages/TaskReward.tsx（onInit 结算）与 src/pages/Splash.tsx（重置）。
 // 用途：特殊页面的进入时逻辑 ——
 //       - TaskReward：进入即结算一次任务奖励（文化值+50、东坡知音印章、苏轼来信、汴京进度 75%）；
+//       - 足迹：进入「某座城」的屏时记一笔真实足迹（个人中心底部那三张卡的数据源）；
 //       - Splash：五连击重置全部数据（对应 Web 的 ?reset=1，实现在 RootView）。
 // 说明：onInitHandler 供 RootView 在渲染屏幕时获取对应 onInit 回调。
 
@@ -29,6 +30,13 @@ func onInitHandler(for screenID: String, store: AppStore) -> (() -> Void)? {
     case "task-reward":
         return { taskRewardOnInit(store: store) }
     default:
+        // 任何"到了某座城"的屏都顺手记一笔足迹。
+        // 为什么挂在 onInit 而不是 Router：Router 只认路由字符串、拿不到 store；
+        // 而 onInit 是"这一屏已经渲染出来"的时机，语义上就等于"用户真的到过这里"。
+        // recordVisit 自身按 tag 去重、只保留最近一次日期，反复进出不会把记录撑爆。
+        if let place = PlaceCatalog.place(forScreen: screenID) {
+            return { store.recordPlace(place.id) }
+        }
         return nil
     }
 }

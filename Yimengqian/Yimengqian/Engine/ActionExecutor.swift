@@ -129,6 +129,10 @@ final class ActionExecutor {
                 return
             }
             let isOn = store.toggle(key)
+            // 15 种动作里只有这一种漏了把新值镜像进 SelectionStore —— 代价是
+            // 收藏页「编辑」按钮点下去，叠层的编辑态（卡片右上角移除角标）永远不出现，
+            // 编辑态下的"点卡片=取消收藏"拦截也永远不命中。补上这一行即可。
+            selection?.note(key: key, value: isOn ? "true" : "", screenID: screenID)
             toast.show(isOn ? (action.onMessage ?? "已收藏") : (action.offMessage ?? "已取消"))
 
         case .storageAndNavigate:
@@ -157,6 +161,9 @@ final class ActionExecutor {
                 // 命中「flag → 印章」映射时才真的发章进快照（否则「已收入收藏」是句空话）。
                 if let stampId = AppStore.stampClaimMap[flag] {
                     store.grantStamp(id: stampId)
+                    // 领奖页上写着「雅集值 +80 / 花瓣 +6」，那就要真的记进账本，
+                    // 否则那是一张"假收据"：回到个人中心什么都没变。
+                    store.applyReward(RewardRules.stampClaim)
                 }
                 // 保存诗境卡：记账 + 真正生成一张卡面存进作品集
                 // （旧实现只 addGeneratedCard 一个 id，作品页画不出卡，等于"存了个编号"）
@@ -172,8 +179,15 @@ final class ActionExecutor {
             if let target = action.target {
                 // ImageScreen.tsx 以毫秒计时（setTimeout(…, action.delay || 600)），配置值 600/800 均为毫秒
                 let delayMs = action.delay ?? 600
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(delayMs))) { [weak self] in
-                    self?.router.navigate(route: target)
+                // ⚠️ 2026-10-27 修一个隐蔽到"整条动作从来没生效"的 bug：
+                // 这里原本是 `[weak self] in self?.router.navigate(...)`，而 ActionExecutor 是
+                // HotspotScreenView.execute() 里的**局部变量** —— 方法一返回就被释放，
+                // 600/800ms 后 self 必然是 nil，于是 dispatch 块什么都不做。
+                // 用户看到的现象就是「弹了一句提示，页面不动」，器物首页的「相册上传」
+                // 与「拍摄识别」正是这条路径。现在把 router 先强引用出来，闭包只抓它。
+                let router = self.router
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(delayMs))) {
+                    router.navigate(route: target)
                 }
             }
 

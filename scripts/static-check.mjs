@@ -148,8 +148,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     activity: new Set([...cd.matchAll(/Activity\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
     pattern: new Set([...cd.matchAll(/PatternElement\(name: "([^"]+)"/g)].map((m) => m[1])),
     city: new Set([...cd.matchAll(/Dynasty\(\s*id: "([^"]+)"/g)].map((m) => m[1])),
-    // 原生列表页（NativeListView 支持的四类）
-    list: new Set(['poems', 'activities', 'works', 'dialogues']),
+    // 原生列表页（NativeListView 支持的五类；footprints = 真实「最近足迹」列表）
+    list: new Set(['poems', 'activities', 'works', 'dialogues', 'footprints']),
     // 原生设置页（NativeSettingsView，固定 main）
     settings: new Set(['main']),
     // 原生搜索页（NativeSearchView，固定 main）
@@ -162,6 +162,8 @@ else ok('screens.targets', `${targets.length} 个设计稿目标全部能解析�
     note: new Set(['main']),
     // 相册选图页（NativePhotoPickView，固定 main）
     photo: new Set(['main']),
+    // 器物识别取图（ArtifactRecognizeView）：album=相册上传 / camera=拍摄识别 / manual=结果页入口
+    recognize: new Set(['album', 'camera', 'manual']),
     // 个人资料编辑页（NativeProfileEditView，固定 main）
     profile: new Set(['main']),
     // 相似纹样（取自 ContentData.similarPatterns，按 name 索引）

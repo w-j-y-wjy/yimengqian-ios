@@ -292,7 +292,9 @@ struct FavoriteCardInfo {
     static func resolve(_ item: FavoriteItem) -> FavoriteCardInfo {
         switch item.type {
         case .poem:
-            if let poem = ContentData.poems.first(where: { $0.id == item.itemId }) {
+            // 用 allPoems()：人物「作品」里挂的宋词（念奴娇/定风波/水调歌头/如梦令/声声慢）
+            // 只在 Character.works 里，只查 ContentData.poems 会让这些收藏的卡片标题显示成裸 id。
+            if let poem = NativeDetail.allPoems().first(where: { $0.id == item.itemId }) {
                 return FavoriteCardInfo(
                     title: poem.title,
                     subtitle: "\(poem.dynasty) · \(poem.author)",

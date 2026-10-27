@@ -35,6 +35,10 @@ enum RewardRules {
     static let taskReward = RewardRule(culture: 50, tag: "task-reward")
     /// 保存一枚诗境卡
     static let savePoetryCard = RewardRule(culture: 10, ya: 5, tag: "poetry-card")
+    /// 领奖页「收下印章」的奖励：必须与设计稿上写的「雅集值 +80 / 花瓣 +6」一致。
+    /// 之前这一条只发了印章、写了个没人读的 petalCount 键 —— 页面上的 +80/+6 是画上去的，
+    /// 用户回到个人中心看不到任何变化（和「江雪播放键」同一类"假收据"）。
+    static let stampClaim = RewardRule(ya: 80, petals: 6, tag: "stamp-reward")
 
     /// 文化值 → 等级：每 400 一点，1 级起，9 级封顶
     static func level(for culture: Int) -> Int {

@@ -30,7 +30,6 @@ struct NativeIdentityView: View {
     private var choiceRows: [(String, String)] {
         let sceneMap = ["landscape": "山水", "marketplace": "市井"]
         let contentMap = ["poetry": "诗词", "painting": "绘画", "artifact": "器物"]
-        let dynastyMap = ["tang": "盛唐", "northern": "北宋", "southern": "南宋"]
         let moodMap = ["lively": "灵动", "quiet": "清幽"]
         func label(_ map: [String: String], _ key: String?) -> String {
             guard let key = key else { return "未选" }
@@ -39,7 +38,8 @@ struct NativeIdentityView: View {
         return [
             ("偏好场景", label(sceneMap, store.string(StorageKeys.preferenceScene))),
             ("偏好内容", label(contentMap, store.string(StorageKeys.preferenceContent))),
-            ("心仪朝代", label(dynastyMap, store.string(StorageKeys.preferenceDynasty))),
+            // 朝代走归一化：偏好页存的是 northernSong/southernSong，统一翻成中文
+            ("心仪朝代", IdentityProfile.dynastyLabel(store.string(StorageKeys.preferenceDynasty))),
             ("心境", label(moodMap, store.string(StorageKeys.preferenceMood))),
         ]
     }

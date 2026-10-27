@@ -17,11 +17,15 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.3</string>
 	<key>CFBundleVersion</key>
-	<string>20261022.3</string>
+	<string>20261027.1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- 古物识趣「拍摄识别」要用相机。缺这一条会在调用 UIImagePickerController(.camera)
+	     的瞬间被系统直接终止进程（不是报错，是闪退），必须声明。 -->
+	<key>NSCameraUsageDescription</key>
+	<string>用于拍摄器物照片并在本机做特征比对，照片不会上传。</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchScreen</key>

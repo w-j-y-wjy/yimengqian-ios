@@ -141,6 +141,9 @@ struct NativeSettingsView: View {
     private func performReset() {
         store.resetAll()
         selection.reset()
+        // 头像存在 Documents/avatar.png，不在 UserDefaults 里，resetAll() 清不到它 ——
+        // 不删的话"重置全部旅程数据"之后头像还是自定义的那张。
+        AvatarStore.clear()
         router.closeNative()
         if let splash = ScreenCatalog.screen(id: "splash") {
             router.jump(to: splash)

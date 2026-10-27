@@ -274,11 +274,38 @@ final class AppStore: ObservableObject {
     }
 
     /// 最近足迹：去重后插到最前，最多保留 8 条
+    ///
+    /// 2026-10-27 修：旧实现用 `$0 == tag` 去重，但存进去的是 `"日期|tag"`，
+    /// 二者永远不相等 —— 于是同一个地方去 3 次就占 3 格，8 格很快被挤满。
+    /// 现在按 tag 后缀去重（保留最近一次访问的日期）。
     func recordVisit(_ tag: String, date: String = AppSnapshot.dateString()) {
-        snapshot.recentViews.removeAll { $0 == tag }
-        snapshot.recentViews.insert("\(date)|\(tag)", at: 0)
+        let entry = "\(date)|\(tag)"
+        // 同一天重复到访直接返回：既避免反复写盘，也避免"记账 → @Published → 重渲染 →
+        // 再记账"的回环（onInit 每次渲染都会重新构造闭包）。
+        if snapshot.recentViews.first == entry { return }
+        snapshot.recentViews.removeAll { $0 == tag || $0.hasSuffix("|\(tag)") }
+        snapshot.recentViews.insert(entry, at: 0)
         if snapshot.recentViews.count > 8 { snapshot.recentViews = Array(snapshot.recentViews.prefix(8)) }
     }
+
+    /// 记一次「到访某地」。tag 用 `place:<id>` 前缀，与其它行为标签（feihualing / teahouse…）
+    /// 共存于同一个 recentViews 数组里 —— 不新增快照字段，旧存档照样能解码。
+    func recordPlace(_ placeID: String, date: String = AppSnapshot.dateString()) {
+        guard PlaceCatalog.place(id: placeID) != nil else { return }
+        recordVisit("place:\(placeID)", date: date)
+    }
+
+    /// 个人中心「最近足迹」的真实数据：只取 `place:` 前缀的记录，按最近到访排序
+    var recentFootprints: [FootprintRecord] {
+        snapshot.recentViews.compactMap { raw -> FootprintRecord? in
+            let parts = raw.split(separator: "|", maxSplits: 1).map(String.init)
+            guard parts.count == 2, parts[1].hasPrefix("place:") else { return nil }
+            let pid = String(parts[1].dropFirst("place:".count))
+            guard let place = PlaceCatalog.place(id: pid) else { return nil }
+            return FootprintRecord(place: place, date: parts[0])
+        }
+    }
+
 
     /// 记录已完成的对谈话题（幂等）
     func completeDialogue(topic: String) {

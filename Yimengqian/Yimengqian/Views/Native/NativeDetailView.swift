@@ -87,6 +87,29 @@ struct NativeDetailView: View {
                         .padding(.horizontal, 20)
                     }
 
+                    // 纹样画廊：NativeDetailContent.gallery 早就填好了（器物详情的纹样大图 +
+                    // 三个要素图），但此前**没有任何视图渲染它** —— 数据白填。
+                    // 这里按设计稿的气质排一条横向画廊，点不放大的交互（单张即可看清）。
+                    if !content.gallery.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 6) {
+                                Rectangle().fill(Theme.vermilion).frame(width: 3, height: 13)
+                                Text("纹样图")
+                                    .font(.custom("KaitiSC-Bold", size: 15))
+                                    .foregroundColor(Theme.ink)
+                            }
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 10) {
+                                    ForEach(Array(content.gallery.enumerated()), id: \.offset) { _, path in
+                                        galleryCell(path)
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+
                     if let fav = content.favorite {
                         favoriteButton(type: fav.type, itemId: fav.itemId)
                             .padding(.horizontal, 20)
@@ -98,6 +121,33 @@ struct NativeDetailView: View {
             }
 
             topBar
+        }
+        .onAppear(perform: recordCityVisitIfNeeded)
+    }
+
+    /// 到访城池详情就记一笔真实足迹 —— 个人中心「最近足迹」的数据来源。
+    /// 放在 onAppear 而不是热点动作里：同一个城池详情可能从朝代页、梦册、足迹卡三处进入，
+    /// 在"页面真的显示了"的时机记，才能覆盖全部入口。
+    private func recordCityVisitIfNeeded() {
+        if case .city(let id) = detail, let place = PlaceCatalog.place(forCityID: id) {
+            store.recordPlace(place.id)
+        }
+    }
+
+    /// 画廊里的一格：装不下就裁切，别把图压扁
+    @ViewBuilder
+    private func galleryCell(_ path: String) -> some View {
+        if let img = AssetLoader.image(path) {
+            Image(uiImage: img)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 150, height: 110)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8)
+                )
         }
     }
 

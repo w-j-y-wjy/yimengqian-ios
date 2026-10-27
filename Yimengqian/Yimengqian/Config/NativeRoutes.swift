@@ -44,6 +44,10 @@ enum NativeDetail: Equatable {
     case profileEdit
     /// 相册选图（器物识别）：原本只跳回器物首页
     case photo
+    /// 器物识别取图：`album`（相册）/ `camera`（拍摄）/ `manual`（结果页里的「相册」入口，不自动弹）。
+    /// 与 `.photo` 分开是因为入口语义不同 —— 古物识趣首页的「相册上传」应当**一进来就弹相册**，
+    /// 而结果页那颗「相册」按钮是让用户自己点，不能抢焦点。
+    case recognize(String)
     /// 茶坊对谈：某一话题的完整问答（对谈记录与话题行点进来）
     case dialogue(String)
     /// 相似纹样（纹样详解页三张对照卡）：原本只弹「相似纹样：缠枝牡丹」，零信息
@@ -88,6 +92,7 @@ enum NativeDetail: Equatable {
         case "note": return .note
         case "profile": return .profileEdit
         case "photo": return .photo
+        case "recognize": return .recognize(parts[1])
         case "imagery": return .imagery(parts[1])
         case "dialogue": return .dialogue(parts[1])
         case "similar": return .similar(parts[1])
@@ -116,6 +121,7 @@ enum NativeDetail: Equatable {
         case .note: return "\(Self.prefix)note/main"
         case .profileEdit: return "\(Self.prefix)profile/main"
         case .photo: return "\(Self.prefix)photo/main"
+        case .recognize(let src): return "\(Self.prefix)recognize/\(src)"
         case .imagery(let id): return "\(Self.prefix)imagery/\(id)"
         case .dialogue(let id): return "\(Self.prefix)dialogue/\(id)"
         case .similar(let name): return "\(Self.prefix)similar/\(name)"
@@ -143,6 +149,7 @@ enum NativeDetail: Equatable {
         case .note: return "note"
         case .profileEdit: return "profile"
         case .photo: return "photo"
+        case .recognize: return "recognize"
         case .imagery: return "imagery"
         case .dialogue: return "dialogue"
         case .similar: return "similar"
@@ -156,7 +163,7 @@ enum NativeDetail: Equatable {
     var id: String {
         switch self {
         case .poem(let v), .artifact(let v), .patternElement(let v),
-             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v), .similar(let v), .card(let v):
+             .activity(let v), .character(let v), .letter(let v), .city(let v), .list(let v), .spot(let v), .share(let v), .imagery(let v), .dialogue(let v), .stamp(let v), .similar(let v), .card(let v), .recognize(let v):
             return v
         case .settings: return "main"
         case .search: return "main"
@@ -178,7 +185,7 @@ enum NativeDetail: Equatable {
     /// 这些页面自己解析内容，不经过 NativeDetailContent。
     var isNativePage: Bool {
         switch self {
-        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit, .card, .identity: return true
+        case .list, .settings, .search, .share, .note, .dialogue, .favoriteSlot, .photo, .profileEdit, .card, .identity, .recognize: return true
         default: return false
         }
     }
@@ -216,7 +223,7 @@ struct NativeDetailContent {
     /// 相似纹样三条本来就缺图，与其留一块空白 hero，不如按纹样类型画出可辨识的形态。
     var paintedPattern: String? = nil
 
-    static func resolve(_ detail: NativeDetail) -> NativeDetailContent? {
+    static func resolve(_ detail: NativeDetail, obtainedStamps: Set<String> = []) -> NativeDetailContent? {
         switch detail {
         case .poem(let id):
             guard let p = NativeDetail.allPoems().first(where: { $0.id == id }) else { return nil }
@@ -423,16 +430,22 @@ struct NativeDetailContent {
             // 个人资料编辑走 NativeProfileEditView，不生成详情内容
             return nil
         case .photo:
-            // 相册选图走 NativePhotoPickView，不生成详情内容
+            // 器物识别的「相册」入口走 ArtifactRecognizeView，不生成详情内容
+            return nil
+        case .recognize:
+            // 器物识别（相册/拍摄）走 ArtifactRecognizeView，自绘整页
             return nil
         case .dialogue:
             // 对谈页走 NativeDialogueView，不生成详情内容
             return nil
         case .stamp(let id):
             guard let st = ContentData.stamps.first(where: { $0.id == id }) else { return nil }
+            // 获得状态必须读**运行时快照**：ContentData.stamps 里的 obtained 是编译期常量，
+            // 用户刚在领奖页「收下印章」，点进详情却还写"尚未获得"。
+            let isObtained = st.obtained || obtainedStamps.contains(id)
             var sections: [(String, String)] = [
                 ("获得条件", st.description),
-                ("状态", st.obtained ? "已获得" : "尚未获得"),
+                ("状态", isObtained ? "已获得" : "尚未获得"),
             ]
             return NativeDetailContent(
                 title: st.name,

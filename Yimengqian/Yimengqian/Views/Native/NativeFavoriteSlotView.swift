@@ -19,6 +19,11 @@ struct NativeFavoriteSlotView: View {
 
     private var filter: String? { selection.value(StorageKeys.favoriteFilter) }
 
+    /// 已获得的印章 id —— 印章详情要按真实状态显示「已获得 / 尚未获得」
+    private var obtainedStamps: Set<String> {
+        Set(store.snapshot.stamps.filter { $0.obtained }.map { $0.id })
+    }
+
     /// 收藏页当前筛选下的第 index 个条目
     private var item: FavoriteItem? {
         let items = store.collection(filter: filter)
@@ -28,7 +33,14 @@ struct NativeFavoriteSlotView: View {
     private var target: NativeDetail? {
         guard let item = item else { return nil }
         switch item.type {
-        case .poem: return .poem(item.itemId)
+        case .poem:
+            // 江雪意象（孤舟/寒江/蓑笠翁/飞雪）也是按 .poem 存进收藏的，
+            // 但它们不在 allPoems() 里 —— 直接当 .poem 解析会渲染成"这一格现在是空的"。
+            // 先按意象查一次，命中就进意象详情。
+            if ContentData.jiangxueImagery.contains(where: { $0.id == item.itemId }) {
+                return .imagery(item.itemId)
+            }
+            return .poem(item.itemId)
         case .artifact: return .artifact(item.itemId)
         case .character: return .character(item.itemId)
         case .letter: return .letter(item.itemId)
@@ -38,7 +50,8 @@ struct NativeFavoriteSlotView: View {
 
     var body: some View {
         Group {
-            if let detail = target, let content = NativeDetailContent.resolve(detail) {
+            if let detail = target,
+               let content = NativeDetailContent.resolve(detail, obtainedStamps: obtainedStamps) {
                 NativeDetailView(detail: detail, content: content)
             } else {
                 // 空槽 / 条目已不存在：给一句明确说明并可直接返回，而不是白屏

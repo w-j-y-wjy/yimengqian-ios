@@ -113,7 +113,9 @@ enum ScreenCatalog {
                 Hotspot(id: "bottom-profile", label: "我的", x: 80, y: 93, width: 20, height: 7, action: HotspotAction(type: .navigate, target: "/profile")),
                 Hotspot(id: "home-avatar", label: "头像", x: 4, y: 4.2, width: 10, height: 6, action: HotspotAction(type: .navigate, target: "/profile")),
                 Hotspot(id: "home-feihualing-card", label: "今日雅集·飞花令", x: 3.8, y: 55.5, width: 92.4, height: 17.6, action: HotspotAction(type: .navigate, target: "/activities/feihualing")),
-                Hotspot(id: "home-daily-poem", label: "今日诗签", x: 3.8, y: 76.4, width: 66, height: 11.5, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian"))
+                Hotspot(id: "home-daily-poem", label: "今日诗签", x: 3.8, y: 76.4, width: 66, height: 11.5, action: HotspotAction(type: .navigate, target: "/native/poem/niao-ming-jian")),
+                Hotspot(id: "home-search", label: "搜索", x: 88.5, y: 6.5, width: 9, height: 5, action: HotspotAction(type: .navigate, target: "/native/search/main")),
+                Hotspot(id: "home-daily-refresh", label: "换一句", x: 69.5, y: 83.4, width: 24, height: 4.6, action: HotspotAction(type: .navigate, target: "/native/list/poems"))
             ]),
         ScreenConfig(id: "dynasties", route: "/city/dynasties", image: "Screens/dynasties.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 3.005, y: 5.377, width: 10, height: 5, action: HotspotAction(type: .back)),
@@ -190,8 +192,8 @@ enum ScreenCatalog {
                 Hotspot(id: "dialogue-record", label: "对谈记录", x: 75.844, y: 5.425, width: 20.129, height: 5, action: HotspotAction(type: .navigate, target: "/native/list/dialogues")),
                 Hotspot(id: "voice-1", label: "语音1", x: 18.231, y: 44.1, width: 67.397, height: 8.21, action: HotspotAction(type: .speakText, message: "人生如逆旅，我亦是行人。")),
                 Hotspot(id: "voice-2", label: "语音2", x: 20.199, y: 53.59, width: 61.395, height: 7.386, action: HotspotAction(type: .speakText, message: "起落本无常，且喜杯中有清欢。")),
-                Hotspot(id: "topic-1", label: "你如何面对人生起伏？", x: 5.657, y: 67.364, width: 88.499, height: 5, action: HotspotAction(type: .navigate, target: "/native/dialogue/life")),
-                Hotspot(id: "topic-2", label: "黄州给你带来了什么？", x: 6.125, y: 73.373, width: 89.062, height: 5, action: HotspotAction(type: .navigate, target: "/native/dialogue/huangzhou")),
+                Hotspot(id: "topic-1", label: "你如何面对人生起伏？", x: 5.657, y: 67.364, width: 88.499, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/native/dialogue/life", storageKey: "dialogueTopic", storageValue: "life")),
+                Hotspot(id: "topic-2", label: "黄州给你带来了什么？", x: 6.125, y: 73.373, width: 89.062, height: 5, action: HotspotAction(type: .storageAndNavigate, target: "/native/dialogue/huangzhou", storageKey: "dialogueTopic", storageValue: "huangzhou")),
                 Hotspot(id: "topic-3", label: "你最想告诉后人的一句话？", x: 5.188, y: 79.382, width: 89.062, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已选择：寄语后人", storageKey: "dialogueTopic", storageValue: "words")),
                 Hotspot(id: "continue-btn", label: "继续交谈", x: 16.594, y: 86.208, width: 66.647, height: 5, action: HotspotAction(type: .conditionalNavigate, target: "/task/reward", message: "请先选择一个话题"))
             ]),
@@ -296,7 +298,7 @@ enum ScreenCatalog {
                 Hotspot(id: "seal-red", label: "朱印", x: 31.385, y: 63.876, width: 29.249, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已添加朱印", storageKey: "poetryCardSeal", storageValue: "red")),
                 Hotspot(id: "seal-none", label: "无印", x: 62.136, y: 63.703, width: 30.563, height: 5, action: HotspotAction(type: .setStorageAndToast, message: "已取消印章", storageKey: "poetryCardSeal", storageValue: "none")),
                 Hotspot(id: "add-note", label: "添加题注", x: 3.403, y: 71.142, width: 46.62, height: 11.327, action: HotspotAction(type: .navigate, target: "/native/note/main")),
-                Hotspot(id: "select-border", label: "选择边框", x: 50.915, y: 71.516, width: 45.211, height: 11.284, action: HotspotAction(type: .navigate, target: "/native/list/works")),
+                Hotspot(id: "select-border", label: "选择边框", x: 50.915, y: 71.516, width: 45.211, height: 11.284, action: HotspotAction(type: .toast, message: "边框样式将在下个版本开放")),
                 Hotspot(id: "save-card", label: "保存诗境卡", x: 4.789, y: 84.761, width: 43.521, height: 5, action: HotspotAction(type: .incrementOnce, message: "已保存至\"我的作品\"", storageKey: "poetryCardCount", flagKey: "jiangxueCardCreated")),
                 Hotspot(id: "share", label: "分享给朋友", x: 50.164, y: 84.397, width: 44.46, height: 5, action: HotspotAction(type: .navigate, target: "/native/share/card"))
             ]),
@@ -331,15 +333,15 @@ enum ScreenCatalog {
             ]),
         ScreenConfig(id: "artifact-home", route: "/artifact", image: "Screens/artifact-home.png", hotspots: [
                 Hotspot(id: "guide", label: "识趣指南", x: 78.701, y: 5.664, width: 18, height: 5, action: HotspotAction(type: .toast, message: "拍摄完整器形，可以获得更准确的识别结果")),
-                Hotspot(id: "upload", label: "相册上传", x: 3.78, y: 20.434, width: 33.756, height: 12.237, action: HotspotAction(type: .delayedNavigate, target: "/artifact/result", message: "已选择相册上传模拟", delay: 600)),
-                Hotspot(id: "camera", label: "拍摄识别", x: 37.258, y: 20.303, width: 26.62, height: 12.237, action: HotspotAction(type: .delayedNavigate, target: "/artifact/result", message: "正在扫描古物", delay: 800)),
+                Hotspot(id: "upload", label: "相册上传", x: 3.78, y: 20.434, width: 33.756, height: 12.237, action: HotspotAction(type: .navigate, target: "/native/recognize/album")),
+                Hotspot(id: "camera", label: "拍摄识别", x: 37.258, y: 20.303, width: 26.62, height: 12.237, action: HotspotAction(type: .navigate, target: "/native/recognize/camera")),
                 Hotspot(id: "demo", label: "示例体验", x: 63.827, y: 20.058, width: 29.531, height: 13.191, action: HotspotAction(type: .navigate, target: "/artifact/result")),
-                Hotspot(id: "hot-qinghua", label: "青花瓷", x: 5, y: 48, width: 20, height: 10, action: HotspotAction(type: .navigate, target: "/artifact/result")),
+                Hotspot(id: "hot-qinghua", label: "青花瓷", x: 5, y: 48, width: 20, height: 10, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
                 Hotspot(id: "hot-mirror", label: "铜镜", x: 28, y: 48, width: 20, height: 10, action: HotspotAction(type: .navigate, target: "/native/artifact/tong-jing")),
                 Hotspot(id: "hot-incense", label: "香炉", x: 52, y: 48, width: 20, height: 10, action: HotspotAction(type: .navigate, target: "/native/artifact/xiang-lu")),
                 Hotspot(id: "hot-jade", label: "玉佩", x: 76, y: 48, width: 20, height: 10, action: HotspotAction(type: .navigate, target: "/native/artifact/yu-pei")),
-                Hotspot(id: "recent-qinghua", label: "最近青花瓷", x: 4.531, y: 78.728, width: 64.93, height: 10.634, action: HotspotAction(type: .navigate, target: "/artifact/result")),
-                Hotspot(id: "recent-detail", label: "查看详情", x: 72.507, y: 83.495, width: 19.39, height: 5, action: HotspotAction(type: .navigate, target: "/artifact/result")),
+                Hotspot(id: "recent-qinghua", label: "最近青花瓷", x: 4.531, y: 78.728, width: 64.93, height: 10.634, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
+                Hotspot(id: "recent-detail", label: "查看详情", x: 72.507, y: 83.495, width: 19.39, height: 5, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
                 Hotspot(id: "bottom-home", label: "首页", x: 5.258, y: 91.7, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/home")),
                 Hotspot(id: "bottom-city", label: "古城", x: 24.601, y: 91.743, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "bottom-experience", label: "体验", x: 44.789, y: 91.743, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/artifact")),
@@ -354,8 +356,8 @@ enum ScreenCatalog {
                 Hotspot(id: "usage", label: "用途", x: 59.207, y: 75.174, width: 15.634, height: 5, action: HotspotAction(type: .toast, message: "主要用于陈设与储藏")),
                 Hotspot(id: "detail-btn", label: "查看详情", x: 30.61, y: 80.199, width: 40.235, height: 5.823, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
                 Hotspot(id: "flash", label: "闪光灯", x: 8.192, y: 89.079, width: 13.944, height: 5.65, action: HotspotAction(type: .toggleTorch)),
-                Hotspot(id: "gallery", label: "相册", x: 78.38, y: 89.123, width: 12.629, height: 5.52, action: HotspotAction(type: .navigate, target: "/native/photo/main")),
-                Hotspot(id: "bottom-shoot", label: "拍摄", x: 40.47, y: 88.462, width: 18.732, height: 8.034, action: HotspotAction(type: .navigate, target: "/artifact"))
+                Hotspot(id: "gallery", label: "相册", x: 78.38, y: 89.123, width: 12.629, height: 5.52, action: HotspotAction(type: .navigate, target: "/native/recognize/manual")),
+                Hotspot(id: "bottom-shoot", label: "拍摄", x: 40.47, y: 88.462, width: 18.732, height: 8.034, action: HotspotAction(type: .navigate, target: "/native/recognize/camera"))
             ]),
         ScreenConfig(id: "artifact-pattern", route: "/artifact/pattern", image: "Screens/artifact-pattern.png", hotspots: [
                 Hotspot(id: "back", label: "返回", x: 1.972, y: 5.594, width: 10, height: 5, action: HotspotAction(type: .back)),
@@ -369,7 +371,7 @@ enum ScreenCatalog {
                 Hotspot(id: "similar-1", label: "相似纹样1", x: 6.126, y: 82.507, width: 28.122, height: 6.69, action: HotspotAction(type: .navigate, target: "/native/similar/缠枝牡丹")),
                 Hotspot(id: "similar-2", label: "相似纹样2", x: 36.657, y: 82.247, width: 27.84, height: 7.167, action: HotspotAction(type: .navigate, target: "/native/similar/缠枝菊花")),
                 Hotspot(id: "similar-3", label: "相似纹样3", x: 67, y: 82.16, width: 29.531, height: 7.99, action: HotspotAction(type: .navigate, target: "/native/similar/缠枝灵芝")),
-                Hotspot(id: "view-piece", label: "查看整器", x: 9.178, y: 91.75, width: 34.789, height: 5, action: HotspotAction(type: .navigate, target: "/artifact/result")),
+                Hotspot(id: "view-piece", label: "查看整器", x: 9.178, y: 91.75, width: 34.789, height: 5, action: HotspotAction(type: .navigate, target: "/native/artifact/qinghua-ping")),
                 Hotspot(id: "favorite-pattern", label: "收藏纹样", x: 47.488, y: 91.576, width: 44.93, height: 5, action: HotspotAction(type: .toggleStorage, storageKey: "favoriteArtifactPattern", onMessage: "已收藏纹样", offMessage: "已取消收藏纹样"))
             ]),
         ScreenConfig(id: "activities-home", route: "/activities", image: "Screens/activities-home.png", hotspots: [
@@ -461,14 +463,15 @@ enum ScreenCatalog {
                 Hotspot(id: "my-dreambook", label: "千年梦册", x: 3.216, y: 48.056, width: 91.408, height: 7.557, action: HotspotAction(type: .navigate, target: "/dreambook")),
                 Hotspot(id: "my-works", label: "我的作品", x: 3.498, y: 55.536, width: 92.254, height: 6.127, action: HotspotAction(type: .navigate, target: "/native/list/works")),
                 Hotspot(id: "my-settings", label: "设置", x: 3.873, y: 61.759, width: 92.723, height: 6.777, action: HotspotAction(type: .navigate, target: "/native/settings/main")),
-                Hotspot(id: "trace-bianjing", label: "汴京", x: 6.502, y: 74.1, width: 27.183, height: 14.187, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
-                Hotspot(id: "trace-hangzhou", label: "杭州", x: 35.906, y: 74.143, width: 26.62, height: 13.754, action: HotspotAction(type: .navigate, target: "/native/city/nan-song")),
-                Hotspot(id: "trace-nanjing", label: "南京", x: 64.935, y: 75.356, width: 28.093, height: 12.594, action: HotspotAction(type: .navigate, target: "/native/city/ming")),
+                Hotspot(id: "trace-bianjing", label: "汴京", x: 6.502, y: 74.1, width: 27.183, height: 14.187, action: HotspotAction(type: .navigate, target: "/native/list/footprints")),
+                Hotspot(id: "trace-hangzhou", label: "杭州", x: 35.906, y: 74.143, width: 26.62, height: 13.754, action: HotspotAction(type: .navigate, target: "/native/list/footprints")),
+                Hotspot(id: "trace-nanjing", label: "南京", x: 64.935, y: 75.356, width: 28.093, height: 12.594, action: HotspotAction(type: .navigate, target: "/native/list/footprints")),
                 Hotspot(id: "bottom-home", label: "首页", x: 6.854, y: 91.137, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/home")),
                 Hotspot(id: "bottom-city", label: "古城", x: 24.319, y: 91.57, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/city/bianjing")),
                 Hotspot(id: "bottom-activities", label: "雅集", x: 45.07, y: 91.7, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/activities")),
                 Hotspot(id: "bottom-favorites", label: "收藏", x: 64.413, y: 91.44, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/favorites")),
-                Hotspot(id: "bottom-profile", label: "我的", x: 83.38, y: 91.223, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/profile"))
+                Hotspot(id: "bottom-profile", label: "我的", x: 83.38, y: 91.223, width: 10, height: 5, action: HotspotAction(type: .navigate, target: "/profile")),
+                Hotspot(id: "profile-trace-more", label: "查看更多足迹", x: 77.5, y: 71.4, width: 18, height: 2.6, action: HotspotAction(type: .navigate, target: "/native/list/footprints"))
             ])
     ]
 

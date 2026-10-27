@@ -102,6 +102,43 @@ struct IdentityProfile {
     let dynasty: String?
     let mood: String?
 
+    init(scene: String?, content: String?, dynasty: String?, mood: String?) {
+        self.scene = scene
+        self.content = content
+        // ⚠️ 口径统一（2026-10-27 修）：偏好测试页的朝代热区写的是
+        // northernSong / southernSong，而下面这张规则表按 northern / southern 分支。
+        // 不归一化的话「北宋」和「南宋」都会落进 default —— 选哪个朝代算出的身份完全一样，
+        // 身份详情页还会把 "northernSong" 这种英文键当中文直接显示给用户。
+        self.dynasty = Self.normalizeDynasty(dynasty)
+        self.mood = mood
+    }
+
+    /// 把上游各种朝代写法收敛成规则表认的三种值
+    static func normalizeDynasty(_ raw: String?) -> String? {
+        guard let raw = raw, !raw.isEmpty else { return nil }
+        switch raw {
+        case "northernSong", "northern-song", "northernsong", "bei-song":
+            return "northern"
+        case "southernSong", "southern-song", "southernsong", "nan-song":
+            return "southern"
+        case "tangSong", "tang-song":
+            return "tang"
+        default:
+            return raw
+        }
+    }
+
+    /// 朝代键 → 中文名（界面回显用，绝不把英文键甩给用户）
+    static func dynastyLabel(_ raw: String?) -> String {
+        switch normalizeDynasty(raw) {
+        case "tang": return "盛唐"
+        case "northern": return "北宋"
+        case "southern": return "南宋"
+        case let other?: return other
+        case nil: return "未选"
+        }
+    }
+
     /// 身份称号：朝代 × 心境 决定
     var title: String {
         switch (dynasty, mood) {

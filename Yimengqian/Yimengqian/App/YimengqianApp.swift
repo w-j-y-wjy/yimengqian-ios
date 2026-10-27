@@ -35,6 +35,17 @@ struct YimengqianApp: App {
            let detail = NativeDetail.parse(raw) {
             router.openNative(detail)
         }
+        // 调试 / CI 用：`-seedFootprints "bianjing@0,linan@1,jinling@3"`
+        // 预置「最近足迹」（@ 后面是天数），这样截图能验证叠层在 1 条 / 3 条 / 空态下的样子，
+        // 而不必在模拟器里真的点进三座城。不传就完全不影响正常流程。
+        if let raw = UserDefaults.standard.string(forKey: "seedFootprints") {
+            for token in raw.split(separator: ",") {
+                let parts = token.split(separator: "@").map(String.init)
+                guard let pid = parts.first, PlaceCatalog.place(id: pid) != nil else { continue }
+                let daysAgo = parts.count > 1 ? (Int(parts[1]) ?? 0) : 0
+                store.recordPlace(pid, date: AppSnapshot.dateString(daysAgo: daysAgo))
+            }
+        }
     }
 
     var body: some Scene {

@@ -52,6 +52,7 @@ struct ProfileLayer: View {
             cultureProgress
             identityTexts
             avatarImage
+            footprintStrip
             ForEach(slots, id: \.hotspotID) { slot in
                 if let card = screen.hotspots.first(where: { $0.id == slot.hotspotID }) {
                     numberPatch(slot: slot, card: card.rect(in: container))
@@ -63,27 +64,190 @@ struct ProfileLayer: View {
 
     // MARK: - 头像（换过才覆盖）
     //
-    // 圆心与半径不是估的：把 profile.png 沿 120 个方向从圆外往里扫，
-    // 取"从卡片底色突变为画面"的边界点，再做代数圆拟合，得
-    //   圆心 (197.3, 302.2)  半径 122.8（852×1846 坐标）
-    // 换算百分比：cx 23.159%、cy 16.370%、r 14.411%（按宽）。
-    // 半径只按宽度算 —— 按宽高各算一次会被拉成椭圆。
+    // ⚠️ 2026-10-27 修正：上一版的圆心/半径 (197.3, 302.2) / r=122.8 是错的。
+    // 真机上「换头像后头像不在原位」就是它造成的：新图整体偏右 26px、偏上 67px，
+    // 半径比原圆大 15px，于是左边/下边各留一道旧头像的月牙，右边还压到了身份文字。
     //
+    // 这次改成**双向线扫描 + 三测点解圆**，三个方向互相校验：
+    //   · 水平 y=370：左边界 x=64（纸底 214 → 165），右边界 x=279（190 → 220），
+    //     弦长 215 ⇒ 圆心 x=171.5、r=107.5；
+    //   · 垂直 x=175：上边界 y=261（描边 162），下边界 y=478（174 → 纸底 215），
+    //     弦长 217 ⇒ 圆心 y=369.5、r=108.5；
+    //   · 用 y=280（左边界实测 110）交叉验证：r=111 时理论左边界 110 —— 与 108 的差值
+    //     落在描边抗锯齿宽度内，符合。
+    // 结论：圆心 (171.5, 369.5)、半径 108.0（852×1846）。设计稿的细描边正好在 r≈108 处，
+    // 所以覆盖圆取 108.0 会把它一起盖掉，再补一条同色描边，边界干净、无月牙。
+    private enum AvatarGeom {
+        static let cx: CGFloat = 0.201291      // 171.5 / 852
+        static let cy: CGFloat = 0.200163      // 369.5 / 1846
+        static let r: CGFloat = 0.126761       // 108.0 / 852
+        // 右下角朱砂铅笔徽标：实测圆心 (257, 442.5)、半径 22.75（852×1846）。
+        // 它有一半压在头像圆上，所以换过头像后必须重画，否则会被裁成半个月牙。
+        static let badgeCx: CGFloat = 0.301643 // 257.0 / 852
+        static let badgeCy: CGFloat = 0.239708 // 442.5 / 1846
+        static let badgeR: CGFloat = 0.026702  // 22.75 / 852
+    }
+
     // 只在用户真的选过头像时才画：没选就完全让位图原样显示，零风险。
     @ViewBuilder
     private var avatarImage: some View {
         if AvatarStore.hasCustomAvatar, let img = AvatarStore.load() {
-            let cx = container.width * 0.23159
-            let cy = container.height * 0.16370
-            let r = container.width * 0.14411
+            let r = container.width * AvatarGeom.r
+            ZStack(alignment: .topLeading) {
+                Image(uiImage: img)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: r * 2, height: r * 2)
+                    .clipShape(Circle())
+                    // 细描边盖住位图圆环内侧的抗锯齿边，避免出现"双圈"
+                    .overlay(Circle().strokeBorder(Theme.goldBorder.opacity(0.55), lineWidth: 1.2))
+                    .position(x: container.width * AvatarGeom.cx, y: container.height * AvatarGeom.cy)
+
+                avatarEditBadge
+            }
+        }
+    }
+
+    /// 重画的铅笔徽标：位图里的那枚被新头像压住了一半，这里按实测位置盖回去。
+    /// 用 SF Symbol 而不是把位图抠出来：任意分辨率都清晰，也不再往包里塞一张碎图。
+    @ViewBuilder
+    private var avatarEditBadge: some View {
+        let br = container.width * AvatarGeom.badgeR
+        ZStack {
+            Circle()
+                .fill(Theme.vermilion)
+                .overlay(Circle().strokeBorder(Theme.paperLight.opacity(0.9), lineWidth: max(1, br * 0.16)))
+            Image(systemName: "pencil")
+                .font(.system(size: br * 1.02, weight: .semibold))
+                .foregroundColor(.white)
+        }
+        .frame(width: br * 2, height: br * 2)
+        .position(x: container.width * AvatarGeom.badgeCx, y: container.height * AvatarGeom.badgeCy)
+    }
+
+    // MARK: - 最近足迹（用真实数据盖掉烤死在位图里的三张假卡）
+    //
+    // 为什么必须重画：设计稿底部「最近足迹」里的「汴京 / 杭州 / 南京」+「今日 / 昨日 / 2天前」
+    // 是**画进位图里的装饰**，跟用户去过哪儿毫无关系 —— 这就是"足迹永远是杭州和南京"的来源。
+    // 真实记录在 AppStore.recentFootprints（由 recentViews 的 place: 前缀派生），
+    // 这里把整条卡片带擦掉再按真数据重画，最多 3 张；一条都没有时给空态，不再展示假卡片。
+    //
+    // 几何全部来自 profile.png 的实测（852×1846）：
+    //   · 卡片带 x 51..797、y 1372..1603；三张卡等宽 241.3、间距 11（末卡右缘 797）
+    //   · 缩略图占卡片上部 155px（1372..1527），下面 76px 是名称与日期
+    //   · 名称墨迹 y 1550..1571（字高 22px）、日期墨迹 y 1585..1601（字高 17px）
+    //   · 名称/日期文字左缘 x=88，定位钉中心 x=75、y≈1558
+    // 区块底色实测 #EDDBC1，与 Theme.cardCream 完全一致，所以擦除后看不出补丁。
+    private enum FootprintGeom {
+        // 擦除带（比卡片带略大一圈，确保旧卡的描边与阴影一并盖掉）
+        static let stripeX: CGFloat = 0.052817   // 45 / 852
+        static let stripeY: CGFloat = 0.739978   // 1366 / 1846
+        static let stripeW: CGFloat = 0.886150   // 755 / 852
+        static let stripeH: CGFloat = 0.132178   // 244 / 1846
+        // 卡片
+        static let cardTop: CGFloat = 0.743229   // 1372 / 1846
+        static let cardH: CGFloat = 0.125136     // 231 / 1846
+        static let firstLeft: CGFloat = 0.059859 // 51 / 852
+        static let cardW: CGFloat = 0.283251     // 241.3 / 852
+        static let stride: CGFloat = 0.296129    // 252.3 / 852
+        static let imageH: CGFloat = 0.083966    // 155 / 1846
+        static let corner: CGFloat = 0.016431    // 14 / 852
+        // 卡内文字（相对卡片左上角，单位仍是全图比例，便于和上面几个数直接相加）
+        static let textInset: CGFloat = 0.043427 // 37 / 852
+        static let nameTop: CGFloat = 0.091820   // (1541.5-1372) / 1846
+        static let dateTop: CGFloat = 0.113760   // (1582-1372) / 1846
+        static let pinCx: CGFloat = 0.028169     // (75-51) / 852
+        static let pinCy: CGFloat = 0.101029     // (1558.5-1372) / 1846
+    }
+
+    @ViewBuilder
+    private var footprintStrip: some View {
+        let records = Array(store.recentFootprints.prefix(3))
+        ZStack(alignment: .topLeading) {
+            // 先整条擦干净：旧实现只覆盖单卡时会留下"3 天前"之类的残字
+            Rectangle()
+                .fill(Theme.cardCream)
+                .frame(width: container.width * FootprintGeom.stripeW,
+                       height: container.height * FootprintGeom.stripeH)
+                .offset(x: container.width * FootprintGeom.stripeX,
+                        y: container.height * FootprintGeom.stripeY)
+
+            if records.isEmpty {
+                Text("还没有足迹 · 去古城走一走")
+                    .font(.custom("SongtiSC-Regular", size: container.height * 0.0122))
+                    .foregroundColor(Theme.inkMuted)
+                    .frame(width: container.width * FootprintGeom.stripeW,
+                           height: container.height * FootprintGeom.stripeH)
+                    .offset(x: container.width * FootprintGeom.stripeX,
+                            y: container.height * FootprintGeom.stripeY)
+            } else {
+                ForEach(Array(records.enumerated()), id: \.element.id) { pair in
+                    footprintCard(record: pair.element, index: pair.offset)
+                }
+            }
+        }
+    }
+
+    private func footprintCard(record: FootprintRecord, index: Int) -> some View {
+        let left = container.width * (FootprintGeom.firstLeft + CGFloat(index) * FootprintGeom.stride)
+        let w = container.width * FootprintGeom.cardW
+        let h = container.height * FootprintGeom.cardH
+        let imgH = container.height * FootprintGeom.imageH
+        let radius = container.width * FootprintGeom.corner
+
+        return ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .fill(Theme.cardCream)
+                .frame(width: w, height: h)
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .strokeBorder(Theme.goldBorder.opacity(0.55), lineWidth: 1)
+                .frame(width: w, height: h)
+
+            placeThumbnail(record.place)
+                .frame(width: w, height: imgH)
+                .clipShape(TopRoundedRectangle(radius: radius))
+
+            Image(systemName: "mappin")
+                .font(.system(size: container.height * 0.0087, weight: .medium))
+                .foregroundColor(Theme.inkLight)
+                .position(x: container.width * FootprintGeom.pinCx,
+                          y: container.height * FootprintGeom.pinCy)
+
+            Text(record.place.name)
+                .font(.custom("KaitiSC-Bold", size: container.height * 0.0152))
+                .foregroundColor(Theme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .offset(x: container.width * FootprintGeom.textInset,
+                        y: container.height * FootprintGeom.nameTop)
+
+            Text(record.whenText)
+                .font(.custom("SongtiSC-Regular", size: container.height * 0.0098))
+                .foregroundColor(Theme.inkMuted)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .offset(x: container.width * FootprintGeom.textInset,
+                        y: container.height * FootprintGeom.dateTop)
+        }
+        .frame(width: w, height: h, alignment: .topLeading)
+        .offset(x: left, y: container.height * FootprintGeom.cardTop)
+    }
+
+    /// 地点缩略图：有专属配图就铺满裁切；没有（黄州 / 白鹿洞）就画同色系纸底 + 淡墨山形，
+    /// 绝不借别的城池图凑数 —— 那会让人以为他真去过那座城。
+    @ViewBuilder
+    private func placeThumbnail(_ place: Place) -> some View {
+        if let path = place.image, let img = AssetLoader.image(path) {
             Image(uiImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: r * 2, height: r * 2)
-                .clipShape(Circle())
-                // 细描边盖住位图圆环内侧的抗锯齿边，避免出现"双圈"
-                .overlay(Circle().strokeBorder(Theme.goldBorder.opacity(0.55), lineWidth: 1.2))
-                .position(x: cx, y: cy)
+        } else {
+            ZStack {
+                Theme.styleBand
+                Image(systemName: "mountain.2.fill")
+                    .font(.system(size: container.height * 0.024))
+                    .foregroundColor(Theme.goldBorder.opacity(0.45))
+            }
         }
     }
 
@@ -233,4 +397,25 @@ struct ProfileLayer: View {
     // 处理：先撤回，不留可见的退步。要做这件事需要像四张统计卡那样，先确定一条真实的
     // 定位依据（热区矩形或精确到 1px 的实测），再落地。在那之前，进度条与等级保持位图，
     // 文化值/等级的"真实值"仍写进快照（RewardRules + applyReward），只是不做像素级展示。
+}
+
+/// 只有上面两个角是圆的矩形 —— 足迹卡的缩略图与设计稿一致：顶部随卡片圆角，
+/// 底部是一条直边接文字区。（用 RoundedRectangle 会把下面两个角也削掉，露出缺口。）
+private struct TopRoundedRectangle: Shape {
+    let radius: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        let r = min(radius, min(rect.width, rect.height) / 2)
+        p.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
+        p.addQuadCurve(to: CGPoint(x: rect.minX + r, y: rect.minY),
+                       control: CGPoint(x: rect.minX, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.maxX - r, y: rect.minY))
+        p.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY + r),
+                       control: CGPoint(x: rect.maxX, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        p.closeSubpath()
+        return p
+    }
 }

@@ -54,7 +54,10 @@ struct RootView: View {
                     } else if case .profileEdit = detail {
                         NativeProfileEditView()
                     } else if case .photo = detail {
-                        NativePhotoPickView()
+                        // 结果页那颗「相册」按钮：不自动弹选择器，由用户自己点
+                        ArtifactRecognizeView(source: "manual")
+                    } else if case .recognize(let source) = detail {
+                        ArtifactRecognizeView(source: source)
                     } else if case .dialogue(let topicID) = detail {
                         NativeDialogueView(topicID: topicID)
                     } else if case .favoriteSlot(let index) = detail {
@@ -65,7 +68,7 @@ struct RootView: View {
                         NativePoetryCardView(cardID: cardID)
                     } else if case .identity = detail {
                         NativeIdentityView()
-                    } else if let content = NativeDetailContent.resolve(detail) {
+                    } else if let content = NativeDetailContent.resolve(detail, obtainedStamps: obtainedStamps) {
                         NativeDetailView(detail: detail, content: content)
                     }
                 }
@@ -83,6 +86,11 @@ struct RootView: View {
         .environmentObject(store)
         .environmentObject(router)
         .environmentObject(toast)
+    }
+
+    /// 已获得的印章 id（印章详情按真实状态显示，而不是编译期常量）
+    private var obtainedStamps: Set<String> {
+        Set(store.snapshot.stamps.filter { $0.obtained }.map { $0.id })
     }
 
     /// 启动页五连击重置（对应 Web ?reset=1）。
@@ -105,6 +113,8 @@ struct RootView: View {
 
     private func performReset() {
         store.resetAll()
+        // 头像文件在沙盒 Documents 里，不在 UserDefaults，resetAll 清不到 —— 必须显式删
+        AvatarStore.clear()
         // 选择态必须一起清：SelectionStore 启动时从 UserDefaults seed 一次就不再重读，
         // 漏掉这一步，重置后偏好测试的描边、飞花令的选中框、收藏的筛选高亮都还停在上一轮。
         // （这正是 08 文档说的"答错态跨屏残留"同一类问题，2026-10-21 体检发现无人调用。）
