@@ -419,7 +419,15 @@ enum ContentData {
             pattern: "海兽葡萄纹",
             usage: "照容",
             description: "唐代铜镜中的精品，镜面光亮，背面饰海兽葡萄纹，工艺精湛。",
-            image: "ArtApp/artifact-tong-jing.jpg"
+            image: "ArtApp/artifact-tong-jing.jpg",
+            patternDetail: PatternDetail(
+                name: "海兽葡萄纹",
+                image: "",
+                structure: "镜背分内、外两区：内区伏卧数只瑞兽（狮、狻猊一类），兽身周围满布葡萄枝蔓与果实；外区多绕飞禽、葡萄或花草一周。纹饰用高浮雕，凸起明显，兽形与枝蔓层层叠压，几乎不留空地。",
+                symbolism: "葡萄果实累累、枝蔓绵长，寓多子丰产、子孙绵延；瑞兽主辟邪纳吉。葡萄与狮子皆自西域传入，唐人视之为祥瑞，这类纹样本身即是中外交流的印记。",
+                eraStyle: "盛唐铜镜体量厚重，纹饰用高浮雕，繁密饱满，明显受波斯、中亚工艺影响；中唐以后浮雕渐低、纹饰趋简，海兽葡萄纹随之式微。",
+                elements: []
+            )
         ),
         Artifact(
             id: "xiang-lu",
@@ -430,7 +438,15 @@ enum ContentData {
             pattern: "缠枝莲纹",
             usage: "焚香",
             description: "明代宣德炉风格，造型端庄，铜质精良。",
-            image: "ArtApp/artifact-xiang-lu.jpg"
+            image: "ArtApp/artifact-xiang-lu.jpg",
+            patternDetail: PatternDetail(
+                name: "缠枝莲纹",
+                image: "",
+                structure: "炉身外壁以缠枝莲纹为主纹：莲花作正面或侧面花头，茎蔓细而匀，作波状连续盘绕，间以卷叶与花苞补空；口沿或足部多配回纹、如意云纹作边饰。铸纹讲究对称规整，线条粗细一致。",
+                symbolism: "莲花出淤泥而不染，寓清净虔敬，与焚香礼佛的用途相合；缠枝连绵不断，寓子孙绵长、香火不绝。",
+                eraStyle: "明代宣德炉式样端庄简练，铜质精炼，皮色以栗壳、藏经为主；纹饰较元代规整、程式化，花头略小而茎蔓更细，讲究对称与留白，不再追求元代那种奔放。",
+                elements: []
+            )
         ),
         Artifact(
             id: "yu-pei",
@@ -441,7 +457,15 @@ enum ContentData {
             pattern: "双龙纹",
             usage: "佩饰",
             description: "和田白玉质地，雕工精细，双龙相对，寓意吉祥。",
-            image: "ArtApp/artifact-yu-pei.jpg"
+            image: "ArtApp/artifact-yu-pei.jpg",
+            patternDetail: PatternDetail(
+                name: "双龙纹",
+                image: "",
+                structure: "以镂空透雕作对首双龙，龙身蜿蜒成 S 形，间以云纹衬底；龙首相对，须发与鳞甲用阴线刻出，边缘留穿系的小孔。整体取对称构图，龙身贴合佩形轮廓。",
+                symbolism: "双龙相向，寓成双成对、护佑平安；玉在传统文化中比德君子，温润而坚，佩之自省。宋代玉器题材趋于世俗，吉祥寓意也更为直白。",
+                eraStyle: "宋代玉雕重线条与层次，镂空多层，刀法细腻含蓄，题材多取花鸟、人物、瑞兽，气息文雅；与汉代玉器的浑厚、明清玉器的繁缛相比，宋玉更讲究以少胜多的韵致。",
+                elements: []
+            )
         ),
     ]
 

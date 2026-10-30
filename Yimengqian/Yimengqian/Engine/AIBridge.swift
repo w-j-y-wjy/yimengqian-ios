@@ -15,6 +15,7 @@
 //   真机上要联网，答辩演示若主打"离线"，请保持 key 为空、走本地路径。
 
 import Foundation
+import UIKit
 
 /// 一次生成请求的意图
 enum AIIntent: String {
@@ -202,5 +203,127 @@ final class AIBridge {
             return bucket.ideas.prefix(3).joined(separator: "、")
         }
         return "疏影横斜、烟岚四合、一灯如豆"
+    }
+}
+
+// MARK: - 视觉通道（器物八项报告）
+
+extension AIBridge {
+    /// 视觉通道用的模型。deepseek-flash 支持图像输入；deepseek-v4-pro 不支持，
+    /// 所以这里写死 flash，不跟着文本通道走。
+    static let visionModel = "deepseek-flash"
+    static let visionEndpoint = "https://api.deepseek.com/chat/completions"
+
+    /// 在线识别一件器物，回调模型给出的 JSON 字符串。
+    /// 没 key、压图失败、网络失败、返回内容为空 —— 一律回调 nil，由调用方走本地兜底。
+    ///
+    /// 为什么单独开一条通道，而不是复用 generate()：
+    /// 那条通道只吃字符串、`max_tokens` 只有 160，既带不了图，也装不下八项
+    /// （简介 + 纹样 + 寓意 + 时代风格 各 80–120 字）。
+    func describeArtifact(image: UIImage, hints: [ArtifactMatch], completion: @escaping (String?) -> Void) {
+        guard let key = Self.apiKey() else {
+            completion(nil)
+            return
+        }
+        guard let jpeg = Self.compressedJPEG(image, maxSide: 768, quality: 0.72) else {
+            completion(nil)
+            return
+        }
+
+        let userText = "请识别这张器物照片，并按约定格式输出 json。\n" + Self.hintText(hints)
+        let body: [String: Any] = [
+            "model": Self.visionModel,
+            "messages": [
+                ["role": "system", "content": Self.artifactSystemPrompt],
+                ["role": "user", "content": [
+                    ["type": "text", "text": userText],
+                    ["type": "image_url", "image_url": [
+                        "url": "data:image/jpeg;base64,\(jpeg.base64EncodedString())",
+                        // low = 先缩到 512×512 再推理：一张图最多约 1024 token，单次成本可控
+                        "detail": "low",
+                    ]],
+                ]],
+            ],
+            // 关掉思考模式：演示要的是"几秒出结果"，不该把 token 花在思维链上
+            "thinking": ["type": "disabled"],
+            "response_format": ["type": "json_object"],
+            "temperature": 0.3,
+            "max_tokens": 1600,
+        ]
+
+        guard let url = URL(string: Self.visionEndpoint),
+              let data = try? JSONSerialization.data(withJSONObject: body) else {
+            completion(nil)
+            return
+        }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.timeoutInterval = 25
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        req.httpBody = data
+
+        URLSession.shared.dataTask(with: req) { data, response, _ in
+            var text: String? = nil
+            if let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode),
+               let data = data,
+               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let choices = obj["choices"] as? [[String: Any]],
+               let msg = choices.first?["message"] as? [String: Any],
+               let content = msg["content"] as? String,
+               !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                text = content
+            }
+            DispatchQueue.main.async { completion(text) }
+        }.resume()
+    }
+
+    /// 系统提示：要求严格 JSON。
+    /// 注意 DeepSeek 的 JSON 模式要求 prompt 里出现 "json" 字样并给出样例，否则会退化成普通文本。
+    static let artifactSystemPrompt = """
+    你是一位中国古器物研究者，为手机应用「一梦千年」的「古物识趣」栏目写一张器物卡片。
+    只输出一个 json 对象，不要代码块，不要任何解释文字。
+
+    json 字段与格式示例：
+    {"name":"青花缠枝莲纹瓶","dynasty":"元代","kind":"瓷器 · 瓶 · 陈设器","intro":"此瓶造型饱满，釉色温润洁白，青花发色浓艳，颈部绘缠枝莲纹……","patternName":"缠枝莲纹","patternText":"以莲花为主题，茎蔓缠绕盘旋，枝叶交错相连……","symbol":"莲花出淤泥而不染，象征纯洁高雅……","eraStyle":"元代青花承袭宋制，花头更大、茎叶更舒展……","certainty":0.8}
+
+    写作规则：
+    1. 拿不准的宁短勿编。朝代把握不足就写「待考」；纹样认不出就把 patternName 写「待考」，patternText 只描述你确实看到的形态。
+    2. certainty 是你对「器物名称 + 朝代」判断的把握，取值 0 到 1。低于 0.5 时，name 前面必须加「疑似」。
+    3. 不要虚构尺寸、重量、出土信息、收藏地或价格。
+    4. 全部使用简体中文；文风克制，不用感叹号；不要提及自己是 AI。
+    """
+
+    /// 把本地比对结果写成"参照提示"，让模型有个锚点。
+    /// 这一步很关键：Flash 档模型单看一张照片容易泛泛而谈，
+    /// 但给它"本地视觉比对最接近缠枝莲纹瓶（62%）"之后，写出来的内容会具体得多。
+    static func hintText(_ hints: [ArtifactMatch]) -> String {
+        let top = hints.prefix(2).map { match -> String in
+            "《\(match.name)》（\(match.dynasty)·\(match.type)，相似度 \(Int((match.score * 100).rounded()))%）"
+        }
+        guard !top.isEmpty else {
+            return "参照提示：本机参照库未给出候选（照片与库内 4 件都不像），请只依据图片判断。"
+        }
+        return "参照提示：本机视觉比对认为它最接近 " + top.joined(separator: "，其次 ") +
+            "。这只是相似度排序，不是结论；若你的判断与它不同，以你的判断为准。"
+    }
+
+    /// 压到长边 maxSide 的 JPEG。图片按内容识别，不依赖扩展名。
+    static func compressedJPEG(_ image: UIImage, maxSide: CGFloat, quality: CGFloat) -> Data? {
+        let size = image.size
+        guard size.width > 0, size.height > 0 else { return nil }
+        let longest = max(size.width, size.height)
+        let scale = longest > maxSide ? maxSide / longest : 1
+        var target = CGSize(width: (size.width * scale).rounded(), height: (size.height * scale).rounded())
+        if target.width < 1 { target.width = 1 }
+        if target.height < 1 { target.height = 1 }
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let upright = UIGraphicsImageRenderer(size: target, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: target))
+        }
+        return upright.jpegData(compressionQuality: quality)
     }
 }

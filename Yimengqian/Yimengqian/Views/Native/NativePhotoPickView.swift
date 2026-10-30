@@ -35,6 +35,12 @@ struct ArtifactRecognizeView: View {
     @State private var isAnalyzing = false
     @State private var sheet: CaptureSource?
     @State private var didAutoPresent = false
+    /// 八项器物报告（库 / 在线模型 / 本地推断，由 ArtifactProfileBuilder 保证有值）
+    @State private var profile: ArtifactProfile?
+    /// 报告正在生成（在线识别时这一步要 4–15 秒，必须有独立的进度文案）
+    @State private var isDescribing = false
+    /// CI 截图用的演示开关，正常使用不会触发
+    @State private var didRunDemo = false
 
     private enum CaptureSource: String, Identifiable {
         case album, camera
@@ -72,19 +78,16 @@ struct ArtifactRecognizeView: View {
                             )
                     }
 
-                    if isAnalyzing {
-                        HStack(spacing: 10) {
-                            ProgressView()
-                                .tint(Theme.vermilion)
-                            Text("正在比对本地参照器物…")
-                                .font(.custom("SongtiSC-Regular", size: 13))
-                                .foregroundColor(Theme.inkLight)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 6)
+                    if isAnalyzing || isDescribing {
+                        progressBlock
                     }
 
-                    if !matches.isEmpty {
+                    if let profile = profile {
+                        profileBlock(profile)
+                        if !matches.isEmpty {
+                            matchesDetail
+                        }
+                    } else if !matches.isEmpty {
                         resultBlock
                     }
 
@@ -120,7 +123,10 @@ struct ArtifactRecognizeView: View {
                 }
             }
         }
-        .onAppear(perform: autoPresentIfNeeded)
+        .onAppear {
+            runDemoIfNeeded()
+            autoPresentIfNeeded()
+        }
     }
 
     // MARK: - 文案
@@ -129,12 +135,12 @@ struct ArtifactRecognizeView: View {
         switch source {
         case "camera":
             return cameraAvailable
-                ? "对准器物整体，尽量避开杂乱背景；拍完会在本机做特征比对。"
+                ? "对准器物整体，尽量避开杂乱背景；拍完先在本机比对，再生成八项器物报告。"
                 : "这台设备没有可用的摄像头（模拟器不支持拍摄）。可以先用相册里的照片试一次。"
         case "album":
-            return "从相册选一张器物照片，选完会在本机做特征比对。"
+            return "从相册选一张器物照片，选完先在本机比对，再生成八项器物报告。"
         default:
-            return "选一张器物的照片，或者直接拍一张。比对全部在本机完成，不联网。"
+            return "选一张器物的照片，或者直接拍一张。比对全部在本机完成；只有未命中参照库且配置了 AI 通道时，才会把压过的照片发出去生成文案。"
         }
     }
 
@@ -186,6 +192,72 @@ struct ArtifactRecognizeView: View {
                     .buttonStyle(PressableStyle())
                 }
                 .padding(.top, 2)
+            }
+        }
+    }
+
+    // MARK: - 报告与进度
+
+    private var progressBlock: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 10) {
+                ProgressView()
+                    .tint(Theme.vermilion)
+                Text(progressText)
+                    .font(.custom("SongtiSC-Regular", size: 13))
+                    .foregroundColor(Theme.inkLight)
+            }
+            if !isAnalyzing && AIBridge.shared.hasKey {
+                Text("在线识别通常需要 4–15 秒；断网或超时会自动回落到本地推断，不会卡住。")
+                    .font(.custom("SongtiSC-Regular", size: 10.5))
+                    .foregroundColor(Theme.inkMuted)
+                    .lineSpacing(2)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 6)
+    }
+
+    private var progressText: String {
+        if isAnalyzing { return "正在比对本地参照器物…" }
+        return AIBridge.shared.hasKey ? "正在生成器物报告（在线识别）…" : "正在生成器物报告…"
+    }
+
+    /// 八项报告。这是本页的主角：选完图先给报告，比对明细退居其后。
+    private func profileBlock(_ p: ArtifactProfile) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Rectangle().fill(Theme.vermilion).frame(width: 3, height: 13)
+                Text("器物报告")
+                    .font(.custom("KaitiSC-Bold", size: 15))
+                    .foregroundColor(Theme.ink)
+                Spacer(minLength: 0)
+                if profile != nil {
+                    Button(action: { self.profile = nil }) {
+                        Text("收起")
+                            .font(.custom("SongtiSC-Regular", size: 11))
+                            .foregroundColor(Theme.inkMuted)
+                    }
+                    .buttonStyle(PressableStyle())
+                }
+            }
+            ArtifactProfileView(profile: p, onOpenLibrary: { id in
+                router.navigate(route: "/native/artifact/\(id)")
+            })
+        }
+    }
+
+    /// 比对明细：报告之下的一条次要信息，保留"为什么给出这个结果"的可解释性
+    private var matchesDetail: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Rectangle().fill(Theme.goldBorder).frame(width: 3, height: 12)
+                Text("视觉比对明细 · \(ContentData.artifacts.count) 件参照")
+                    .font(.custom("KaitiSC-Bold", size: 13))
+                    .foregroundColor(Theme.inkLight)
+            }
+            ForEach(Array(matches.prefix(3).enumerated()), id: \.element.id) { pair in
+                matchRow(pair.element, rank: pair.offset)
             }
         }
     }
@@ -360,15 +432,24 @@ struct ArtifactRecognizeView: View {
     private static let steps: [String] = [
         "拍下或选一张器物照片（整体入镜更准）",
         "在本机与 4 件参照器物比对视觉特征",
-        "得到最接近的几件，点开看详情与纹样",
+        "生成器物报告：名称、朝代、属性、简介、纹样、寓意、时代风格、纹样图",
+        "报告顶部标出来源：本机参照库 / 在线识别 / 本地推断",
     ]
 
     private var disclaimer: some View {
-        Text("识别方式：在本机与 \(ArtifactRecognizer.shared.referenceCount) 件参照器物做视觉特征比对（Vision 特征指纹 + 颜色分布），不联网、不上传照片。相似度是相对排序，不是训练模型给出的概率。")
+        Text(disclaimerText)
             .font(.custom("SongtiSC-Regular", size: 10.5))
             .foregroundColor(Theme.inkMuted.opacity(0.9))
             .lineSpacing(2)
             .padding(.top, 2)
+    }
+
+    private var disclaimerText: String {
+        let local = "在本机与 \(ArtifactRecognizer.shared.referenceCount) 件参照器物做视觉特征比对（Vision 特征指纹 + 颜色分布），不联网、不上传照片。"
+        if AIBridge.shared.hasKey {
+            return "识别分两层：\(local)命中参照库就用库里的真数据；未命中才把照片压到长边 768 后发给 DeepSeek 视觉模型生成八项文案。生成内容仅供参考，器物命名与断代以实物考据为准。"
+        }
+        return "识别方式：\(local)当前未配置 AI 通道，因此只做比对与本地推断，不做断代推测。"
     }
 
     // MARK: - 顶栏
@@ -415,6 +496,7 @@ struct ArtifactRecognizeView: View {
     private func handle(_ image: UIImage) {
         picked = image
         matches = []
+        profile = nil
         isAnalyzing = true
         ArtifactRecognizer.shared.recognize(image) { result in
             isAnalyzing = false
@@ -422,7 +504,34 @@ struct ArtifactRecognizeView: View {
             if result.first?.confident == true {
                 Haptics.tap()
             }
+            buildProfile(image: image, matches: result)
         }
+    }
+
+    /// 报告生成：库命中是同步的（几十毫秒），在线识别要等网络。
+    /// 两条路都保证有回调，所以界面上不会出现"转完圈什么都没有"。
+    private func buildProfile(image: UIImage, matches: [ArtifactMatch]) {
+        isDescribing = true
+        ArtifactProfileBuilder.shared.build(image: image, matches: matches) { result in
+            isDescribing = false
+            profile = result
+            if result.source == .remote {
+                Haptics.tap()
+            }
+        }
+    }
+
+    /// CI 截图用：`-demoRecognize qinghua-ping` 把库图当作"刚拍到的照片"跑完整流程；
+    /// 传 `generic` 则用一张不属于参照库的图，走"未命中"分支。
+    /// 正式使用时 UserDefaults 里没有这个键，不会触发。
+    private func runDemoIfNeeded() {
+        guard !didRunDemo, let token = UserDefaults.standard.string(forKey: "demoRecognize") else { return }
+        didRunDemo = true
+        let path: String? = ContentData.artifacts.first(where: { $0.id == token })?.image
+            ?? (token == "generic" ? "ArtApp/pattern-chanzhilian.jpg" : nil)
+        guard let assetPath = path, let image = AssetLoader.image(assetPath) else { return }
+        didAutoPresent = true
+        handle(image)
     }
 
     private func isFavorite(_ match: ArtifactMatch) -> Bool {

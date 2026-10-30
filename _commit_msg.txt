@@ -1,0 +1,21 @@
+古物识趣升级：拍/选照片生成八项器物报告（名称·朝代·属性·简介·纹样·寓意·时代风格·纹样图）
+
+识别与生成分开做成三层，任何一层失效都有兜底：
+1) 本地 Vision 比对命中参照库（相似度 ≥0.45）→ 八项直接取 ContentData 真数据，不联网不花钱；
+2) 未命中且配置了 AI 通道 → 把照片压到长边 768 发给 DeepSeek 视觉模型（deepseek-flash，
+   JSON 模式 + 关闭思考模式），一次返回八项；
+3) 未命中且没 key 或网络失败 → 本地推断：只写可核实的主色与器形近似度，朝代一律「待考」。
+
+新增：
+- Engine/ArtifactProfile.swift：八项报告模型 + 三层装配（ArtifactProfileBuilder）
+- Views/Native/ArtifactProfileView.swift：报告页，带来源角标（本机参照库/在线识别/本地推断）与把握度
+- ArtifactRecognizer.tone(of:)：平均色→中文色名，供本地推断档说人话
+- ArtifactRecognizer.patternCrops(from:)：Vision 显著性检测裁两块照片局部当纹样图，不生成任何图
+
+内容补全：铜镜/香炉/玉佩三条补上 patternDetail（此前只有青花瓷有纹样·寓意·时代风格），
+详情页 gallery 不再塞空字符串路径。
+
+AI 通道 key：Info.plist 的 YimengAIKey 留空；真机包 workflow 用 secrets.YIMENG_AI_KEY
+临时写入（只回显长度），未配置时包内为空、功能自动走本地推断。
+
+CI：新增 -demoRecognize 演示开关（qinghua-ping / generic），补两张截图验证命中与未命中两条链路。

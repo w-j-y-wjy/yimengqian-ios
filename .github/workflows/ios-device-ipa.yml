@@ -26,6 +26,23 @@ jobs:
           xcodebuild -version
           echo "### $(xcodebuild -version | head -1)" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: 注入 AI 通道 key（可选）
+        env:
+          YIMENG_AI_KEY: ${{ secrets.YIMENG_AI_KEY }}
+        run: |
+          set -euo pipefail
+          PLIST="Yimengqian/Yimengqian/Info.plist"
+          if [ -z "${YIMENG_AI_KEY:-}" ]; then
+            echo "::warning::未配置 secrets.YIMENG_AI_KEY —— 包内 AI 通道为空，古物识趣会走本地推断"
+            echo "### AI 通道：未配置（古物识趣将走本地推断）" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          /usr/libexec/PlistBuddy -c "Set :YimengAIKey $YIMENG_AI_KEY" "$PLIST"
+          # 只回显长度，绝不回显 key 本身（GitHub 也会对 secret 做掩码，但别依赖它）
+          LEN=$(/usr/libexec/PlistBuddy -c "Print :YimengAIKey" "$PLIST" | tr -d '\n' | wc -c | tr -d ' ')
+          echo "AI 通道：已注入（长度 $LEN）"
+          echo "### AI 通道：已注入（长度 $LEN）" >> "$GITHUB_STEP_SUMMARY"
+
       - name: 编译真机包（Release · 不签名）
         run: |
           set -euo pipefail
@@ -69,6 +86,9 @@ jobs:
           shasum -a 256 Yimengqian-unsigned.ipa | tee ipa-sha256.txt
           BID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' Payload/Yimengqian.app/Info.plist)
           MOS=$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' Payload/Yimengqian.app/Info.plist)
+          # AI 通道是否真的进了包：只看长度，不看内容
+          AILEN=$(/usr/libexec/PlistBuddy -c 'Print :YimengAIKey' Payload/Yimengqian.app/Info.plist 2>/dev/null | tr -d '\n' | wc -c | tr -d ' ')
+          echo "包内 YimengAIKey 长度：$AILEN（0 表示未注入，AI 通道会走本地推断）"
           SIZE=$(du -h Yimengqian-unsigned.ipa | cut -f1)
           {
             echo "### 真机包已生成（未签名）"

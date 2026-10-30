@@ -190,4 +190,136 @@ final class ArtifactRecognizer {
         for i in 0..<a.count { sum += abs(a[i] - b[i]) }
         return min(1, sum / 2)
     }
+
+    // MARK: - 主色（给「本地推断」用）
+
+    /// 照片的主色，只给一个中文色名 + HSB。
+    /// 为什么需要它：没有在线识别时，总要有一句能核实的话可说；
+    /// "画面以青调为主"是可核实的，"此为元代青花"不是。
+    struct ToneSample {
+        let name: String
+        let hue: Double
+        let saturation: Double
+        let brightness: Double
+    }
+
+    static func tone(of image: UIImage) -> ToneSample {
+        let side = 24
+        guard let cg = image.cgImage,
+              let ctx = CGContext(data: nil,
+                                  width: side, height: side,
+                                  bitsPerComponent: 8,
+                                  bytesPerRow: side * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+            return ToneSample(name: "杂色", hue: 0, saturation: 0, brightness: 0.5)
+        }
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: side, height: side))
+        guard let raw = ctx.data else {
+            return ToneSample(name: "杂色", hue: 0, saturation: 0, brightness: 0.5)
+        }
+        let pixels = raw.bindMemory(to: UInt8.self, capacity: side * side * 4)
+        var r = 0.0, g = 0.0, b = 0.0
+        for i in stride(from: 0, to: side * side * 4, by: 4) {
+            r += Double(pixels[i])
+            g += Double(pixels[i + 1])
+            b += Double(pixels[i + 2])
+        }
+        let total = Double(side * side)
+        r /= total * 255; g /= total * 255; b /= total * 255
+
+        var h: CGFloat = 0, s: CGFloat = 0, v: CGFloat = 0
+        UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1)
+            .getHue(&h, saturation: &s, brightness: &v, alpha: nil)
+
+        return ToneSample(name: toneName(hue: Double(h) * 360, saturation: Double(s), brightness: Double(v)),
+                          hue: Double(h) * 360,
+                          saturation: Double(s),
+                          brightness: Double(v))
+    }
+
+    /// 色相/饱和度/明度 → 中文色名。分档刻意粗：只为了说"青/白/褐"，不是为了配色。
+    private static func toneName(hue: Double, saturation: Double, brightness: Double) -> String {
+        if brightness < 0.24 { return "墨" }
+        if saturation < 0.12 { return brightness > 0.74 ? "白" : "灰" }
+        switch hue {
+        case 0..<18, 344..<361: return "朱"
+        case 18..<34: return brightness < 0.42 ? "褐" : "赭"
+        case 34..<52: return "土黄"
+        case 52..<72: return "米黄"
+        case 72..<160: return "青绿"
+        case 160..<255: return "青"
+        case 255..<300: return "紫"
+        default: return "绛"
+        }
+    }
+
+    // MARK: - 纹样局部裁切
+
+    /// 从照片里取最"吸睛"的两块当作纹样局部。
+    /// 这一步**不生成任何东西**：裁出来的就是你拍的那张照片的一部分，
+    /// 所以在未命中参照库、也没接在线识别时，它是唯一可以指着说"这是真的"的纹样证据。
+    /// 显著性检测失败（模拟器/老系统/纯色照片）就退回中心与上方两个方图，保证结果稳定可复现。
+    static func patternCrops(from image: UIImage, limit: Int = 2) -> [UIImage] {
+        let prepared = squarePixelImage(image, maxSide: 1400)
+        guard let cg = prepared.cgImage else { return [] }
+        let w = CGFloat(cg.width), h = CGFloat(cg.height)
+        guard w > 16, h > 16 else { return [] }
+
+        var rects: [CGRect] = []
+        if let objects = attentionSaliency(cg) {
+            rects = objects
+                .sorted { $0.boundingBox.width * $0.boundingBox.height > $1.boundingBox.width * $1.boundingBox.height }
+                .map { box in
+                    // Vision 的 boundingBox 原点在左下，CGImage 裁切原点在左上 → y 要翻过来
+                    CGRect(x: box.minX * w,
+                           y: (1 - box.maxY) * h,
+                           width: box.width * w,
+                           height: box.height * h)
+                }
+                .filter { $0.width >= 56 && $0.height >= 56 }
+        }
+        if rects.isEmpty {
+            let s = min(w, h) * 0.52
+            rects = [CGRect(x: (w - s) / 2, y: (h - s) / 2, width: s, height: s),
+                     CGRect(x: (w - s) / 2, y: h * 0.14, width: s, height: s)]
+        }
+
+        return rects.prefix(limit).compactMap { rect in
+            let clamped = rect.intersection(CGRect(x: 0, y: 0, width: w, height: h))
+            guard clamped.width >= 32, clamped.height >= 32,
+                  let sub = cg.cropping(to: clamped.integral) else { return nil }
+            return UIImage(cgImage: sub, scale: 1, orientation: prepared.imageOrientation)
+        }
+    }
+
+    private static func attentionSaliency(_ cg: CGImage) -> [VNRectangleObservation]? {
+        let request = VNGenerateAttentionBasedSaliencyImageRequest()
+        let handler = VNImageRequestHandler(cgImage: cg, orientation: .up, options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            return nil
+        }
+        guard let result = request.results?.first as? VNSaliencyImageObservation else { return nil }
+        return result.salientObjects
+    }
+
+    /// 把图缩到长边 maxSide 以内，并顺手把方向"烤"进像素
+    /// （否则裁切出来的局部会带着 EXIF 方向，显示时被再转一次）
+    private static func squarePixelImage(_ image: UIImage, maxSide: CGFloat) -> UIImage {
+        let size = image.size
+        guard size.width > 0, size.height > 0 else { return image }
+        let longest = max(size.width, size.height)
+        let scale = longest > maxSide ? maxSide / longest : 1
+        var target = CGSize(width: (size.width * scale).rounded(), height: (size.height * scale).rounded())
+        if target.width < 1 { target.width = 1 }
+        if target.height < 1 { target.height = 1 }
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: target, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: target))
+        }
+    }
 }

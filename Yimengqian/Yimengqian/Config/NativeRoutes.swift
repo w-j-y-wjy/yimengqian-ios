@@ -260,8 +260,10 @@ struct NativeDetailContent {
                 sections.append(("纹样 · \(pd.name)", pd.structure))
                 sections.append(("寓意", pd.symbolism))
                 sections.append(("时代风格", pd.eraStyle))
-                gallery.append(pd.image)
-                gallery.append(contentsOf: pd.elements.map { $0.image })
+                // 空字符串不能塞进 gallery：AssetLoader 会去查一个不存在的 asset，
+                // 画面上就是一格空白，比不给图更难看。
+                if !pd.image.isEmpty { gallery.append(pd.image) }
+                gallery.append(contentsOf: pd.elements.map { $0.image }.filter { !$0.isEmpty })
             }
             return NativeDetailContent(
                 title: a.name,
@@ -271,7 +273,9 @@ struct NativeDetailContent {
                 sections: sections,
                 tags: [a.pattern, a.shape, a.usage].filter { !$0.isEmpty },
                 favorite: (.artifact, id),
-                gallery: gallery
+                gallery: gallery,
+                // 三件后补的纹样没有配图 → 用程序化纹样占位（只对 PatternPainter 认识的纹样生效）
+                paintedPattern: gallery.isEmpty ? a.patternDetail.flatMap { ArtifactProfile.painterName(for: $0.name) } : nil
             )
 
         case .patternElement(let name):

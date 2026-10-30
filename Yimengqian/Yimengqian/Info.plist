@@ -46,5 +46,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- AI 通道（古物识趣的在线识别用）。**这里故意留空，仓库里永远不放真 key。**
+	     取值顺序见 Engine/AIBridge.swift 的 apiKey()：
+	       1) 本项（CI 出真机包时由 workflow 用 secrets.YIMENG_AI_KEY 临时写入）
+	       2) 环境变量 YIMENG_AI_KEY（本机调试用）
+	       3) 都没有 → 全部回落本地推断，功能不会白屏
+	     留空或占位符（以 $( 开头）都算"未配置"。 -->
+	<key>YimengAIKey</key>
+	<string></string>
 </dict>
 </plist>
