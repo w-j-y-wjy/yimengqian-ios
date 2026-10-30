@@ -39,9 +39,10 @@ jobs:
           fi
           /usr/libexec/PlistBuddy -c "Set :YimengAIKey $YIMENG_AI_KEY" "$PLIST"
           # 只回显长度，绝不回显 key 本身（GitHub 也会对 secret 做掩码，但别依赖它）
+          # 注意：变量后面紧跟中文全角括号时必须写 ${LEN}，否则 bash 会把全角字节当成变量名的一部分
           LEN=$(/usr/libexec/PlistBuddy -c "Print :YimengAIKey" "$PLIST" | tr -d '\n' | wc -c | tr -d ' ')
-          echo "AI 通道：已注入（长度 $LEN）"
-          echo "### AI 通道：已注入（长度 $LEN）" >> "$GITHUB_STEP_SUMMARY"
+          echo "AI 通道：已注入（长度 ${LEN}）"
+          echo "### AI 通道：已注入（长度 ${LEN}）" >> "$GITHUB_STEP_SUMMARY"
 
       - name: 编译真机包（Release · 不签名）
         run: |
@@ -88,7 +89,7 @@ jobs:
           MOS=$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' Payload/Yimengqian.app/Info.plist)
           # AI 通道是否真的进了包：只看长度，不看内容
           AILEN=$(/usr/libexec/PlistBuddy -c 'Print :YimengAIKey' Payload/Yimengqian.app/Info.plist 2>/dev/null | tr -d '\n' | wc -c | tr -d ' ')
-          echo "包内 YimengAIKey 长度：$AILEN（0 表示未注入，AI 通道会走本地推断）"
+          echo "包内 YimengAIKey 长度：${AILEN}（1 表示空，正常应约 35）"
           SIZE=$(du -h Yimengqian-unsigned.ipa | cut -f1)
           {
             echo "### 真机包已生成（未签名）"
