@@ -207,20 +207,13 @@ extension ArtifactProfile {
         }
         p.dynasty = "待考"
 
-        // 与参照库足够接近（≥0.32，界面上叫"可能相关"）时，才借库里的纹样资料写"疑为"
-        if let top = top, top.score >= 0.32,
-           let a = ContentData.artifacts.first(where: { $0.id == top.id }),
-           let pd = a.patternDetail {
-            p.patternName = "疑为\(pd.name)"
-            p.patternText = "若此器果与「\(a.name)」同类，则纹样结构可参照后者：\(pd.structure)"
-            p.symbol = "同一前提下的寓意为：\(pd.symbolism)"
-            p.eraStyle = "同一前提下的时代风格为：\(pd.eraStyle)"
-        } else {
-            p.patternName = "待考"
-            p.patternText = "未接通在线识别时，纹样题材不做推测。下面的纹样图取自你照片里纹理最集中的两处局部，可作为观察依据。"
-            p.symbol = "寓意须先确认纹样题材，本地不做推测。"
-            p.eraStyle = "时代风格须先确认年代与窑口，本地不做推测。"
-        }
+        // 为什么不在这里"借"参照库的纹样资料：比对没过比值检验，说明它只是画风相近，
+        // 并不真的是同一件器物（实测苏轼画像对青花瓶有 93% 的相似度）。
+        // 这时候把「缠枝莲纹」写上去就是编，宁可写「待考」。
+        p.patternName = "待考"
+        p.patternText = "未接通在线识别时，纹样题材不做推测。下面的纹样图取自你照片里纹理最集中的两处局部，可作为观察依据。"
+        p.symbol = "寓意须先确认纹样题材，本地不做推测。"
+        p.eraStyle = "时代风格须先确认年代与窑口，本地不做推测。"
 
         for (i, crop) in crops.enumerated() {
             p.patternImages.append(PatternImage(image: crop, painted: nil, caption: "你照片中的局部 \(i + 1)"))

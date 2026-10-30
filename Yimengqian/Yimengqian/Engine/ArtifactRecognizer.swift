@@ -46,6 +46,13 @@ final class ArtifactRecognizer {
     /// 相似度低于这个值时，不把 top1 当成结论
     static let confidentThreshold: Double = 0.45
 
+    /// top1 必须比 top2 至少高这么多，才算"认出来了"（Lowe 式比值检验）。
+    /// 为什么非要这一条：Vision 特征指纹对"同一类画风"极不敏感 —— 参照库 4 件都是
+    /// 纸本国风插画，于是任何国风照片都会以 90%+ 命中青花瓶。CI 里用苏轼画像测出
+    /// 93% 的假命中，就是这个原因。加上"要比第二名明显更像"之后，
+    /// 只有真正接近同一件器物的照片才会通过；通不过就老实说"未能可靠识别"。
+    static let marginThreshold: Double = 0.05
+
     private struct Reference {
         let artifact: Artifact
         let feature: VNFeaturePrintObservation?
@@ -82,19 +89,24 @@ final class ArtifactRecognizer {
                 return (ref.artifact, Self.score(featureDistance: featureDistance, colorDistance: colorDistance), colorDistance)
             }
 
-            let matches = scored
-                .sorted { $0.1 > $1.1 }
-                .map { (artifact, score, _) in
-                    ArtifactMatch(
-                        id: artifact.id,
-                        name: artifact.name,
-                        dynasty: artifact.dynasty,
-                        type: artifact.type,
-                        image: artifact.image,
-                        score: score,
-                        confident: score >= Self.confidentThreshold
-                    )
-                }
+            let sorted = scored.sorted { $0.1 > $1.1 }
+            let topScore: Double = sorted.first?.1 ?? 0
+            let secondScore: Double = sorted.count > 1 ? sorted[1].1 : 0
+            let distinct: Bool = (topScore - secondScore) >= Self.marginThreshold
+
+            let matches = sorted.enumerated().map { index, item -> ArtifactMatch in
+                let artifact = item.0
+                let score = item.1
+                return ArtifactMatch(
+                    id: artifact.id,
+                    name: artifact.name,
+                    dynasty: artifact.dynasty,
+                    type: artifact.type,
+                    image: artifact.image,
+                    score: score,
+                    confident: index == 0 && score >= Self.confidentThreshold && distinct
+                )
+            }
             DispatchQueue.main.async { completion(matches) }
         }
     }
