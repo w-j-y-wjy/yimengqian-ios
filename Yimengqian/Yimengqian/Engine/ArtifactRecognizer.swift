@@ -268,16 +268,24 @@ final class ArtifactRecognizer {
 
         var rects: [CGRect] = []
         if let objects = attentionSaliency(cg) {
-            rects = objects
-                .sorted { $0.boundingBox.width * $0.boundingBox.height > $1.boundingBox.width * $1.boundingBox.height }
-                .map { box in
-                    // Vision 的 boundingBox 原点在左下，CGImage 裁切原点在左上 → y 要翻过来
-                    CGRect(x: box.minX * w,
-                           y: (1 - box.maxY) * h,
-                           width: box.width * w,
-                           height: box.height * h)
-                }
-                .filter { $0.width >= 56 && $0.height >= 56 }
+            // 逐条显式写类型：链式 sorted/map/filter 里混着 CGFloat 运算，
+            // 会触发 "unable to type-check this expression in reasonable time"（已在 CI 复现一次）。
+            var boxes: [VNRectangleObservation] = objects
+            boxes.sort { lhs, rhs in
+                let areaL: CGFloat = lhs.boundingBox.width * lhs.boundingBox.height
+                let areaR: CGFloat = rhs.boundingBox.width * rhs.boundingBox.height
+                return areaL > areaR
+            }
+            for box in boxes {
+                let bb: CGRect = box.boundingBox
+                let x: CGFloat = bb.minX * w
+                // Vision 的 boundingBox 原点在左下，CGImage 裁切原点在左上 → y 要翻过来
+                let y: CGFloat = (1 - bb.maxY) * h
+                let bw: CGFloat = bb.width * w
+                let bh: CGFloat = bb.height * h
+                guard bw >= 56, bh >= 56 else { continue }
+                rects.append(CGRect(x: x, y: y, width: bw, height: bh))
+            }
         }
         if rects.isEmpty {
             let s = min(w, h) * 0.52
@@ -285,12 +293,17 @@ final class ArtifactRecognizer {
                      CGRect(x: (w - s) / 2, y: h * 0.14, width: s, height: s)]
         }
 
-        return rects.prefix(limit).compactMap { rect in
-            let clamped = rect.intersection(CGRect(x: 0, y: 0, width: w, height: h))
-            guard clamped.width >= 32, clamped.height >= 32,
-                  let sub = cg.cropping(to: clamped.integral) else { return nil }
-            return UIImage(cgImage: sub, scale: 1, orientation: prepared.imageOrientation)
+        // 逐条裁切，同样显式写类型（理由同上：链式闭包会让类型检查爆炸）
+        var out: [UIImage] = []
+        let bounds = CGRect(x: 0, y: 0, width: w, height: h)
+        for rect in rects.prefix(limit) {
+            let clamped: CGRect = rect.intersection(bounds)
+            guard clamped.width >= 32, clamped.height >= 32 else { continue }
+            let pixelRect: CGRect = clamped.integral
+            guard let sub: CGImage = cg.cropping(to: pixelRect) else { continue }
+            out.append(UIImage(cgImage: sub, scale: 1, orientation: prepared.imageOrientation))
         }
+        return out
     }
 
     private static func attentionSaliency(_ cg: CGImage) -> [VNRectangleObservation]? {

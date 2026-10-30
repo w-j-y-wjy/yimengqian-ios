@@ -229,16 +229,41 @@ extension AIBridge {
             completion(nil)
             return
         }
+        let base64 = jpeg.base64EncodedString()
 
-        let userText = "请识别这张器物照片，并按约定格式输出 json。\n" + Self.hintText(hints)
-        let body: [String: Any] = [
+        sendVision(key: key, imageBase64: base64, hints: hints, jsonMode: true) { text, status in
+            if let text = text {
+                completion(text)
+                return
+            }
+            // 一次有条件的重试：少数部署/模型组合不接受「图片 + response_format 同时用」，
+            // 会回 400/422。去掉 response_format 再要一次，靠花括号提取 JSON
+            // （系统提示里已明确要求"只输出一个 json 对象"）。
+            // 只在协议类错误时重试：断网/超时重试只会把等待时间翻倍。
+            guard status == 400 || status == 415 || status == 422 else {
+                completion(nil)
+                return
+            }
+            self.sendVision(key: key, imageBase64: base64, hints: hints, jsonMode: false) { retryText, _ in
+                completion(retryText)
+            }
+        }
+    }
+
+    /// 发一次视觉请求。回调 (解析出的 content 或 nil, HTTP 状态码；传输失败为 0)
+    private func sendVision(key: String,
+                            imageBase64: String,
+                            hints: [ArtifactMatch],
+                            jsonMode: Bool,
+                            completion: @escaping (String?, Int) -> Void) {
+        var body: [String: Any] = [
             "model": Self.visionModel,
             "messages": [
                 ["role": "system", "content": Self.artifactSystemPrompt],
                 ["role": "user", "content": [
-                    ["type": "text", "text": userText],
+                    ["type": "text", "text": "请识别这张器物照片，并按约定格式输出 json。\n" + Self.hintText(hints)],
                     ["type": "image_url", "image_url": [
-                        "url": "data:image/jpeg;base64,\(jpeg.base64EncodedString())",
+                        "url": "data:image/jpeg;base64,\(imageBase64)",
                         // low = 先缩到 512×512 再推理：一张图最多约 1024 token，单次成本可控
                         "detail": "low",
                     ]],
@@ -246,27 +271,30 @@ extension AIBridge {
             ],
             // 关掉思考模式：演示要的是"几秒出结果"，不该把 token 花在思维链上
             "thinking": ["type": "disabled"],
-            "response_format": ["type": "json_object"],
             "temperature": 0.3,
             "max_tokens": 1600,
         ]
+        if jsonMode {
+            body["response_format"] = ["type": "json_object"]
+        }
 
         guard let url = URL(string: Self.visionEndpoint),
               let data = try? JSONSerialization.data(withJSONObject: body) else {
-            completion(nil)
+            completion(nil, 0)
             return
         }
 
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
-        req.timeoutInterval = 25
+        req.timeoutInterval = 22
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
         req.httpBody = data
 
         URLSession.shared.dataTask(with: req) { data, response, _ in
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
             var text: String? = nil
-            if let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode),
+            if (200..<300).contains(status),
                let data = data,
                let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let choices = obj["choices"] as? [[String: Any]],
@@ -275,7 +303,7 @@ extension AIBridge {
                !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 text = content
             }
-            DispatchQueue.main.async { completion(text) }
+            DispatchQueue.main.async { completion(text, status) }
         }.resume()
     }
 

@@ -164,7 +164,7 @@ struct ArtifactProfileView: View {
                                     .foregroundColor(Theme.inkMuted)
                                     .lineLimit(2)
                                     .fixedSize(horizontal: false, vertical: true)
-                                    .frame(width: 138, alignment: .leading)
+                                    .frame(width: patternSide, alignment: .leading)
                             }
                         }
                     }
@@ -174,14 +174,16 @@ struct ArtifactProfileView: View {
         }
     }
 
+    /// 纹样图边长（列表里统一，横向滚动）
+    private let patternSide: CGFloat = 138
+
     @ViewBuilder
     private func patternCell(_ item: ArtifactProfile.PatternImage) -> some View {
-        let side: CGFloat = 138
         if let img = item.image {
             Image(uiImage: img)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: side, height: side)
+                .frame(width: patternSide, height: patternSide)
                 .clipped()
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
@@ -190,7 +192,7 @@ struct ArtifactProfileView: View {
                 )
         } else if let painted = item.painted {
             PatternPainter(name: painted)
-                .frame(width: side, height: side)
+                .frame(width: patternSide, height: patternSide)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)

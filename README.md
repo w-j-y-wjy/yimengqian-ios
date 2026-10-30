@@ -86,6 +86,7 @@ node tools/add-swift-to-pbxproj.mjs Engine/Foo.swift   # 新 Swift 文件登记�
 | 相册选图 | 系统 `PHPickerViewController`，无需相册权限声明；器物首页「相册上传」进页面即弹 |
 | 拍摄识别 | 系统相机（`UIImagePickerController(.camera)`，需 `NSCameraUsageDescription`）；无摄像头设备如实说明并给相册退路 |
 | 器物识别 | `Engine/ArtifactRecognizer.swift`：Vision 特征指纹 + 颜色直方图，与本机 4 件参照器物做**离线**相似度排序；相似度不足时明说「未能可靠识别」 |
+| 器物报告 | `Engine/ArtifactProfile.swift` 把「名称·朝代·属性·简介·纹样·寓意·时代风格·纹样图」八项凑齐，三层降级：命中参照库 → 用库里真数据；未命中且有 key → DeepSeek 视觉模型生成；都没有 → 本地推断（只写主色与器形近似度，朝代写「待考」）。报告顶部标来源，纹样图优先用**你照片里裁出的局部** |
 | 最近足迹 | 进首页/汴京/茶坊/城池详情都会记一笔；「我的」底部三张卡与 `/native/list/footprints` 同源，可空态、可去重 |
 | AI 本地规则 | `Engine/AIBridge.swift` 未配 key 时走本地规则引擎（模板 + 意象库 + 押韵校验） |
 
@@ -94,9 +95,10 @@ node tools/add-swift-to-pbxproj.mjs Engine/Foo.swift   # 新 Swift 文件登记�
 | 项 | 现状 |
 |---|---|
 | 器物识别精度 | 参照库只有工程里那 4 张器物插画，**不是训练过的器物分类器**；给的是相对相似度排序，不是"识别准确率" |
+| 器物报告准确性 | 命中参照库的八项是真数据；未命中时由 DeepSeek 视觉模型（`deepseek-flash`）看图生成，**会出错**——界面标「在线识别 · 仅供参考」，器物命名与断代以实物考据为准 |
 | 江雪视频 | 无视频素材，播放键用朗读替代（有声音，无画面） |
 | 四画风原图 | 工程只有一张江雪图；四种画风是 Core Image **滤镜风格化**，不是 AI 生成的同构图原图 |
-| AI 在线生成 | key 留空 ⇒ 只有本地规则；要在线需自备 `YimengAIKey`（Info.plist）或 `YIMENG_AI_KEY`（环境变量）并联网 |
+| AI 在线生成 | 两条通道共用 `Engine/AIBridge.swift`。文本（题注/对谈/意象）与视觉（古物识趣报告）都只在配了 key 时联网；key 来源：Info.plist `YimengAIKey` ＞ 环境变量 `YIMENG_AI_KEY`。仓库里**永远留空**，真机包由 `.github/workflows/ios-device-ipa.yml` 用 `secrets.YIMENG_AI_KEY` 临时写入 |
 | 位图里的静态状态栏 | 25 屏顶部烤着 `9:41`，而系统状态栏被全局隐藏（另有 22 个原生页本来就没状态栏）。改它要给 25 张图重新对齐全部像素叠层，本轮未做 |
 
 > 三条硬原则：不把规则引擎说成语言模型、断网演示不塞联网功能、没有评测集不报准确率。
