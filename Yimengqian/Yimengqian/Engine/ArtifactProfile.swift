@@ -197,9 +197,11 @@ extension ArtifactProfile {
         p.failureNote = note
 
         if let top = top {
-            p.name = "疑似\(tone.name)调\(top.type)（近\(top.name)）"
-            p.kind = "\(top.type) · 器形近\(top.name) · 主色\(tone.name)"
-            p.intro = "本地未接通在线识别，因此不给出器名与年代的结论。从照片本身能核实的是：画面以\(tone.name)调为主，器形与本地参照库中的「\(top.name)」最为接近（视觉相似度 \(pct)%）。相似度是相对排序，不是分类概率。若需完整的命名、断代与释义，可在设置里配置 AI 通道后重试。"
+            // 不把"最接近的那件"写进器物名：没过比值检验就只是画风相近，
+            // 说成「疑似青花缠枝莲纹瓶」会让人以为认出来了。
+            p.name = "疑似\(tone.name)调器物"
+            p.kind = "类别待辨 · 主色\(tone.name)"
+            p.intro = "本地未接通在线识别，因此不给出器名与年代的结论。从照片本身能核实的是：画面以\(tone.name)调为主。本机参照库中最接近的是「\(top.name)」（相似度 \(pct)%），但它与第二名的差距不到判定门槛，所以不采信为结论。若需完整的命名、断代与释义，可在设置里配置 AI 通道后重试。"
         } else {
             p.name = "疑似\(tone.name)调器物"
             p.kind = "类别待辨 · 主色\(tone.name)"
