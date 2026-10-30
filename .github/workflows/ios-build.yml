@@ -149,6 +149,28 @@ jobs:
           fi
           echo "### 冒烟通过：应用能安装、启动、无崩溃" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: 本机比对分数矩阵（阈值是否站得住，看数据）
+        run: |
+          set -euo pipefail
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" -initialScreen home -dumpScoreMatrix 1 >/dev/null
+          # Vision 请求 + 14 张图 × 4 件比对，给足时间
+          sleep 18
+          DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)
+          MATRIX="$DATA/Documents/score-matrix.txt"
+          if [ ! -f "$MATRIX" ]; then
+            echo "::error::分数矩阵没有生成（$MATRIX）"
+            exit 1
+          fi
+          cat "$MATRIX" | tee score-matrix.txt
+          {
+            echo "### 本机比对分数矩阵（自比对 vs 干扰图）"
+            echo '```'
+            cat "$MATRIX"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: 叠层验证截图（偏好测试 / 飞花令 / 收藏页）
         run: |
           set -euo pipefail
@@ -479,6 +501,7 @@ jobs:
             sweep/*.png
             thumbs/*.jpg
             build.log
+            score-matrix.txt
           retention-days: 7
           if-no-files-found: warn
 

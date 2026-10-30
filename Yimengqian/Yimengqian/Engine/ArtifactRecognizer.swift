@@ -111,6 +111,33 @@ final class ArtifactRecognizer {
         }
     }
 
+    /// 同步打分，只给自检探针用（ArtifactScoreProbe）。
+    /// 为什么单独开一个：`recognize` 是异步且只回 confident 布尔值，
+    /// 而"为什么误判"要看完整分数与被拉开多少 —— 那需要把 4 件的分数全拿到。
+    func probeScores(_ image: UIImage) -> [(name: String, score: Double)] {
+        var out: [(name: String, score: Double)] = []
+        queue.sync {
+            let refs = self.buildReferencesIfNeeded()
+            let queryFeature = Self.featurePrint(of: image)
+            let queryHist = Self.histogram(of: image)
+            var rows: [(name: String, score: Double)] = []
+            for ref in refs {
+                var featureDistance: Double? = nil
+                if let q = queryFeature, let r = ref.feature {
+                    var d = Float(0)
+                    if (try? q.computeDistance(&d, to: r)) != nil {
+                        featureDistance = Double(d)
+                    }
+                }
+                let colorDistance = Self.histogramDistance(queryHist, ref.histogram)
+                rows.append((name: ref.artifact.name,
+                             score: Self.score(featureDistance: featureDistance, colorDistance: colorDistance)))
+            }
+            out = rows.sorted { $0.score > $1.score }
+        }
+        return out
+    }
+
     /// 综合分：特征指纹为主（75%），颜色直方图为辅（25%）。
     /// 为什么加权：参照图是插画、实拍照片的色调差异大，纯特征指纹容易被背景带偏；
     /// 纯颜色又分不清纹样结构。两者互补后，排序在真机样张上更稳。

@@ -53,6 +53,10 @@ struct YimengqianApp: App {
                 store.recordPlace(pid, date: AppSnapshot.dateString(daysAgo: daysAgo))
             }
         }
+        // 调试 / CI 用：`-dumpScoreMatrix 1` 把本机比对的分数矩阵写到 Documents/score-matrix.txt。
+        // 阈值该定多少只能看这张矩阵 —— 拍脑袋定的 0.45 曾让苏轼画像以 93% 命中青花瓶。
+        // 不带这个参数就完全不运行，正式使用不受影响。
+        ArtifactScoreProbe.runIfRequested()
     }
 
     var body: some Scene {
