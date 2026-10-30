@@ -65,7 +65,9 @@ struct ArtifactRecognizeView: View {
                         .foregroundColor(Theme.inkMuted)
                         .lineSpacing(3)
 
-                    if let picked = picked {
+                    // 有报告时不再单独显示原图：报告里已经有一张同样的照片，
+                    // 两张叠着排会让人以为选了两张（CI 截图复现过）。
+                    if let picked = picked, profile == nil {
                         Image(uiImage: picked)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -522,13 +524,13 @@ struct ArtifactRecognizeView: View {
     }
 
     /// CI 截图用：`-demoRecognize qinghua-ping` 把库图当作"刚拍到的照片"跑完整流程；
-    /// 传 `generic` 则用一张不属于参照库的图，走"未命中"分支。
+    /// 传 `generic` 则用一张与器物无关的图（人物画像，视觉特征差得远，必走"未命中"分支）。
     /// 正式使用时 UserDefaults 里没有这个键，不会触发。
     private func runDemoIfNeeded() {
         guard !didRunDemo, let token = UserDefaults.standard.string(forKey: "demoRecognize") else { return }
         didRunDemo = true
         let path: String? = ContentData.artifacts.first(where: { $0.id == token })?.image
-            ?? (token == "generic" ? "ArtApp/pattern-chanzhilian.jpg" : nil)
+            ?? (token == "generic" ? "ArtApp/character-sushi.jpg" : nil)
         guard let assetPath = path, let image = AssetLoader.image(assetPath) else { return }
         didAutoPresent = true
         handle(image)
