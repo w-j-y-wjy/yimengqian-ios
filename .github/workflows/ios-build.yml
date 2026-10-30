@@ -352,9 +352,9 @@ jobs:
 
           # 器物报告（命中参照库）：把库里的器物图当作"刚拍到的照片"喂进去，
           # 走的是和真机完全一样的一条链路（Vision 比对 → 命中 → 八项取库数据）。
-          xcrun simctl launch "$UDID" "$BUNDLE_ID" \\
-            -initialScreen artifact-home \\
-            -nativeDetail /native/recognize/manual \\
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-home \
+            -nativeDetail /native/recognize/manual \
             -demoRecognize qinghua-ping
           sleep 9
           xcrun simctl io "$UDID" screenshot overlay-artifact-profile-library.png
@@ -362,9 +362,9 @@ jobs:
 
           # 器物报告（未命中 + 无 key）：故意用一张不属于参照库的图，
           # 应看到「本地推断」角标、"待考"朝代与照片裁切出来的纹样局部。
-          xcrun simctl launch "$UDID" "$BUNDLE_ID" \\
-            -initialScreen artifact-home \\
-            -nativeDetail /native/recognize/manual \\
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" \
+            -initialScreen artifact-home \
+            -nativeDetail /native/recognize/manual \
             -demoRecognize generic
           sleep 9
           xcrun simctl io "$UDID" screenshot overlay-artifact-profile-infer.png
