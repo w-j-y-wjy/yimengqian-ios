@@ -27,15 +27,17 @@ struct ArtifactMatch: Identifiable, Equatable {
     let dynasty: String
     let type: String
     let image: String
-    /// 综合相似度 0…1（越大越像）。由特征距离与颜色距离加权得出。
+    /// 综合相似度 0…1（越大越像）。由「结构相关」与「色彩分布」两路得出，见 score(...)
     let score: Double
     /// 是否足够可信（低于阈值时界面显示「未能可靠识别」）
     let confident: Bool
 
-    /// 界面上的档位文案：不假装是概率
+    /// 界面上的档位文案：不假装是概率。
+    /// 阈值按新的分数刻度定（自比对≈0.95+，干扰图≈0.2–0.5），见 ArtifactScoreProbe 的实测矩阵。
     var bandText: String {
-        if score >= 0.55 { return "形态相近" }
-        if score >= 0.32 { return "可能相关" }
+        if score >= 0.86 { return "高度一致" }
+        if score >= 0.70 { return "形态相近" }
+        if score >= 0.50 { return "仅略相似" }
         return "差异较大"
     }
 }
@@ -43,20 +45,18 @@ struct ArtifactMatch: Identifiable, Equatable {
 final class ArtifactRecognizer {
     static let shared = ArtifactRecognizer()
 
-    /// 相似度低于这个值时，不把 top1 当成结论
-    static let confidentThreshold: Double = 0.45
+    /// 相似度低于这个值时，不把 top1 当成结论。
+    /// 0.86 是按 ArtifactScoreProbe 实测矩阵定的（自比对 > 0.9，干扰图 < 0.6）。
+    static let confidentThreshold: Double = 0.86
 
     /// top1 必须比 top2 至少高这么多，才算"认出来了"（Lowe 式比值检验）。
-    /// 为什么非要这一条：Vision 特征指纹对"同一类画风"极不敏感 —— 参照库 4 件都是
-    /// 纸本国风插画，于是任何国风照片都会以 90%+ 命中青花瓶。CI 里用苏轼画像测出
-    /// 93% 的假命中，就是这个原因。加上"要比第二名明显更像"之后，
-    /// 只有真正接近同一件器物的照片才会通过；通不过就老实说"未能可靠识别"。
-    static let marginThreshold: Double = 0.05
+    /// 只有"分数够高"不够：参照库 4 件同属一类画风时，所有分数会被一起抬高，
+    /// 这时"比第二名高多少"才是真正有判别力的量。
+    static let marginThreshold: Double = 0.06
 
     private struct Reference {
         let artifact: Artifact
-        let feature: VNFeaturePrintObservation?
-        let histogram: [Double]
+        let signature: Signature
     }
 
     private var references: [Reference]?
@@ -71,22 +71,11 @@ final class ArtifactRecognizer {
         queue.async { [weak self] in
             guard let self = self else { return }
             let refs = self.buildReferencesIfNeeded()
-            let queryFeature = Self.featurePrint(of: image)
-            let queryHist = Self.histogram(of: image)
+            let query = Self.signature(of: image)
 
-            let scored: [(Artifact, Double, Double)] = refs.map { ref in
-                let featureDistance: Double? = {
-                    guard let q = queryFeature, let r = ref.feature else { return nil }
-                    var d = Float(0)
-                    do {
-                        try q.computeDistance(&d, to: r)
-                        return Double(d)
-                    } catch {
-                        return nil
-                    }
-                }()
-                let colorDistance = Self.histogramDistance(queryHist, ref.histogram)
-                return (ref.artifact, Self.score(featureDistance: featureDistance, colorDistance: colorDistance), colorDistance)
+            let scored: [(Artifact, Double)] = refs.map { ref in
+                let s = query.map { Self.score(query: $0, ref: ref.signature) } ?? 0
+                return (ref.artifact, s)
             }
 
             let sorted = scored.sorted { $0.1 > $1.1 }
@@ -112,41 +101,29 @@ final class ArtifactRecognizer {
     }
 
     /// 同步打分，只给自检探针用（ArtifactScoreProbe）。
-    /// 为什么单独开一个：`recognize` 是异步且只回 confident 布尔值，
-    /// 而"为什么误判"要看完整分数与被拉开多少 —— 那需要把 4 件的分数全拿到。
-    func probeScores(_ image: UIImage) -> [(name: String, score: Double)] {
-        var out: [(name: String, score: Double)] = []
+    /// 返回分数 + 两路分量，方便从矩阵里看清"是结构像还是颜色像"。
+    func probeDetails(_ image: UIImage) -> [(name: String, score: Double, structure: Double, color: Double)] {
+        var out: [(name: String, score: Double, structure: Double, color: Double)] = []
         queue.sync {
             let refs = self.buildReferencesIfNeeded()
-            let queryFeature = Self.featurePrint(of: image)
-            let queryHist = Self.histogram(of: image)
-            var rows: [(name: String, score: Double)] = []
+            guard let query = Self.signature(of: image) else { return }
+            var rows: [(name: String, score: Double, structure: Double, color: Double)] = []
             for ref in refs {
-                var featureDistance: Double? = nil
-                if let q = queryFeature, let r = ref.feature {
-                    var d = Float(0)
-                    if (try? q.computeDistance(&d, to: r)) != nil {
-                        featureDistance = Double(d)
-                    }
-                }
-                let colorDistance = Self.histogramDistance(queryHist, ref.histogram)
-                rows.append((name: ref.artifact.name,
-                             score: Self.score(featureDistance: featureDistance, colorDistance: colorDistance)))
+                let st = Self.structureSimilarity(query.structure, ref.signature.structure)
+                let co = Self.colorSimilarity(query.color, ref.signature.color)
+                rows.append((name: ref.artifact.name, score: 0.55 * st + 0.45 * co, structure: st, color: co))
             }
             out = rows.sorted { $0.score > $1.score }
         }
         return out
     }
 
-    /// 综合分：特征指纹为主（75%），颜色直方图为辅（25%）。
-    /// 为什么加权：参照图是插画、实拍照片的色调差异大，纯特征指纹容易被背景带偏；
-    /// 纯颜色又分不清纹样结构。两者互补后，排序在真机样张上更稳。
-    private static func score(featureDistance: Double?, colorDistance: Double) -> Double {
-        // 1/(1+d)：d=0 → 1.0，d=1 → 0.5，d=5 → 0.17，d=15 → 0.06（Vision 特征的典型区间）
-        let colorScore = max(0, min(1, 1 - colorDistance / 1.4))
-        guard let fd = featureDistance else { return colorScore }
-        let featureScore = 1.0 / (1.0 + max(0, fd))
-        return 0.75 * featureScore + 0.25 * colorScore
+    // MARK: - 打分
+
+    static func score(query: Signature, ref: Signature) -> Double {
+        let st = structureSimilarity(query.structure, ref.structure)
+        let co = colorSimilarity(query.color, ref.color)
+        return 0.55 * st + 0.45 * co
     }
 
     // MARK: - 参照库
@@ -155,79 +132,94 @@ final class ArtifactRecognizer {
         if let refs = references { return refs }
         var out: [Reference] = []
         for artifact in ContentData.artifacts {
-            guard let img = AssetLoader.image(artifact.image) else { continue }
-            out.append(Reference(artifact: artifact,
-                                 feature: Self.featurePrint(of: img),
-                                 histogram: Self.histogram(of: img)))
+            guard let img = AssetLoader.image(artifact.image),
+                  let sig = Self.signature(of: img) else { continue }
+            out.append(Reference(artifact: artifact, signature: sig))
         }
         references = out
         return out
     }
 
-    // MARK: - 视觉特征
+    // MARK: - 图像签名（自己算，不用 Vision 特征指纹）
 
-    private static func featurePrint(of image: UIImage) -> VNFeaturePrintObservation? {
-        guard let cg = image.cgImage else { return nil }
-        let request = VNGenerateImageFeaturePrintRequest()
-        request.imageCropAndScaleOption = .centerCrop
-        let handler = VNImageRequestHandler(cgImage: cg, orientation: cgOrientation(image.imageOrientation), options: [:])
-        do {
-            try handler.perform([request])
-        } catch {
-            return nil
-        }
-        return request.results?.first as? VNFeaturePrintObservation
+    /// 16×16 灰度（已 z-score 归一化）+ 4×4 网格平均色（48 维）。
+    ///
+    /// 为什么不再用 `VNGenerateImageFeaturePrint`：实测它的距离在这套素材上**完全塌缩** ——
+    /// 4 件参照互相之间、以及苏轼画像、山水诗意图、活动图，距离全都落在 0.00–0.02，
+    /// 于是任何一张国风图都能拿到 90%+ 的"相似度"。它不是坏，是不适合"跨画风比器物"。
+    /// 自己算的两路更诚实：灰度相关系数管构图（花瓶竖轮廓 vs 人物半身像），
+    /// 4×4 色块管配色（青白 vs 赭褐），两者都不会因为"同为纸本插画"就一起塌到 0.9。
+    struct Signature {
+        let structure: [Float]
+        let color: [Float]
     }
 
-    private static func cgOrientation(_ o: UIImage.Orientation) -> CGImagePropertyOrientation {
-        switch o {
-        case .up: return .up
-        case .down: return .down
-        case .left: return .left
-        case .right: return .right
-        case .upMirrored: return .upMirrored
-        case .downMirrored: return .downMirrored
-        case .leftMirrored: return .leftMirrored
-        case .rightMirrored: return .rightMirrored
-        @unknown default: return .up
-        }
-    }
-
-    /// 4×4×4 RGB 颜色直方图（64 桶，按像素占比归一化）。
-    /// 缩到 48×48 再统计：既够稳，又不至于在低端机上耗时。
-    private static func histogram(of image: UIImage) -> [Double] {
-        let side = 48
-        // 用 data: nil 让 CoreGraphics 自己分配缓冲区，画完再从 ctx.data 读。
-        // 不要传 `&array`：CGContext 不持有那块内存，出作用域后指针就没有保证了。
-        guard let ctx = CGContext(data: nil,
+    static func signature(of image: UIImage) -> Signature? {
+        let side = 16
+        let block = 4
+        guard let cg = image.cgImage,
+              let ctx = CGContext(data: nil,
                                   width: side, height: side,
                                   bitsPerComponent: 8,
                                   bytesPerRow: side * 4,
                                   space: CGColorSpaceCreateDeviceRGB(),
-                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
-              let cg = image.cgImage else {
-            return [Double](repeating: 0, count: 64)
-        }
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        ctx.interpolationQuality = .high
         ctx.draw(cg, in: CGRect(x: 0, y: 0, width: side, height: side))
-        guard let raw = ctx.data else { return [Double](repeating: 0, count: 64) }
-        let pixels = raw.bindMemory(to: UInt8.self, capacity: side * side * 4)
+        guard let raw = ctx.data else { return nil }
+        let px = raw.bindMemory(to: UInt8.self, capacity: side * side * 4)
 
-        var bins = [Double](repeating: 0, count: 64)
-        let total = Double(side * side)
-        for i in stride(from: 0, to: side * side * 4, by: 4) {
-            let r = Int(pixels[i] / 64), g = Int(pixels[i + 1] / 64), b = Int(pixels[i + 2] / 64)
-            bins[r * 16 + g * 4 + b] += 1
+        // 灰度 → z-score：把"整体明暗"这个共同项扣掉，留下的才是构图
+        var gray = [Float](repeating: 0, count: side * side)
+        for y in 0..<side {
+            for x in 0..<side {
+                let i = (y * side + x) * 4
+                gray[y * side + x] = 0.299 * Float(px[i]) + 0.587 * Float(px[i + 1]) + 0.114 * Float(px[i + 2])
+            }
         }
-        for i in 0..<bins.count { bins[i] /= total }
-        return bins
+        let count = Float(side * side)
+        let mean = gray.reduce(0, +) / count
+        let variance = gray.reduce(Float(0)) { $0 + ($1 - mean) * ($1 - mean) } / count
+        let sd = max(0.5, sqrt(variance))
+        let normalized = gray.map { ($0 - mean) / sd }
+
+        // 4×4 色块
+        var color = [Float](repeating: 0, count: 48)
+        for by in 0..<4 {
+            for bx in 0..<4 {
+                var r: Float = 0, g: Float = 0, b: Float = 0
+                for y in 0..<block {
+                    for x in 0..<block {
+                        let i = ((by * block + y) * side + (bx * block + x)) * 4
+                        r += Float(px[i]); g += Float(px[i + 1]); b += Float(px[i + 2])
+                    }
+                }
+                let n = Float(block * block) * 255
+                let idx = (by * 4 + bx) * 3
+                color[idx] = r / n
+                color[idx + 1] = g / n
+                color[idx + 2] = b / n
+            }
+        }
+        return Signature(structure: normalized, color: color)
     }
 
-    /// L1 距离再折半：完全一致 0，完全不同 1
-    private static func histogramDistance(_ a: [Double], _ b: [Double]) -> Double {
-        guard a.count == b.count else { return 1 }
-        var sum = 0.0
+    /// 结构相似度：z-score 归一化后向量的平均点积 = Pearson 相关系数，截到 0…1
+    static func structureSimilarity(_ a: [Float], _ b: [Float]) -> Double {
+        guard a.count == b.count, !a.isEmpty else { return 0 }
+        var dot: Float = 0
+        for i in 0..<a.count { dot += a[i] * b[i] }
+        let corr = dot / Float(a.count)
+        return Double(max(0, min(1, corr)))
+    }
+
+    /// 色彩相似度：4×4 色块的平均绝对差，差到 0.20 就算完全不同
+    static func colorSimilarity(_ a: [Float], _ b: [Float]) -> Double {
+        guard a.count == b.count, !a.isEmpty else { return 0 }
+        var sum: Float = 0
         for i in 0..<a.count { sum += abs(a[i] - b[i]) }
-        return min(1, sum / 2)
+        let meanDiff = sum / Float(a.count)
+        return Double(max(0, min(1, 1 - meanDiff / 0.20)))
     }
 
     // MARK: - 主色（给「本地推断」用）

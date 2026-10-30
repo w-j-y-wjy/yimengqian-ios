@@ -113,7 +113,8 @@ struct ArtifactProfileView: View {
     private func certaintyText(_ c: Double) -> String {
         let pct = Int((max(0, min(1, c)) * 100).rounded())
         switch profile.source {
-        case .library: return "视觉相似度 \(pct)%"
+        // 「同款比对」= 与参照库那张图有多像，不是分类把握，措辞上必须区分开
+        case .library: return "同款比对 \(pct)%"
         case .remote: return "模型把握 \(pct)%"
         case .localInfer: return ""
         }

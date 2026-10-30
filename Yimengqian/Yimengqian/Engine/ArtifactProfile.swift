@@ -190,7 +190,6 @@ extension ArtifactProfile {
                            note: String? = nil) -> ArtifactProfile {
         let tone = ArtifactRecognizer.tone(of: image)
         let top = matches.first
-        let pct = top.map { Int(($0.score * 100).rounded()) } ?? 0
 
         var p = ArtifactProfile()
         p.source = .localInfer
@@ -201,7 +200,8 @@ extension ArtifactProfile {
             // 说成「疑似青花缠枝莲纹瓶」会让人以为认出来了。
             p.name = "疑似\(tone.name)调器物"
             p.kind = "类别待辨 · 主色\(tone.name)"
-            p.intro = "本地未接通在线识别，因此不给出器名与年代的结论。从照片本身能核实的是：画面以\(tone.name)调为主。本机参照库中最接近的是「\(top.name)」（相似度 \(pct)%），但它与第二名的差距不到判定门槛，所以不采信为结论。若需完整的命名、断代与释义，可在设置里配置 AI 通道后重试。"
+            // 不写百分比：这个分数是相对排序，不是概率，写"93%"只会让人以为有 93% 的把握
+            p.intro = "本地未接通在线识别，因此不给出器名与年代的结论。从照片本身能核实的是：画面以\(tone.name)调为主。本机参照库中最接近的是「\(top.name)」（\(top.bandText)），但它与第二名的差距不到判定门槛，所以不采信为结论。若需完整的命名、断代与释义，可在设置里配置 AI 通道后重试。"
         } else {
             p.name = "疑似\(tone.name)调器物"
             p.kind = "类别待辨 · 主色\(tone.name)"

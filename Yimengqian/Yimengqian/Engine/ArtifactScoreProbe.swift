@@ -54,7 +54,7 @@ enum ArtifactScoreProbe {
             }
 
             for query in queries {
-                let scores = ArtifactRecognizer.shared.probeScores(query.image)
+                let scores = ArtifactRecognizer.shared.probeDetails(query.image)
                 guard let top = scores.first else {
                     lines.append("\(query.name)  → 无参照可用")
                     continue
@@ -66,9 +66,9 @@ enum ArtifactScoreProbe {
                 let verdict: String = query.expectSelf
                     ? (pass ? "通过(应通过)" : "未通过(应通过)")
                     : (pass ? "通过(不应通过·误判)" : "未通过(正确)")
-                lines.append(String(format: "%@ → %@ %.3f / %@ %.3f / margin %.3f → %@",
+                lines.append(String(format: "%@ → %@ %.3f(structure %.2f / color %.2f) / %@ %.3f / margin %.3f → %@",
                                     query.name,
-                                    top.name, top.score,
+                                    top.name, top.score, top.structure, top.color,
                                     second?.name ?? "-", second?.score ?? 0,
                                     margin, verdict))
                 // 附完整排序，方便看"所有参照都 0.9"这种塌缩现象
