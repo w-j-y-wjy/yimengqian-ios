@@ -106,7 +106,16 @@ struct RootView: View {
         } else if let content = NativeDetailContent.resolve(detail, obtainedStamps: obtainedStamps) {
             NativeDetailView(detail: detail, content: content)
         } else {
-            EmptyView()
+            // 内容库里查不到这一条：以前是"点了没反应"，现在明确告诉用户
+            ZStack {
+                Theme.paperWarm.ignoresSafeArea()
+                ErrorStateView(
+                    title: "这件内容暂未收录",
+                    message: "内容库还没有这一条，可能是在整理中。可以先返回看看别的。",
+                    retryTitle: "返回",
+                    retry: { router.closeNative() }
+                )
+            }
         }
     }
 

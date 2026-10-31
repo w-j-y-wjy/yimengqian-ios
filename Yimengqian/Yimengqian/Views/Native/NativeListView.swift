@@ -70,11 +70,7 @@ struct NativeListView: View {
                     }
 
                     if rows.isEmpty {
-                        Text(emptyText)
-                            .font(.custom("SongtiSC-Regular", size: 13))
-                            .foregroundColor(Theme.inkMuted)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 30)
+                        EmptyStateView(icon: "tray", title: "还没有内容", message: emptyText)
                     }
 
                     Spacer(minLength: 40)

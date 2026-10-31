@@ -44,7 +44,17 @@ struct NativeSearchView: View {
                     hintList
                 } else {
                     kindFilterRow
-                    resultList
+                    if hits.isEmpty {
+                        EmptyStateView(
+                            icon: "magnifyingglass",
+                            title: "没有找到「\(keyword.trimmingCharacters(in: .whitespaces))」",
+                            message: "换个词试试：可以是诗句里的字、朝代、人物名，或器物的纹样名。",
+                            actionTitle: "清空重搜",
+                            action: { keyword = "" }
+                        )
+                    } else {
+                        resultList
+                    }
                 }
                 Spacer(minLength: 0)
             }
@@ -137,13 +147,6 @@ struct NativeSearchView: View {
     private var resultList: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 10) {
-                if hits.isEmpty {
-                    Text("没有找到「\(keyword)」，换个词试试")
-                        .font(.custom("SongtiSC-Regular", size: 13))
-                        .foregroundColor(Theme.inkMuted)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 30)
-                }
                 ForEach(hits) { hit in
                     Button(action: { router.navigate(route: hit.route) }) {
                         HStack(spacing: 12) {

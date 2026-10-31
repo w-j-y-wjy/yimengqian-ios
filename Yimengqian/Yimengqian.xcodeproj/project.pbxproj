@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		BAC1DE94A6DE9FFA727625D0 /* StateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEBF937F96EE83ECBAA6D19D /* StateViews.swift */; };
 		1785AA324DC6BFBCFB411CD5 /* NativeMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A4D1CD15C4B4FC3037AC68 /* NativeMetrics.swift */; };
 		43E1CF37A522404AC6592257 /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */; };
 		4D20F0652E42725F390AC243 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB6978AE864F036C5520CFB /* BackupService.swift */; };
@@ -71,6 +72,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		EEBF937F96EE83ECBAA6D19D /* StateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateViews.swift; sourceTree = "<group>"; };
 		F3A4D1CD15C4B4FC3037AC68 /* NativeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeMetrics.swift; sourceTree = "<group>"; };
 		DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		6CB6978AE864F036C5520CFB /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
@@ -240,6 +242,7 @@
 				766B2E663E2C05778F06D762 /* SpecialScreens.swift */,
 				1AD46AF34014FC22CD991FD7 /* ToastView.swift */,
 							817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */,
+				EEBF937F96EE83ECBAA6D19D /* StateViews.swift */,
 );
 			path = Views;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAC1DE94A6DE9FFA727625D0 /* StateViews.swift in Sources */,
 				1785AA324DC6BFBCFB411CD5 /* NativeMetrics.swift in Sources */,
 				43E1CF37A522404AC6592257 /* AppTab.swift in Sources */,
 				4D20F0652E42725F390AC243 /* BackupService.swift in Sources */,
