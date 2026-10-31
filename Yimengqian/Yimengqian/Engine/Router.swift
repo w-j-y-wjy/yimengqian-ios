@@ -95,6 +95,17 @@ final class Router: ObservableObject {
         if !nativeStack.isEmpty { nativeStack.removeLast() }
     }
 
+    /// 给 `NavigationStack` 用的可变路径。
+    /// 只允许系统"弹出"（newValue 变短），不允许它凭空追加：
+    /// 追加一律走 `openNative`，那里有「同一页连点不重复入栈」与内容解析校验。
+    var nativePath: [NativeDetail] {
+        get { nativeStack }
+        set {
+            guard newValue.count <= nativeStack.count else { return }
+            nativeStack = newValue
+        }
+    }
+
     /// 替换栈顶（对齐 conditionalJump 直达 /home：清空栈再推入目标）
     func jump(to screen: ScreenConfig) {
         stack = [screen]
