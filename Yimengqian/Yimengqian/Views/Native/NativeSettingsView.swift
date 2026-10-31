@@ -9,6 +9,7 @@
 // 清快照 + 清离散键 + 清选择态 + 回启动页。
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct NativeSettingsView: View {
     @EnvironmentObject private var router: Router
@@ -17,6 +18,9 @@ struct NativeSettingsView: View {
     @EnvironmentObject private var toast: ToastCenter
 
     @State private var showResetConfirm = false
+    @State private var showExporter = false
+    @State private var showImporter = false
+    @State private var backupDoc: BackupDocument?
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -56,6 +60,40 @@ struct NativeSettingsView: View {
                         ("内容来源", "\(ContentData.poems.count + ContentData.characters.flatMap { $0.works }.count) 首诗词 · \(ContentData.artifacts.count) 件器物 · \(ContentData.characters.count) 位人物"),
                     ])
 
+                    // 备份：能把自己的旅程带走 —— 换机/重装/答辩后留档都靠它
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Rectangle().fill(Theme.vermilion).frame(width: 3, height: 13)
+                            Text("数据备份").font(.custom("KaitiSC-Bold", size: 15)).foregroundColor(Theme.ink)
+                        }
+                        HStack(spacing: 10) {
+                            Button(action: prepareExport) {
+                                Text("导出备份")
+                                    .font(.custom("SongtiSC-Regular", size: 14))
+                                    .foregroundColor(Theme.paperLight)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 11)
+                                    .background(Capsule().fill(Theme.vermilion))
+                            }
+                            .buttonStyle(PressableStyle())
+
+                            Button(action: { showImporter = true }) {
+                                Text("导入备份")
+                                    .font(.custom("SongtiSC-Regular", size: 14))
+                                    .foregroundColor(Theme.vermilion)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 11)
+                                    .overlay(Capsule().strokeBorder(Theme.vermilion.opacity(0.7), lineWidth: 1))
+                            }
+                            .buttonStyle(PressableStyle())
+                        }
+                        Text("导出为 JSON 文件（\(BackupService.summary(store.snapshot))）。导入会覆盖当前进度，请先导出一份再导入。")
+                            .font(.custom("SongtiSC-Regular", size: 11))
+                            .foregroundColor(Theme.inkMuted)
+                            .lineSpacing(2)
+                    }
+                    .padding(.top, 4)
+
                     Button(action: { showResetConfirm = true }) {
                         Text("重置全部旅程数据")
                             .font(.custom("SongtiSC-Regular", size: 15))
@@ -84,6 +122,42 @@ struct NativeSettingsView: View {
             Button("重置", role: .destructive) { performReset() }
         } message: {
             Text("将清空偏好、收藏、印章与全部进度。此操作不可撤销。")
+        }
+        .fileExporter(isPresented: $showExporter,
+                      document: backupDoc,
+                      contentType: .json,
+                      defaultFilename: BackupService.defaultFilename()) { result in
+            if case .success = result {
+                toast.show("备份已导出")
+            }
+        }
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json]) { result in
+            handleImport(result)
+        }
+    }
+
+    // MARK: - 备份
+
+    private func prepareExport() {
+        do {
+            backupDoc = BackupDocument(data: try BackupService.exportData(store.snapshot))
+            showExporter = true
+        } catch {
+            toast.show("导出失败：文件写入被拒绝")
+        }
+    }
+
+    private func handleImport(_ result: Result<URL, Error>) {
+        guard case .success(let url) = result else { return }
+        // 走文件选择器拿到的 URL 是安全作用域资源，不 start 就读不到内容
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let snapshot = try BackupService.decodeSnapshot(from: Data(contentsOf: url))
+            store.snapshot = snapshot
+            toast.show("已恢复：\(BackupService.summary(snapshot))")
+        } catch {
+            toast.show("这个文件不是有效的备份")
         }
     }
 

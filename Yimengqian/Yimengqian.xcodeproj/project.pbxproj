@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		4D20F0652E42725F390AC243 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB6978AE864F036C5520CFB /* BackupService.swift */; };
 		AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */; };
 		5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */; };
 		00411F35C5CEB28242F080A9 /* DreambookLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E67B691501648058FECC74 /* DreambookLayer.swift */; };
@@ -68,6 +69,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		6CB6978AE864F036C5520CFB /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BakedStatusBarMask.swift; sourceTree = "<group>"; };
 		8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StampRewardLayer.swift; sourceTree = "<group>"; };
 		E9E67B691501648058FECC74 /* DreambookLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreambookLayer.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				988C5F4070BF3A54A7C3B0D4 /* ArtifactRecognizer.swift */,
 				5AA63AB94E3722F2F584282D /* ArtifactProfile.swift */,
 				B2D1A4A7F369B6E47C0FE933 /* ArtifactScoreProbe.swift */,
+				6CB6978AE864F036C5520CFB /* BackupService.swift */,
 );
 			path = Engine;
 			sourceTree = "<group>";
@@ -349,6 +352,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D20F0652E42725F390AC243 /* BackupService.swift in Sources */,
 				AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */,
 				5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */,
 				00411F35C5CEB28242F080A9 /* DreambookLayer.swift in Sources */,
