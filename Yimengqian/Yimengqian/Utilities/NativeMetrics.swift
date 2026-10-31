@@ -16,16 +16,14 @@
 import UIKit
 
 enum NativeMetrics {
-    /// 内容区顶部留白（原来硬编码 96）
-    static var contentTop: CGFloat {
-        max(UIScreen.main.bounds.height * 0.063, safeTop + 8)
-    }
+    /// 返回栏顶部留白（原来硬编码 54）：安全区 + 8。
+    static var barTop: CGFloat { safeTop + 8 }
 
-    /// 返回栏顶部留白（原来硬编码 54）
-    /// 比内容区少 42pt —— 这正是标题栏的高度，两者关系保持不变。
-    static var barTop: CGFloat {
-        max(contentTop - 42, safeTop + 2)
-    }
+    /// 内容区顶部留白（原来硬编码 96）：**必须由 barTop + 42 推出**，不能各自取 max。
+    /// 第一版写成 max(屏高*6.3%, safe+8) 与 max(content-42, safe+2) 两路各自取最大，
+    /// 在 iPhone 15 上得到 contentTop=67、barTop=61，只差 6pt ——
+    /// 返回按钮和标题直接叠在一起（2026-10-31 真机反馈）。固定 42pt 间距就不会再错。
+    static var contentTop: CGFloat { barTop + 42 }
 
     private static var safeTop: CGFloat {
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
