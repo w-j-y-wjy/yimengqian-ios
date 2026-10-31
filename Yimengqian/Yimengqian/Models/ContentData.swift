@@ -214,6 +214,115 @@ enum ContentData {
             ],
             letters: []
         ),
+        // 2026-10-31 加厚度：人物 4 → 8。新增四位都能在诗词页读到代表作，
+        // 没有专属画像的 image 留空（不借他人肖像，同王维的规矩）。
+        Character(
+            id: "dufu",
+            name: "杜甫",
+            dynasty: "唐",
+            title: "诗圣",
+            tags: ["沉郁", "写实", "家国"],
+            bio: "杜甫，字子美，自号少陵野老。安史之乱中流寓西南，诗多写民生疾苦与家国之思，格律精严、沉郁顿挫，后世尊为「诗圣」，其诗被称为「诗史」。",
+            works: [
+                Poem(
+                    id: "chun-wang",
+                    title: "春望",
+                    author: "杜甫",
+                    dynasty: "唐",
+                    content: "国破山河在，\n城春草木深。\n感时花溅泪，\n恨别鸟惊心。\n烽火连三月，\n家书抵万金。\n白头搔更短，\n浑欲不胜簪。",
+                    category: "离愁",
+                    analysis: PoemAnalysis(
+                        translation: "国都已破，山河依旧；春日的长安草木深茂。感伤时局，见花也落泪；怅恨别离，闻鸟亦惊心。",
+                        background: "至德二载春，杜甫被困长安，目睹战乱后的都城，写下此诗。",
+                        features: "以「山河在」与「草木深」对写：物是人非。末联以搔头白发收束，把家国之痛落到一具衰老的身体上。"
+                    )
+                )
+            ],
+            footprints: [
+                Footprint(city: "长安", period: "天宝", description: "困守长安，写下《兵车行》"),
+                Footprint(city: "成都", period: "上元", description: "营草堂于浣花溪畔，诗风稍得安顿"),
+            ],
+            letters: []
+        ),
+        Character(
+            id: "baijuyi",
+            name: "白居易",
+            dynasty: "唐",
+            title: "诗魔",
+            tags: ["平易", "讽喻", "长庆体"],
+            bio: "白居易，字乐天，号香山居士。主张「文章合为时而著，歌诗合为事而作」，诗风平易晓畅，老妪能解；晚年居洛阳，与刘禹锡唱和，世称「刘白」。",
+            works: [
+                Poem(
+                    id: "yi-jiang-nan",
+                    title: "忆江南",
+                    author: "白居易",
+                    dynasty: "唐",
+                    content: "江南好，\n风景旧曾谙。\n日出江花红胜火，\n春来江水绿如蓝。\n能不忆江南？",
+                    category: "山水"
+                )
+            ],
+            footprints: [
+                Footprint(city: "杭州", period: "长庆", description: "任杭州刺史，筑堤蓄水，后人称白堤"),
+                Footprint(city: "洛阳", period: "晚年", description: "退居香山，与龙门山水为伴"),
+            ],
+            letters: []
+        ),
+        Character(
+            id: "xinqiji",
+            name: "辛弃疾",
+            dynasty: "宋",
+            title: "词中之龙",
+            tags: ["豪放", "爱国", "稼轩"],
+            bio: "辛弃疾，字幼安，号稼轩。生于金人占领的济南，二十二岁率众南归，一生力主抗金而不得用，词风雄浑激越，与苏轼并称「苏辛」。",
+            works: [
+                Poem(
+                    id: "chou-nu-er",
+                    title: "丑奴儿·书博山道中壁",
+                    author: "辛弃疾",
+                    dynasty: "宋",
+                    content: "少年不识愁滋味，\n爱上层楼。\n爱上层楼，\n为赋新词强说愁。\n而今识尽愁滋味，\n欲说还休。\n欲说还休，\n却道天凉好个秋。",
+                    category: "离愁",
+                    analysis: PoemAnalysis(
+                        translation: "年少时不懂愁，偏爱登楼，为写新词硬说愁。如今尝尽愁味，想说又止，只道一句「天凉好个秋」。",
+                        background: "辛弃疾罢官闲居带湖时，途经博山道中，题于壁上。",
+                        features: "上下片以「爱上层楼」「欲说还休」复沓对照，少年与而今两副心境；结句以闲语收浓愁，愈淡愈重。"
+                    )
+                )
+            ],
+            footprints: [
+                Footprint(city: "济南", period: "绍兴", description: "起兵抗金，率五十骑擒叛将"),
+                Footprint(city: "上饶", period: "闲居", description: "罢官居带湖，写下大量田园与抒怀词"),
+            ],
+            letters: []
+        ),
+        Character(
+            id: "luyou",
+            name: "陆游",
+            dynasty: "宋",
+            title: "放翁",
+            tags: ["爱国", "田园", "剑南"],
+            bio: "陆游，字务观，号放翁。一生力主北伐，屡遭排挤；诗作近万首，既有金戈铁马的慷慨，也有村居烟火的亲切，是南宋诗坛的巨擘。",
+            works: [
+                Poem(
+                    id: "you-shan-xi-cun",
+                    title: "游山西村",
+                    author: "陆游",
+                    dynasty: "宋",
+                    content: "莫笑农家腊酒浑，\n丰年留客足鸡豚。\n山重水复疑无路，\n柳暗花明又一村。",
+                    category: "山水",
+                    analysis: PoemAnalysis(
+                        translation: "别嫌农家腊酒浑浊，丰年待客有鸡有肉。山重水复以为无路，柳暗花明处又见一村。",
+                        background: "乾道三年陆游罢官闲居山阴，游山西村时所作。",
+                        features: "「山重水复」「柳暗花明」本是写行路，后世移作处境的写照，是流传最广的一联。"
+                    )
+                )
+            ],
+            footprints: [
+                Footprint(city: "山阴", period: "乾道", description: "罢官归里，村居期间写下大量田园诗"),
+                Footprint(city: "南郑", period: "乾道", description: "入四川宣抚使幕，亲历前线军旅"),
+            ],
+            letters: []
+        ),
     ]
 
     // MARK: - poems.ts：jiangxueImagery（4 个意象）

@@ -33,6 +33,12 @@ struct NativeSettingsView: View {
                         ("已收藏内容", "\(store.snapshot.favorites.count) 项"),
                         ("已获得印章", "\(store.obtainedStamps().count) 枚"),
                         ("文化值", "\(store.snapshot.cultureValue) / 2000"),
+                        ("雅集值", "\(store.snapshot.yaValue)"),
+                        // 花瓣此前是个"隐形字段"：领奖时 +6，界面上却没有任何一处显示它。
+                        ("花瓣", "\(store.snapshot.petals) 片"),
+                        ("已入梦", "\(store.snapshot.dreamDays) 日"),
+                        ("到访城池", "\(store.snapshot.cityVisits?.filter { $0.value > 0 }.count ?? 0) 座"),
+                        ("相逢古人", "\(store.snapshot.characterMeets?.filter { $0.value > 0 }.count ?? 0) 位"),
                         ("当前等级", "Lv.\(store.snapshot.level)"),
                         ("诗境卡作品", "\(store.snapshot.generatedCards.count) 张"),
                     ])
