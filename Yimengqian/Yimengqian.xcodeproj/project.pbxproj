@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */; };
+		00411F35C5CEB28242F080A9 /* DreambookLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E67B691501648058FECC74 /* DreambookLayer.swift */; };
 		6A03173D45654CB889F70922 /* ViewCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729F61C8AB0BEF0280F87447 /* ViewCompat.swift */; };
 		23BBCA2442E2C28E8C5557AD /* ArtifactScoreProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D1A4A7F369B6E47C0FE933 /* ArtifactScoreProbe.swift */; };
 		40E4210FEE6EA6074A6C2CE3 /* ArtifactProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE75A236A5A57B531C0D58 /* ArtifactProfileView.swift */; };
@@ -65,6 +67,8 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StampRewardLayer.swift; sourceTree = "<group>"; };
+		E9E67B691501648058FECC74 /* DreambookLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreambookLayer.swift; sourceTree = "<group>"; };
 		729F61C8AB0BEF0280F87447 /* ViewCompat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCompat.swift; sourceTree = "<group>"; };
 		B2D1A4A7F369B6E47C0FE933 /* ArtifactScoreProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactScoreProbe.swift; sourceTree = "<group>"; };
 		41DE75A236A5A57B531C0D58 /* ArtifactProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactProfileView.swift; sourceTree = "<group>"; };
@@ -255,6 +259,8 @@
 				77FC4385290E5D1BA46D6BC9 /* NativeIdentityView.swift */,
 				9617566BF3D606A29FC4F7E9 /* PatternPainter.swift */,
 				41DE75A236A5A57B531C0D58 /* ArtifactProfileView.swift */,
+				E9E67B691501648058FECC74 /* DreambookLayer.swift */,
+				8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */,
 );
 			path = Views/Native;
 			sourceTree = "<group>";
@@ -340,6 +346,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */,
+				00411F35C5CEB28242F080A9 /* DreambookLayer.swift in Sources */,
 				6A03173D45654CB889F70922 /* ViewCompat.swift in Sources */,
 				23BBCA2442E2C28E8C5557AD /* ArtifactScoreProbe.swift in Sources */,
 				40E4210FEE6EA6074A6C2CE3 /* ArtifactProfileView.swift in Sources */,

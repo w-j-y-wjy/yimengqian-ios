@@ -80,6 +80,10 @@ struct ScreenNativeLayer: View {
                 PatternTabsLayer(screen: screen, container: containerSize)
             case "jiangxue-scene":
                 JiangxueStyleLayer(screen: screen, container: containerSize)
+            case "dreambook":
+                DreambookLayer(screen: screen, container: containerSize)
+            case "stamp-reward":
+                StampRewardLayer(screen: screen, container: containerSize)
             // identity-result 不做像素叠层：
             // 这张卡的底色是**带纸纹与花瓣的渐变**，不是纯色。纯色遮罩会在卡面上留下
             // 一块可见的方块边界（CI 截图实测：称号与 bio 两块都能看出接缝），
