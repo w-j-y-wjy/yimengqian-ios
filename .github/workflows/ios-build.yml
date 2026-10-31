@@ -489,6 +489,17 @@ jobs:
           done
           echo "缩略图 $(ls thumbs/*.jpg 2>/dev/null | wc -l | tr -d ' ') 张"
           du -sh thumbs || true
+          # 空白截图断言：正常屏缩略图 80–120 KB，整屏空白只有 3–9 KB。
+          # 这是 2026-10-31 "整屏白屏但 CI 照样绿" 那次事故的补丁 ——
+          # 之前只验"截图存在 + 没崩溃"，画面全白也能过。
+          BLANK=$(ls -l thumbs/*-screen.jpg 2>/dev/null | awk '$5<20000' | wc -l | tr -d ' ')
+          TOTAL=$(ls thumbs/*-screen.jpg 2>/dev/null | wc -l | tr -d ' ')
+          echo "扫屏缩略图 $TOTAL 张，疑似空白 $BLANK 张"
+          if [ "$BLANK" -ne 0 ]; then
+            echo "::error::有 $BLANK 张扫屏缩略图小于 20KB，基本可断定整屏空白（编译过了但没渲染）"
+            ls -l thumbs/*-screen.jpg | awk '$5<20000' | head -5
+            exit 1
+          fi
 
       - name: 上传证据（截图 + 编译日志）
         if: always()

@@ -734,6 +734,123 @@ enum ContentData {
                 elements: []
             )
         ),
+        // 2026-10-31 加厚度：器物 4 → 10。
+        // 这 6 件**没有配图**（image 留空）—— 与人物同一条规矩：宁可承认缺图，也不塞风格不对的图。
+        // 详情页 hero 为空时不会画图，但八项文字（简介/纹样/寓意/时代风格）都在，报告页也照常生成。
+        Artifact(
+            id: "sancai-ma",
+            name: "三彩马",
+            dynasty: "唐代",
+            type: "陶器",
+            shape: "马",
+            pattern: "素面施釉",
+            usage: "随葬明器",
+            description: "唐三彩的代表器类。马身施黄、绿、白三色釉，釉层交融流动，四蹄立于踏板之上；头小颈长，剪鬃缚尾，姿态多昂首或嘶鸣。",
+            image: "",
+            patternDetail: PatternDetail(
+                name: "素面施釉",
+                image: "",
+                structure: "不以刻划纹样为主，而靠釉色的流淌与交融成形：先施白色化妆土，再点染黄、绿、褐釉，入窑低温烧成，釉面自然下淌、互相浸润。",
+                symbolism: "马是唐人出行、征战与身份的象征；以三彩马随葬，寄托死后仍可驰骋的愿望，也反映盛唐厚葬之风。",
+                eraStyle: "盛唐三彩釉色鲜亮、胎体厚重、造型饱满；中晚唐以后釉色转暗、器形渐小，三彩工艺随之衰落。",
+                elements: []
+            )
+        ),
+        Artifact(
+            id: "qingci-xi",
+            name: "天青釉洗",
+            dynasty: "宋代",
+            type: "瓷器",
+            shape: "洗",
+            pattern: "素面开片",
+            usage: "文房用具",
+            description: "宋代青瓷名品。器形浅盘、敞口、圈足，通体施天青釉，釉面润泽如玉，开细密冰裂纹片；底部多见芝麻钉支烧痕迹。",
+            image: "",
+            patternDetail: PatternDetail(
+                name: "素面开片",
+                image: "",
+                structure: "器表不加刻划纹饰，装饰性来自釉色与开片：釉面在冷却中自然开裂，纹路细如蟹爪、色如冰裂，深浅不一。",
+                symbolism: "天青色近于雨后初晴的天空，寓清静、含蓄、不事张扬；宋人赏瓷重「韵」不重「饰」，素面正合此意。",
+                eraStyle: "北宋青瓷以釉色取胜，釉层肥厚、光泽内敛；与唐代南青北白的明快相比，宋瓷更讲温润与克制。",
+                elements: []
+            )
+        ),
+        Artifact(
+            id: "yubi",
+            name: "谷纹玉璧",
+            dynasty: "汉代",
+            type: "玉器",
+            shape: "璧",
+            pattern: "谷纹",
+            usage: "礼器",
+            description: "汉代常见玉礼器。圆形扁平，中有穿孔；璧面满饰谷纹，颗粒凸起排列整齐，多作青玉或白玉质。",
+            image: "",
+            patternDetail: PatternDetail(
+                name: "谷纹",
+                image: "",
+                structure: "以浅浮雕琢出密集的螺旋状小凸起，形似谷粒；常呈同心圆分排，颗颗饱满、排列规整，边缘另刻弦纹一周。",
+                symbolism: "谷纹取五谷丰登之意，寓生养与丰足；《周礼》以苍璧礼天，璧又是通天与身份的象征。",
+                eraStyle: "汉代玉器浑厚饱满，谷纹颗大而挺，刀法爽利；与战国的细密繁复相比更见力度，与宋玉的文雅相比更显雄浑。",
+                elements: []
+            )
+        ),
+        Artifact(
+            id: "qingtong-jue",
+            name: "兽面纹青铜爵",
+            dynasty: "商代",
+            type: "铜器",
+            shape: "爵",
+            pattern: "兽面纹",
+            usage: "酒器",
+            description: "商代常见饮酒礼器。长流有尾，口沿立两柱，腹侧设鋬，下承三足；腹部饰兽面纹，多以云雷纹为地。",
+            image: "",
+            patternDetail: PatternDetail(
+                name: "兽面纹",
+                image: "",
+                structure: "以对称的正视兽头为主纹，双角、双目、鼻梁居中，两侧配身尾；主纹凸起，地纹为细密云雷纹，形成「主地两层」的铸造层次。",
+                symbolism: "兽面（饕餮）纹多用于祭祀重器，寓威严与通神，也起「戒贪」的训诫之意。",
+                eraStyle: "商代青铜器胎壁厚重、纹饰峻深，多通体满花；西周中期以后纹饰转简、出现长篇铭文，气象由神秘转向庄重。",
+                elements: []
+            )
+        ),
+        Artifact(
+            id: "fencai-pan",
+            name: "粉彩花卉纹盘",
+            dynasty: "清代",
+            type: "瓷器",
+            shape: "盘",
+            pattern: "粉彩花卉",
+            usage: "陈设器",
+            description: "清代官窑常见品种。盘心以粉彩绘折枝花卉，花瓣用玻璃白打底再以洋红渲染，浓淡过渡自然，釉面莹白。",
+            image: "",
+            patternDetail: PatternDetail(
+                name: "粉彩花卉",
+                image: "",
+                structure: "先于釉面勾出花形轮廓，填以含砷的玻璃白，再用洋红、洋黄等色料洗染，形成由深到浅的过渡；叶片另以绿料分阴阳向背。",
+                symbolism: "折枝花卉取「四季平安」「花开富贵」之意；清代器物纹样多图必有意，意必吉祥。",
+                eraStyle: "清三代粉彩设色柔丽、渲染精细，器面如小幅工笔；晚清以后绘工渐粗、色料转艳，气象大不如前。",
+                elements: []
+            )
+        ),
+        Artifact(
+            id: "qinghua-guan",
+            name: "青花海水江崖纹罐",
+            dynasty: "明代",
+            type: "瓷器",
+            shape: "罐",
+            pattern: "海水江崖纹",
+            usage: "陈设器",
+            description: "明代典型青花器。直口短颈、丰肩鼓腹，通体以青花绘海水江崖纹，浪涛层层叠起，辅以如意云与缠枝作边饰。",
+            image: "",
+            patternDetail: PatternDetail(
+                name: "海水江崖纹",
+                image: "",
+                structure: "以层层弧线画出波涛，浪头作如意状或鱼鳞状，间夹三角山崖立于水面，取「江山永固」之势；纹样多为通景环绕。",
+                symbolism: "海水与山崖合称「海水江崖」，寓江山永固、绵延不绝，是明清官窑与龙袍上最常见的政治性纹样。",
+                eraStyle: "明永乐、宣德青花发色浓艳，带铁锈斑；纹样布局疏朗有神。成化以后转向疏淡轻巧，海水江崖纹则愈趋程式化。",
+                elements: []
+            )
+        ),
     ]
 
     // MARK: - activities.ts：activities（5 项 + 茶坊点茶）
