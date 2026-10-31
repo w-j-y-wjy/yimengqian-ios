@@ -50,7 +50,7 @@ struct NativeShareView: View {
                 Text("分享")
                     .font(.custom("KaitiSC-Bold", size: 26))
                     .foregroundColor(Theme.ink)
-                    .padding(.top, 96)
+                    .padding(.top, NativeMetrics.contentTop)
 
                 VStack(alignment: .leading, spacing: 10) {
                     Text(card.title)
@@ -113,6 +113,6 @@ struct NativeShareView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 }

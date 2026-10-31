@@ -31,7 +31,7 @@ struct NativeSettingsView: View {
                     Text("设置")
                         .font(.custom("KaitiSC-Bold", size: 26))
                         .foregroundColor(Theme.ink)
-                        .padding(.top, 96)
+                        .padding(.top, NativeMetrics.contentTop)
 
                     section("我的数据", rows: [
                         ("已收藏内容", "\(store.snapshot.favorites.count) 项"),
@@ -177,7 +177,7 @@ struct NativeSettingsView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 
     private func section(_ title: String, rows: [(String, String)]) -> some View {

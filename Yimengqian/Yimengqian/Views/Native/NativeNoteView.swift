@@ -28,7 +28,7 @@ struct NativeNoteView: View {
                     Text("添加题注")
                         .font(.custom("KaitiSC-Bold", size: 26))
                         .foregroundColor(Theme.ink)
-                        .padding(.top, 96)
+                        .padding(.top, NativeMetrics.contentTop)
 
                     Text("给这张诗境卡写一句话。保存后会显示在「我的作品」里。")
                         .font(.custom("SongtiSC-Regular", size: 12.5))
@@ -105,7 +105,7 @@ struct NativeNoteView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 
     private func save() {

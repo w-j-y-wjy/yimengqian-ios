@@ -40,7 +40,7 @@ struct NativePoetryCardView: View {
                                     .strokeBorder(Theme.goldBorder.opacity(0.55), lineWidth: 1)
                             )
                             .shadow(color: Theme.cardShadow, radius: 10, x: 0, y: 4)
-                            .padding(.top, 100)
+                            .padding(.top, NativeMetrics.contentTop)
 
                         metaRow(card)
                         actionRow(card)
@@ -151,6 +151,6 @@ struct NativePoetryCardView: View {
             Color.clear.frame(width: 62, height: 1)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 }

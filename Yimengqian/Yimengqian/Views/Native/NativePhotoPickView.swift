@@ -106,7 +106,7 @@ struct ArtifactRecognizeView: View {
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 96)
+                .padding(.top, NativeMetrics.contentTop)
             }
 
             topBar
@@ -473,7 +473,7 @@ struct ArtifactRecognizeView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 
     // MARK: - 行为

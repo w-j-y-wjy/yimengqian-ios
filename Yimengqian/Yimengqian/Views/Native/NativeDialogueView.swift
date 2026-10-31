@@ -29,7 +29,7 @@ struct NativeDialogueView: View {
                     Text("对谈")
                         .font(.custom("KaitiSC-Bold", size: 26))
                         .foregroundColor(Theme.ink)
-                        .padding(.top, 96)
+                        .padding(.top, NativeMetrics.contentTop)
 
                     if let topic = topic {
                         Text("你问：\(topic.question)")
@@ -97,6 +97,6 @@ struct NativeDialogueView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 }

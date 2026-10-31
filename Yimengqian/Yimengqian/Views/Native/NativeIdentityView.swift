@@ -57,7 +57,7 @@ struct NativeIdentityView: View {
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 100)
+                .padding(.top, NativeMetrics.contentTop)
             }
 
             topBar
@@ -171,6 +171,6 @@ struct NativeIdentityView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 }

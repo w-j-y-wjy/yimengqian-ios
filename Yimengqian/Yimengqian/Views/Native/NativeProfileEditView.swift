@@ -32,7 +32,7 @@ struct NativeProfileEditView: View {
                     Text("个人资料")
                         .font(.custom("KaitiSC-Bold", size: 26))
                         .foregroundColor(Theme.ink)
-                        .padding(.top, 96)
+                        .padding(.top, NativeMetrics.contentTop)
 
                     field("昵称", text: $name, placeholder: "梦客·苏蘅", limit: nameLimit)
 
@@ -196,7 +196,7 @@ struct NativeProfileEditView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 
     private func save() {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		1785AA324DC6BFBCFB411CD5 /* NativeMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A4D1CD15C4B4FC3037AC68 /* NativeMetrics.swift */; };
 		43E1CF37A522404AC6592257 /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */; };
 		4D20F0652E42725F390AC243 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB6978AE864F036C5520CFB /* BackupService.swift */; };
 		AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */; };
@@ -70,6 +71,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		F3A4D1CD15C4B4FC3037AC68 /* NativeMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeMetrics.swift; sourceTree = "<group>"; };
 		DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		6CB6978AE864F036C5520CFB /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BakedStatusBarMask.swift; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 				D5943FC32792DF613316533F /* Helpers.swift */,
 				D5342F8E48BA3DEEB66718A5 /* Theme.swift */,
 							729F61C8AB0BEF0280F87447 /* ViewCompat.swift */,
+				F3A4D1CD15C4B4FC3037AC68 /* NativeMetrics.swift */,
 );
 			path = Utilities;
 			sourceTree = "<group>";
@@ -355,6 +358,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1785AA324DC6BFBCFB411CD5 /* NativeMetrics.swift in Sources */,
 				43E1CF37A522404AC6592257 /* AppTab.swift in Sources */,
 				4D20F0652E42725F390AC243 /* BackupService.swift in Sources */,
 				AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */,

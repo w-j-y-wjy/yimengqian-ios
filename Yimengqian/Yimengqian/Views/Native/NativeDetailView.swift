@@ -117,7 +117,7 @@ struct NativeDetailView: View {
 
                     Spacer(minLength: 40)
                 }
-                .padding(.top, 96)
+                .padding(.top, NativeMetrics.contentTop)
             }
 
             topBar
@@ -173,7 +173,7 @@ struct NativeDetailView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 
     @ViewBuilder

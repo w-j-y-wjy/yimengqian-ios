@@ -35,7 +35,7 @@ struct NativeSearchView: View {
                 Text("搜索")
                     .font(.custom("KaitiSC-Bold", size: 26))
                     .foregroundColor(Theme.ink)
-                    .padding(.top, 96)
+                    .padding(.top, NativeMetrics.contentTop)
 
                 searchField
 
@@ -71,7 +71,7 @@ struct NativeSearchView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 54)
+        .padding(.top, NativeMetrics.barTop)
     }
 
     private var searchField: some View {
