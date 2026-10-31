@@ -45,6 +45,9 @@ struct RootView: View {
         // 3) 以后加 tab 时，一个 tab 一条 path，结构才对得上「真骨架」。
         // 代价：NavigationStack 需要 iOS 16（本项目最低版本已从 15 提到 16）。
         .overlay {
+            // 只在有原生页时才挂 NavigationStack：它自带系统背景色，
+            // 常驻会把底下的设计稿整屏盖成白色（CI 实测：25 屏截图全白）。
+            if !router.nativeStack.isEmpty {
             NavigationStack(path: Binding(
                 get: { router.nativePath },
                 set: { router.nativePath = $0 }
@@ -54,6 +57,7 @@ struct RootView: View {
                         nativeDestination(detail)
                             .navigationBarHidden(true)
                     }
+            }
             }
         }
         .alert("重置全部旅程数据？", isPresented: $showResetConfirm) {
