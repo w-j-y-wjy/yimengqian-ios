@@ -13,6 +13,10 @@ import SwiftUI
 struct NativeSearchView: View {
     @EnvironmentObject private var router: Router
     @State private var keyword: String = ""
+    /// 分类筛选：nil = 全部
+    @State private var kindFilter: String? = nil
+    /// 最近搜索（最多 6 条，UserDefaults 持久化；换机后由备份以外的方式不迁移，属预期）
+    @State private var history: [String] = []
 
     private struct Hit: Identifiable {
         let id: String
@@ -36,8 +40,10 @@ struct NativeSearchView: View {
                 searchField
 
                 if keyword.trimmingCharacters(in: .whitespaces).isEmpty {
+                    if !history.isEmpty { historySection }
                     hintList
                 } else {
+                    kindFilterRow
                     resultList
                 }
                 Spacer(minLength: 0)
@@ -46,6 +52,7 @@ struct NativeSearchView: View {
 
             topBar
         }
+        .onAppear(perform: loadHistory)
     }
 
     private var topBar: some View {
@@ -75,6 +82,8 @@ struct NativeSearchView: View {
             TextField("搜诗词、器物、人物、活动", text: $keyword)
                 .font(.custom("SongtiSC-Regular", size: 13))
                 .foregroundColor(Theme.ink)
+                .submitLabel(.search)
+                .onSubmit { remember(keyword) }
             if !keyword.isEmpty {
                 Button(action: { keyword = "" }) {
                     Image(systemName: "xmark.circle.fill")
@@ -172,6 +181,87 @@ struct NativeSearchView: View {
         }
     }
 
+    // MARK: - 搜索历史与筛选
+
+    private static let historyKey = "yimeng.search.history"
+
+    private func loadHistory() {
+        history = UserDefaults.standard.stringArray(forKey: Self.historyKey) ?? []
+    }
+
+    /// 回车或点建议词时记一笔（最多 6 条，去重后置顶）
+    private func remember(_ raw: String) {
+        let k = raw.trimmingCharacters(in: .whitespaces)
+        guard !k.isEmpty else { return }
+        var list = history.filter { $0 != k }
+        list.insert(k, at: 0)
+        history = Array(list.prefix(6))
+        UserDefaults.standard.set(history, forKey: Self.historyKey)
+    }
+
+    private func clearHistory() {
+        history = []
+        UserDefaults.standard.removeObject(forKey: Self.historyKey)
+    }
+
+    private var historySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("最近搜索")
+                    .font(.custom("SongtiSC-Regular", size: 12))
+                    .foregroundColor(Theme.inkMuted)
+                Spacer()
+                Button(action: clearHistory) {
+                    Text("清除")
+                        .font(.custom("SongtiSC-Regular", size: 11.5))
+                        .foregroundColor(Theme.inkMuted)
+                }
+                .buttonStyle(PressableStyle())
+            }
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 8)], alignment: .leading, spacing: 8) {
+                ForEach(history, id: \.self) { word in
+                    Button(action: { keyword = word; kindFilter = nil }) {
+                        Text(word)
+                            .font(.custom("SongtiSC-Regular", size: 12.5))
+                            .foregroundColor(Theme.inkLight)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Capsule().fill(Theme.paperLight))
+                            .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(0.4), lineWidth: 0.8))
+                    }
+                    .buttonStyle(PressableStyle())
+                }
+            }
+        }
+        .padding(.top, 2)
+    }
+
+    /// 结果分类筛选：搜「月」时诗句、人物、器物混在一起，一点就能只看一类
+    private var kindFilterRow: some View {
+        HStack(spacing: 8) {
+            filterChip("全部", nil)
+            filterChip("诗", "poem")
+            filterChip("人", "character")
+            filterChip("物", "artifact")
+            filterChip("集", "activity")
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func filterChip(_ title: String, _ kind: String?) -> some View {
+        let on = kindFilter == kind
+        return Button(action: { kindFilter = kind }) {
+            Text(title)
+                .font(.custom("SongtiSC-Regular", size: 12))
+                .foregroundColor(on ? Theme.paperLight : Theme.inkLight)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Capsule().fill(on ? Theme.vermilion : Theme.paperLight))
+                .overlay(Capsule().strokeBorder(Theme.goldBorder.opacity(on ? 0 : 0.4), lineWidth: 0.8))
+        }
+        .buttonStyle(PressableStyle())
+    }
+
     private var hintWords: [String] {
         ["江雪", "苏轼", "青花", "飞花令", "月", "山水"]
     }
@@ -216,7 +306,8 @@ struct NativeSearchView: View {
                            subtitle: a.description,
                            image: a.image, route: "/native/activity/\(a.id)"))
         }
-        return out
+        guard let filter = kindFilter else { return out }
+        return out.filter { $0.kind == filter }
     }
 
     @ViewBuilder
