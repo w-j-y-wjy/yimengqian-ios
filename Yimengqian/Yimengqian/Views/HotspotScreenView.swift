@@ -40,6 +40,10 @@ struct HotspotScreenView: View {
             let fitted = fittedSize(in: geo.size)
             ZStack(alignment: .topLeading) {
                 imageLayer(width: fitted.width, height: fitted.height)
+                // 擦掉位图顶部烤死的假「9:41 / 电量」——真机下午三点不该显示九点四十一。
+                // 颜色按屏采样（见 BakedStatusBarMask），所以不会露出横条接缝。
+                BakedStatusBarMask(screenID: screen.id,
+                                   container: CGSize(width: fitted.width, height: fitted.height))
                 hotspotLayer(width: fitted.width, height: fitted.height)
                 // 原生叠层：只补位图做不到的实时状态（选中态、判题反馈）。
                 // 它 .allowsHitTesting(false)，不会抢热区的点击。

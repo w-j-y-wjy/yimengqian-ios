@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */; };
 		5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */; };
 		00411F35C5CEB28242F080A9 /* DreambookLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9E67B691501648058FECC74 /* DreambookLayer.swift */; };
 		6A03173D45654CB889F70922 /* ViewCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729F61C8AB0BEF0280F87447 /* ViewCompat.swift */; };
@@ -67,6 +68,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BakedStatusBarMask.swift; sourceTree = "<group>"; };
 		8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StampRewardLayer.swift; sourceTree = "<group>"; };
 		E9E67B691501648058FECC74 /* DreambookLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DreambookLayer.swift; sourceTree = "<group>"; };
 		729F61C8AB0BEF0280F87447 /* ViewCompat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCompat.swift; sourceTree = "<group>"; };
@@ -228,7 +230,8 @@
 				1828A9688D7D25703FC15400 /* HotspotScreenView.swift */,
 				766B2E663E2C05778F06D762 /* SpecialScreens.swift */,
 				1AD46AF34014FC22CD991FD7 /* ToastView.swift */,
-			);
+							817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */,
+);
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -346,6 +349,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */,
 				5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */,
 				00411F35C5CEB28242F080A9 /* DreambookLayer.swift in Sources */,
 				6A03173D45654CB889F70922 /* ViewCompat.swift in Sources */,
