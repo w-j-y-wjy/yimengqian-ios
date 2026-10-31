@@ -134,9 +134,11 @@ struct DreambookLayer: View {
                             y: container.height * rowTop / Self.designHeight)
             }
 
-            // 下半两块：城市足迹「入梦 N 日」、相逢古人「相逢 N 次」
-            row(cityTexts, band: cityRow)
-            row(meetTexts, band: meetRow)
+            // 下半两块（城市足迹「入梦 N 日」、相逢古人「相逢 N 次」）暂时不画：
+            // 数据侧已经就绪（cityVisits / characterMeets），但它们的文字压在
+            // 照片与章节标题之间，量错 40–50px 就会盖住「城市足迹」标题与诗句，
+            // 属于"宁可先不画，也不留可见错位"。下一轮按 1:1 裁图重新量准后再启用。
+            // 旧值仍留在位图上（入梦 6 日 / 相逢 2 次），已在 README 诚实表登记。
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
         .allowsHitTesting(false)
