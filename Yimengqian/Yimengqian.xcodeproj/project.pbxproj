@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		6A03173D45654CB889F70922 /* ViewCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729F61C8AB0BEF0280F87447 /* ViewCompat.swift */; };
 		23BBCA2442E2C28E8C5557AD /* ArtifactScoreProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D1A4A7F369B6E47C0FE933 /* ArtifactScoreProbe.swift */; };
 		40E4210FEE6EA6074A6C2CE3 /* ArtifactProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DE75A236A5A57B531C0D58 /* ArtifactProfileView.swift */; };
 		0704FE0D2A2DCB1C72427381 /* ArtifactProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA63AB94E3722F2F584282D /* ArtifactProfile.swift */; };
@@ -64,6 +65,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		729F61C8AB0BEF0280F87447 /* ViewCompat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCompat.swift; sourceTree = "<group>"; };
 		B2D1A4A7F369B6E47C0FE933 /* ArtifactScoreProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactScoreProbe.swift; sourceTree = "<group>"; };
 		41DE75A236A5A57B531C0D58 /* ArtifactProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactProfileView.swift; sourceTree = "<group>"; };
 		5AA63AB94E3722F2F584282D /* ArtifactProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtifactProfile.swift; sourceTree = "<group>"; };
@@ -211,7 +213,8 @@
 			children = (
 				D5943FC32792DF613316533F /* Helpers.swift */,
 				D5342F8E48BA3DEEB66718A5 /* Theme.swift */,
-			);
+							729F61C8AB0BEF0280F87447 /* ViewCompat.swift */,
+);
 			path = Utilities;
 			sourceTree = "<group>";
 		};
@@ -337,6 +340,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A03173D45654CB889F70922 /* ViewCompat.swift in Sources */,
 				23BBCA2442E2C28E8C5557AD /* ArtifactScoreProbe.swift in Sources */,
 				40E4210FEE6EA6074A6C2CE3 /* ArtifactProfileView.swift in Sources */,
 				0704FE0D2A2DCB1C72427381 /* ArtifactProfile.swift in Sources */,

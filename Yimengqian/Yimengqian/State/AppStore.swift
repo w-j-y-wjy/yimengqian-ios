@@ -33,6 +33,10 @@ struct AppSnapshot: Codable, Equatable {
     var feihualingProgress: Int
     var feihualingScore: Int
     var generatedCards: [String]
+    /// 首次打开日期（yyyy-MM-dd）。给「千年梦册」的「已入梦 N 日」提供真值 ——
+    /// 这一格以前是位图里烤死的 18，没有字段可读。
+    /// 用 Optional：老快照里没有这个键，`decodeIfPresent` 解成 nil，不会让整份用户数据解码失败。
+    var firstOpenDate: String? = nil
 
     /// 默认值 —— 与 AppContext.defaultState 完全一致
     static let `default` = AppSnapshot(
@@ -87,6 +91,26 @@ struct AppSnapshot: Codable, Equatable {
         fmt.dateFormat = "yyyy-MM-dd"
         return fmt.string(from: day)
     }
+
+    /// 两个 `yyyy-MM-dd` 之间差几天（b - a）。解析失败返回 nil —— 调用方要能区分"没数据"和"0 天"。
+    static func daysBetween(_ a: String, _ b: String) -> Int? {
+        let fmt = DateFormatter()
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        fmt.dateFormat = "yyyy-MM-dd"
+        guard let da = fmt.date(from: a), let db = fmt.date(from: b) else { return nil }
+        return Calendar.current.dateComponents([.day], from: da, to: db).day
+    }
+
+    /// 已入梦天数：首次打开当天算第 1 天。
+    var dreamDays: Int {
+        guard let first = firstOpenDate,
+              let delta = AppSnapshot.daysBetween(first, AppSnapshot.dateString()) else { return 1 }
+        return max(1, delta + 1)
+    }
+
+    /// 解锁故事：诗境卡（自己生成的）+ 已完成的对谈。
+    /// 「故事」在数据层没有独立实体，用这两类有据可查的产出求和，口径写进界面文案。
+    var unlockedStories: Int { generatedCards.count + dialogueCompleted.count }
 }
 
 /// 全局状态 —— 语义对齐 AppContext + localStorage
@@ -102,6 +126,12 @@ final class AppStore: ObservableObject {
             migrateLegacyFavorites()
         } else {
             snapshot = .default
+        }
+        // 首次打开日：老用户（快照里没有这个键）在升级后第一次启动时补记，
+        // 于是「已入梦 N 日」从 1 开始，而不是显示一个没有来源的数字。
+        if snapshot.firstOpenDate == nil {
+            snapshot.firstOpenDate = AppSnapshot.dateString()
+            saveSnapshot()
         }
     }
 

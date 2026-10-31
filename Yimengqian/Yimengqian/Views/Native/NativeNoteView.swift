@@ -21,63 +21,68 @@ struct NativeNoteView: View {
         ZStack(alignment: .top) {
             Theme.paperWarm.ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 14) {
-                Text("添加题注")
-                    .font(.custom("KaitiSC-Bold", size: 26))
-                    .foregroundColor(Theme.ink)
-                    .padding(.top, 96)
-
-                Text("给这张诗境卡写一句话。保存后会显示在「我的作品」里。")
-                    .font(.custom("SongtiSC-Regular", size: 12.5))
-                    .foregroundColor(Theme.inkMuted)
-
-                ZStack(alignment: .topLeading) {
-                    // iOS 15 没有 TextEditor 占位符，自己叠一层
-                    if text.isEmpty {
-                        Text("例如：此卡取水墨意，留白处最见寒江")
-                            .font(.custom("SongtiSC-Regular", size: 14))
-                            .foregroundColor(Theme.inkMuted.opacity(0.7))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 14)
-                    }
-                    TextEditor(text: $text)
-                        .font(.custom("SongtiSC-Regular", size: 14))
+            // 必须可滚：根是 VStack 时，小屏一弹键盘，170pt 的编辑框 + 计数字 + 保存按钮
+            // 会把「保存」挤出可视区，而且无处可滚 —— 现场演示写题注会直接卡住。
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("添加题注")
+                        .font(.custom("KaitiSC-Bold", size: 26))
                         .foregroundColor(Theme.ink)
-                        .scrollContentBackgroundHiddenIfAvailable()
-                        .padding(8)
-                }
-                .frame(height: 170)
-                .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Theme.paperLight))
-                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8))
+                        .padding(.top, 96)
 
-                HStack {
-                    Text("\(text.count) / \(limit)")
-                        .font(.custom("SongtiSC-Regular", size: 11.5))
-                        .foregroundColor(text.count > limit ? Theme.vermilion : Theme.inkMuted)
-                    Spacer()
-                    if !text.isEmpty {
-                        Button(action: { text = "" }) {
-                            Text("清空")
-                                .font(.custom("SongtiSC-Regular", size: 12.5))
-                                .foregroundColor(Theme.inkMuted)
+                    Text("给这张诗境卡写一句话。保存后会显示在「我的作品」里。")
+                        .font(.custom("SongtiSC-Regular", size: 12.5))
+                        .foregroundColor(Theme.inkMuted)
+
+                    ZStack(alignment: .topLeading) {
+                        // iOS 15 没有 TextEditor 占位符，自己叠一层
+                        if text.isEmpty {
+                            Text("例如：此卡取水墨意，留白处最见寒江")
+                                .font(.custom("SongtiSC-Regular", size: 14))
+                                .foregroundColor(Theme.inkMuted.opacity(0.7))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 14)
                         }
-                        .buttonStyle(PressableStyle())
+                        TextEditor(text: $text)
+                            .font(.custom("SongtiSC-Regular", size: 14))
+                            .foregroundColor(Theme.ink)
+                            .scrollContentBackgroundHiddenIfAvailable()
+                            .padding(8)
                     }
-                }
+                    .frame(height: 170)
+                    .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Theme.paperLight))
+                    .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(Theme.goldBorder.opacity(0.45), lineWidth: 0.8))
 
-                Button(action: save) {
-                    Text("保存题注")
-                        .font(.custom("SongtiSC-Regular", size: 15))
-                        .foregroundColor(Theme.paperWarm)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
-                        .background(Capsule().fill(Theme.vermilion))
-                }
-                .buttonStyle(PressableStyle())
+                    HStack {
+                        Text("\(text.count) / \(limit)")
+                            .font(.custom("SongtiSC-Regular", size: 11.5))
+                            .foregroundColor(text.count > limit ? Theme.vermilion : Theme.inkMuted)
+                        Spacer()
+                        if !text.isEmpty {
+                            Button(action: { text = "" }) {
+                                Text("清空")
+                                    .font(.custom("SongtiSC-Regular", size: 12.5))
+                                    .foregroundColor(Theme.inkMuted)
+                            }
+                            .buttonStyle(PressableStyle())
+                        }
+                    }
 
-                Spacer(minLength: 0)
+                    Button(action: save) {
+                        Text("保存题注")
+                            .font(.custom("SongtiSC-Regular", size: 15))
+                            .foregroundColor(Theme.paperWarm)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                            .background(Capsule().fill(Theme.vermilion))
+                    }
+                    .buttonStyle(PressableStyle())
+
+                    Spacer(minLength: 40)
+                }
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
+            .scrollDismissesKeyboardIfAvailable()
 
             topBar
         }
@@ -119,14 +124,3 @@ struct NativeNoteView: View {
     }
 }
 
-private extension View {
-    /// iOS 16+ 才有 scrollContentBackground；iOS 15 上保持默认即可
-    @ViewBuilder
-    func scrollContentBackgroundHiddenIfAvailable() -> some View {
-        if #available(iOS 16.0, *) {
-            self.scrollContentBackground(.hidden)
-        } else {
-            self
-        }
-    }
-}
