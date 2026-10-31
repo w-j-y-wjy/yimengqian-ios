@@ -397,7 +397,14 @@ struct NativeDetailContent {
             let names = d.characters.compactMap { cid in
                 ContentData.characters.first(where: { $0.id == cid })?.name
             }
-            var sections: [(String, String)] = [("城池", d.description)]
+            var sections: [(String, String)] = []
+            // 未解锁的城池（长安 / 临安 / 金陵 / 黄州 / 白鹿洞）在内容库里只有一行简介，
+            // 直接摊开像"点进去是空的"。用户 2026-10-31 要求明确标"尚未开放"，
+            // 所以第一段永远是一句状态说明，后面才是已有资料 —— 不假装这座城已经做完。
+            if !d.unlocked {
+                sections.append(("尚未开放", "这座城的详细内容还在整理中。下面是它已有的简介、人物与诗作，可以先看看。"))
+            }
+            sections.append(("城池", d.description))
             // 人物：把"这座城里有谁"写出来，而不是只留一行简介
             let people = d.characters.compactMap { cid in
                 ContentData.characters.first(where: { $0.id == cid })
@@ -412,11 +419,11 @@ struct NativeDetailContent {
             }
             return NativeDetailContent(
                 title: "\(d.name)·\(d.city)",
-                subtitle: d.period,
+                subtitle: d.unlocked ? d.period : "\(d.period) · 尚未开放",
                 hero: d.image,
                 lines: [],
                 sections: sections,
-                tags: names,
+                tags: d.unlocked ? names : ["尚未开放"] + names,
                 favorite: nil
             )
 
