@@ -19,7 +19,12 @@ import Foundation
 import SwiftUI
 
 final class Router: ObservableObject {
-    @Published private(set) var stack: [ScreenConfig] = []
+    /// 每个 tab 各自一条栈（真骨架的核心：切换 tab 不再丢历史）
+    @Published private(set) var stacks: [AppTab: [ScreenConfig]] = [:]
+    /// 当前 tab
+    @Published var activeTab: AppTab = .home
+    /// 当前 tab 的栈（只读派生，保持旧调用点语义不变）
+    var stack: [ScreenConfig] { stacks[activeTab] ?? [] }
     @Published var navigationID = UUID()  // 换屏令牌（只用来强制重建视图，不驱动动画）
 
     /// 原生浮层栈（/native/... 路由）。栈空时不显示任何浮层，也不改动设计稿栈。
@@ -30,7 +35,9 @@ final class Router: ObservableObject {
     var nativeDetail: NativeDetail? { nativeStack.last }
 
     init(initial: ScreenConfig) {
-        stack = [initial]
+        let tab = AppTab.owner(of: initial.id) ?? .home
+        activeTab = tab
+        stacks = [tab: [initial]]
     }
 
     var top: ScreenConfig? { stack.last }
@@ -43,16 +50,29 @@ final class Router: ObservableObject {
     /// 推入新屏幕（对齐 navigate(route)）
     func push(_ screen: ScreenConfig) {
         // 底栏切换：替换整栈（与系统 App 的 tab 行为一致，也避免栈无限增长）
+        let tab = AppTab.owner(of: screen.id) ?? activeTab
+        // 底栏根屏：切 tab 并把该 tab 的栈重置为根屏
         if Self.tabRoutes.contains(screen.route) {
-            if stack.last?.route != screen.route {
-                stack = [screen]
+            if stacks[tab]?.last?.route != screen.route {
+                stacks[tab] = [screen]
+                activeTab = tab
                 navigationID = UUID()
             }
             return
         }
-        // 连点防护：目标就是当前栈顶时不再压一层
-        if stack.last?.id == screen.id { return }
-        stack.append(screen)
+        // 连点防护：目标就是该 tab 栈顶时不再压一层
+        var cur = stacks[tab] ?? []
+        if cur.isEmpty, let root = ScreenCatalog.screen(id: tab.rootScreenID), root.id != screen.id {
+            // 该 tab 还没有栈：以根屏打底，保证返回时能回到 tab 根
+            cur = [root]
+        }
+        if cur.last?.id == screen.id {
+            activeTab = tab
+            return
+        }
+        cur.append(screen)
+        stacks[tab] = cur
+        activeTab = tab
         navigationID = UUID()
     }
 
@@ -64,7 +84,9 @@ final class Router: ObservableObject {
             return
         }
         guard stack.count > 1 else { return }
-        stack.removeLast()
+        var cur = stack
+        cur.removeLast()
+        stacks[activeTab] = cur
         navigationID = UUID()
     }
 
@@ -108,8 +130,19 @@ final class Router: ObservableObject {
 
     /// 替换栈顶（对齐 conditionalJump 直达 /home：清空栈再推入目标）
     func jump(to screen: ScreenConfig) {
-        stack = [screen]
+        let tab = AppTab.owner(of: screen.id) ?? activeTab
+        activeTab = tab
+        stacks[tab] = [screen]
         nativeStack.removeAll()
         navigationID = UUID()
+    }
+
+    /// 底栏点选：切到该 tab 的栈顶（没有栈就用根屏）
+    func selectTab(_ tab: AppTab) {
+        if let root = ScreenCatalog.screen(id: tab.rootScreenID) {
+            if stacks[tab] == nil { stacks[tab] = [root] }
+            activeTab = tab
+            navigationID = UUID()
+        }
     }
 }
