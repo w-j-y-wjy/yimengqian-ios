@@ -640,6 +640,163 @@ enum ContentData {
                 features: "「绿」字作动词，是著名的炼字例：据说曾用「到」「过」「入」「满」，终定「绿」，一字而春意满纸。"
             )
         ),
+        // 2026-10-31 加厚度（第二轮）：诗 28 → 40。同样选能背、常见的短篇，各配三段短注。
+        Poem(
+            id: "wang-tian-men-shan",
+            title: "望天门山",
+            author: "李白",
+            dynasty: "唐",
+            content: "天门中断楚江开，\n碧水东流至此回。\n两岸青山相对出，\n孤帆一片日边来。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "天门山从中断开，楚江奔涌而过；碧水东流到此回旋。两岸青山相对而出，一片孤帆从日边驶来。",
+                background: "李白出蜀东游，行经当涂天门山时所作。",
+                features: "四句四个动作：断、回、出、来，把静止的山写成迎面而来；末句以「日边来」把视线推向极远处。"
+            )
+        ),
+        Poem(
+            id: "song-yuan-er",
+            title: "送元二使安西",
+            author: "王维",
+            dynasty: "唐",
+            content: "渭城朝雨浥轻尘，\n客舍青青柳色新。\n劝君更尽一杯酒，\n西出阳关无故人。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "渭城的朝雨润湿了轻尘，客舍旁柳色青青。请你再干一杯酒——向西出了阳关，就再没有老朋友了。",
+                background: "王维在渭城送友人元二出使安西都护府，唐代送别名篇，后谱入《阳关三叠》。",
+                features: "前两句写景极清新，把离别放在最好的春光里；后两句只劝一杯酒，不着一「悲」字而情自深。"
+            )
+        ),
+        Poem(
+            id: "jiu-yue-jiu-ri",
+            title: "九月九日忆山东兄弟",
+            author: "王维",
+            dynasty: "唐",
+            content: "独在异乡为异客，\n每逢佳节倍思亲。\n遥知兄弟登高处，\n遍插茱萸少一人。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "独自在他乡作客，每逢佳节就更思念亲人。遥想兄弟登高插茱萸时，会发现少了我一个人。",
+                background: "王维十七岁客居长安，重阳节思念家乡蒲州的兄弟而作。",
+                features: "不写自己想家，反过来写「少一人」——从对方角度落笔，思念因此加倍。"
+            )
+        ),
+        Poem(
+            id: "xiang-si",
+            title: "相思",
+            author: "王维",
+            dynasty: "唐",
+            content: "红豆生南国，\n春来发几枝。\n愿君多采撷，\n此物最相思。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "红豆生在南方，春天会发几枝？愿你多采一些——这东西最寄相思。",
+                background: "王维赠友之作；红豆（相思子）在唐代已被赋予思念之意。",
+                features: "二十字只用一问一劝，把「物」写成「情」；语言近乎口语，却最耐读。"
+            )
+        ),
+        Poem(
+            id: "huang-he-lou-song",
+            title: "黄鹤楼送孟浩然之广陵",
+            author: "李白",
+            dynasty: "唐",
+            content: "故人西辞黄鹤楼，\n烟花三月下扬州。\n孤帆远影碧空尽，\n唯见长江天际流。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "老朋友在黄鹤楼与我作别，烟花三月顺流去扬州。孤帆的影子消失在碧空尽头，只剩长江向天边流去。",
+                background: "开元年间李白在江夏送孟浩然东下扬州。",
+                features: "不写惜别之语，只写望帆：帆尽、空尽、唯见江流，视线拉得越长，怅惘越深。"
+            )
+        ),
+        Poem(
+            id: "chun-ye-xi-yu",
+            title: "春夜喜雨",
+            author: "杜甫",
+            dynasty: "唐",
+            content: "好雨知时节，\n当春乃发生。\n随风潜入夜，\n润物细无声。",
+            category: "四季",
+            analysis: PoemAnalysis(
+                translation: "好雨懂得时令，正当春天就落下。它随着风悄悄潜入夜里，滋润万物而细密无声。",
+                background: "杜甫居成都草堂时所作，写春夜细雨，也写农事之喜。",
+                features: "「潜」「细」两字把雨写活：不是滂沱大雨，而是无声浸润，后来成了形容教化的成语。"
+            )
+        ),
+        Poem(
+            id: "jue-ju-huang-li",
+            title: "绝句·两个黄鹂鸣翠柳",
+            author: "杜甫",
+            dynasty: "唐",
+            content: "两个黄鹂鸣翠柳，\n一行白鹭上青天。\n窗含西岭千秋雪，\n门泊东吴万里船。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "两只黄鹂在翠柳间鸣叫，一行白鹭飞上青天。窗里含着西岭的千年积雪，门前停着来自东吴的万里行船。",
+                background: "杜甫回到成都草堂时所作，四句写草堂四周春景。",
+                features: "黄、翠、白、青四色并列；「千秋」写时间，「万里」写空间，一窗一门装下极大时空。"
+            )
+        ),
+        Poem(
+            id: "fu-de-gu-yuan-cao",
+            title: "赋得古原草送别",
+            author: "白居易",
+            dynasty: "唐",
+            content: "离离原上草，\n一岁一枯荣。\n野火烧不尽，\n春风吹又生。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "原野上的草长得茂密，一年一枯一荣。野火也烧不尽它，春风一吹又生出来。",
+                background: "白居易少年应试的习作，据说以此诗得顾况赏识。",
+                features: "以草写别情：草有枯荣而根不死，正如离别之后仍有重逢；后两句已成中国人最熟的生命比喻。"
+            )
+        ),
+        Poem(
+            id: "min-nong",
+            title: "悯农",
+            author: "李绅",
+            dynasty: "唐",
+            content: "锄禾日当午，\n汗滴禾下土。\n谁知盘中餐，\n粒粒皆辛苦。",
+            category: "四季",
+            analysis: PoemAnalysis(
+                translation: "正午烈日下锄地，汗水滴进禾下的泥土。谁知道盘中的饭食，每一粒都来得辛苦。",
+                background: "李绅早年目睹农事艰辛所作，是中唐新乐府关注民生的代表作。",
+                features: "前三句全是画面，最后一句是发问；不写同情而同情自见，成为最广为传诵的惜粮诗。"
+            )
+        ),
+        Poem(
+            id: "deng-fei-lai-feng",
+            title: "登飞来峰",
+            author: "王安石",
+            dynasty: "宋",
+            content: "飞来山上千寻塔，\n闻说鸡鸣见日升。\n不畏浮云遮望眼，\n自缘身在最高层。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "飞来峰上有千寻高塔，听说鸡鸣时能看见日出。不怕浮云遮住视线，只因为自己站在最高层。",
+                background: "皇祐二年王安石任鄞县知县，登越州飞来山时所作，时年三十。",
+                features: "前两句写高，后两句写「为什么不怕」；「浮云」既是实景也是喻象，抱负写在写景里。"
+            )
+        ),
+        Poem(
+            id: "yin-hu-shang",
+            title: "饮湖上初晴后雨",
+            author: "苏轼",
+            dynasty: "宋",
+            content: "水光潋滟晴方好，\n山色空蒙雨亦奇。\n欲把西湖比西子，\n淡妆浓抹总相宜。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "晴时水光潋滟正美，雨中山色空蒙也奇。若把西湖比作西施，淡妆浓抹都合适。",
+                background: "熙宁年间苏轼任杭州通判时所作；西湖「西子湖」之名即源于此。",
+                features: "以美人比湖，一句概尽晴雨两态；从此西湖在文学里有了一个固定的比拟。"
+            )
+        ),
+        Poem(
+            id: "jiang-nan-chun",
+            title: "江南春",
+            author: "杜牧",
+            dynasty: "唐",
+            content: "千里莺啼绿映红，\n水村山郭酒旗风。\n南朝四百八十寺，\n多少楼台烟雨中。",
+            category: "四季",
+            analysis: PoemAnalysis(
+                translation: "千里江南莺啼柳绿映着花红，水村山郭间酒旗随风招展。南朝留下的四百八十座寺庙，多少楼台都笼在烟雨里。",
+                background: "杜牧游历江南时所作，写景中寄寓对南朝侵佛误国的感慨。",
+                features: "前两句明丽，后两句转入迷蒙；「多少楼台」一叹，把写景抬成了历史与兴亡。"
+            )
+        ),
     ]
 
     // MARK: - poems.ts：poetryCategories（icon 在 TS 源中均为空串 ""）
