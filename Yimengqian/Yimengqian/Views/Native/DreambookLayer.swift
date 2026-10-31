@@ -55,6 +55,59 @@ struct DreambookLayer: View {
         ]
     }
 
+    // MARK: - 下半两块：城市足迹「入梦 N 日」/ 相逢古人「相逢 N 次」
+
+    /// 三张卡的文字左缘（x 像素，852 宽设计稿实测：142 / 371 / 586）
+    private let columnLeft: [CGFloat] = [140, 368, 588]
+    /// 城市足迹副行 y 925…968；相逢古人副行 y 1230…1290
+    private let cityRow: (CGFloat, CGFloat) = (925, 968)
+    private let meetRow: (CGFloat, CGFloat) = (1230, 1290)
+
+    private let cityIDs = ["bianjing", "linan", "jinling"]
+    private let characterIDs = ["sushi", "liqingzhao", "wangwei"]
+
+    private var cityTexts: [String] {
+        cityIDs.map { id in
+            let days = store.snapshot.cityDays(id)
+            return days > 0 ? "入梦 \(days) 日" : "尚未入梦"
+        }
+    }
+
+    private var meetTexts: [String] {
+        characterIDs.map { id in
+            let n = store.snapshot.meetCount(id)
+            return n > 0 ? "相逢 \(n) 次" : "尚未相逢"
+        }
+    }
+
+    /// 一行三块：先擦掉位图里的假数字，再按各列左缘重画
+    @ViewBuilder
+    private func row(_ texts: [String], band: (CGFloat, CGFloat)) -> some View {
+        ZStack(alignment: .topLeading) {
+            ForEach(Array(columnLeft.enumerated()), id: \.offset) { pair in
+                Rectangle()
+                    .fill(cardFill)
+                    .frame(width: container.width * 150 / Self.designWidth,
+                           height: container.height * (band.1 - band.0) / Self.designHeight)
+                    .offset(x: container.width * (pair.element - 4) / Self.designWidth,
+                            y: container.height * band.0 / Self.designHeight)
+            }
+            ForEach(Array(columnLeft.enumerated()), id: \.offset) { pair in
+                Text(texts[pair.offset])
+                    .font(.custom("SongtiSC-Regular", size: container.height * 0.0172))
+                    .foregroundColor(digitInk)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .frame(width: container.width * 150 / Self.designWidth,
+                           height: container.height * (band.1 - band.0) / Self.designHeight,
+                           alignment: .leading)
+                    .offset(x: container.width * pair.element / Self.designWidth,
+                            y: container.height * band.0 / Self.designHeight)
+            }
+        }
+        .frame(width: container.width, height: container.height, alignment: .topLeading)
+    }
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             // 先擦
@@ -80,6 +133,10 @@ struct DreambookLayer: View {
                     .offset(x: container.width * pair.element.rightEdge / Self.designWidth - container.width * 0.18,
                             y: container.height * rowTop / Self.designHeight)
             }
+
+            // 下半两块：城市足迹「入梦 N 日」、相逢古人「相逢 N 次」
+            row(cityTexts, band: cityRow)
+            row(meetTexts, band: meetRow)
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
         .allowsHitTesting(false)

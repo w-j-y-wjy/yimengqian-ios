@@ -33,6 +33,11 @@ struct AppSnapshot: Codable, Equatable {
     var feihualingProgress: Int
     var feihualingScore: Int
     var generatedCards: [String]
+    /// 城池到访天数（place id → 天数）。给千年梦册「城市足迹」的「入梦 N 日」提供真值。
+    /// 用 Optional：老快照没有这个键，decodeIfPresent 解成 nil，不会让用户数据解码失败。
+    var cityVisits: [String: Int]? = nil
+    /// 与古人相逢次数（character id → 次数）。给「相逢 N 次」提供真值。
+    var characterMeets: [String: Int]? = nil
     /// 首次打开日期（yyyy-MM-dd）。给「千年梦册」的「已入梦 N 日」提供真值 ——
     /// 这一格以前是位图里烤死的 18，没有字段可读。
     /// 用 Optional：老快照里没有这个键，`decodeIfPresent` 解成 nil，不会让整份用户数据解码失败。
@@ -100,6 +105,11 @@ struct AppSnapshot: Codable, Equatable {
         guard let da = fmt.date(from: a), let db = fmt.date(from: b) else { return nil }
         return Calendar.current.dateComponents([.day], from: da, to: db).day
     }
+
+    /// 某城入梦天数（没去过就是 0）
+    func cityDays(_ id: String) -> Int { (cityVisits ?? [:])[id] ?? 0 }
+    /// 与某人相逢次数（没见过就是 0）
+    func meetCount(_ id: String) -> Int { (characterMeets ?? [:])[id] ?? 0 }
 
     /// 已入梦天数：首次打开当天算第 1 天。
     var dreamDays: Int {
@@ -308,21 +318,36 @@ final class AppStore: ObservableObject {
     /// 2026-10-27 修：旧实现用 `$0 == tag` 去重，但存进去的是 `"日期|tag"`，
     /// 二者永远不相等 —— 于是同一个地方去 3 次就占 3 格，8 格很快被挤满。
     /// 现在按 tag 后缀去重（保留最近一次访问的日期）。
-    func recordVisit(_ tag: String, date: String = AppSnapshot.dateString()) {
+    @discardableResult
+    func recordVisit(_ tag: String, date: String = AppSnapshot.dateString()) -> Bool {
         let entry = "\(date)|\(tag)"
         // 同一天重复到访直接返回：既避免反复写盘，也避免"记账 → @Published → 重渲染 →
         // 再记账"的回环（onInit 每次渲染都会重新构造闭包）。
-        if snapshot.recentViews.first == entry { return }
+        if snapshot.recentViews.first == entry { return false }
         snapshot.recentViews.removeAll { $0 == tag || $0.hasSuffix("|\(tag)") }
         snapshot.recentViews.insert(entry, at: 0)
         if snapshot.recentViews.count > 8 { snapshot.recentViews = Array(snapshot.recentViews.prefix(8)) }
+        return true
+    }
+
+    /// 记一次「与某位古人相逢」。与 recordPlace 同构：同一天只累加一次。
+    func recordMeet(_ characterID: String, date: String = AppSnapshot.dateString()) {
+        guard ContentData.characters.contains(where: { $0.id == characterID }) else { return }
+        guard recordVisit("meet:\(characterID)", date: date) else { return }
+        var meets = snapshot.characterMeets ?? [:]
+        meets[characterID] = (meets[characterID] ?? 0) + 1
+        snapshot.characterMeets = meets
     }
 
     /// 记一次「到访某地」。tag 用 `place:<id>` 前缀，与其它行为标签（feihualing / teahouse…）
     /// 共存于同一个 recentViews 数组里 —— 不新增快照字段，旧存档照样能解码。
     func recordPlace(_ placeID: String, date: String = AppSnapshot.dateString()) {
         guard PlaceCatalog.place(id: placeID) != nil else { return }
-        recordVisit("place:\(placeID)", date: date)
+        guard recordVisit("place:\(placeID)", date: date) else { return }
+        // 同一天重复到访不重复累加（recordVisit 已经按天去重）
+        var visits = snapshot.cityVisits ?? [:]
+        visits[placeID] = (visits[placeID] ?? 0) + 1
+        snapshot.cityVisits = visits
     }
 
     /// 个人中心「最近足迹」的真实数据：只取 `place:` 前缀的记录，按**到访日期倒序**。

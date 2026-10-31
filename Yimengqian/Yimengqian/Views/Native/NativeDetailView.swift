@@ -131,6 +131,12 @@ struct NativeDetailView: View {
     private func recordCityVisitIfNeeded() {
         if case .city(let id) = detail, let place = PlaceCatalog.place(forCityID: id) {
             store.recordPlace(place.id)
+            return
+        }
+        // 古人详情页同理记一笔「相逢」——千年梦册「相逢古人」那一格之前没有任何数据源，
+        // 只能在"人物页真的显示了"的时刻记，才覆盖朝代页 / 梦册 / 搜索三个入口。
+        if case .character(let id) = detail {
+            store.recordMeet(id)
         }
     }
 
