@@ -373,6 +373,164 @@ enum ContentData {
             content: "江南好，\n风景旧曾谙。\n日出江花红胜火，\n春来江水绿如蓝。\n能不忆江南？",
             category: "山水"
         ),
+        // 2026-10-31 加厚度：诗库 16 → 28。选的都是能背、能考的常见篇目，
+        // 每首配「译解 / 创作背景 / 艺术特色」三段短注（各 40–60 字），不写没有来源的奇闻。
+        Poem(
+            id: "deng-guan-que-lou",
+            title: "登鹳雀楼",
+            author: "王之涣",
+            dynasty: "唐",
+            content: "白日依山尽，\n黄河入海流。\n欲穷千里目，\n更上一层楼。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "太阳沿山脊沉落，黄河向海奔流。想把千里景色看尽，就再登上一层楼。",
+                background: "鹳雀楼在蒲州（今山西永济），唐代为登临胜地。诗人登楼远眺，写下这首五绝。",
+                features: "前两句写景，一句向西（落日）、一句向东（黄河），空间开阔；后两句由景入理，说理却不枯。"
+            )
+        ),
+        Poem(
+            id: "wang-lu-shan-pu-bu",
+            title: "望庐山瀑布",
+            author: "李白",
+            dynasty: "唐",
+            content: "日照香炉生紫烟，\n遥看瀑布挂前川。\n飞流直下三千尺，\n疑是银河落九天。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "日光照着香炉峰，升起紫色云烟；远看瀑布像挂在山前的白练。飞泻三千尺，让人疑心是银河倾落。",
+                background: "李白漫游庐山时所作，写香炉峰瀑布的雄奇。",
+                features: "「挂」字把动态的瀑布写成静物；末句以银河作比，夸张而不失真切，是典型的浪漫笔法。"
+            )
+        ),
+        Poem(
+            id: "zao-fa-bai-di-cheng",
+            title: "早发白帝城",
+            author: "李白",
+            dynasty: "唐",
+            content: "朝辞白帝彩云间，\n千里江陵一日还。\n两岸猿声啼不住，\n轻舟已过万重山。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "清晨在彩云间告别白帝城，千里外的江陵一天就到。两岸猿声还在耳边，轻舟已驶过万重山。",
+                background: "乾元二年李白流放夜郎，行至白帝城遇赦，旋即东下，写下此诗。",
+                features: "全诗写「快」：空间快、舟行快、情绪也快；猿声未歇而山已过尽，把遇赦的轻快写得不着痕迹。"
+            )
+        ),
+        Poem(
+            id: "feng-qiao-ye-bo",
+            title: "枫桥夜泊",
+            author: "张继",
+            dynasty: "唐",
+            content: "月落乌啼霜满天，\n江枫渔火对愁眠。\n姑苏城外寒山寺，\n夜半钟声到客船。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "月落乌啼，寒霜满天；江边枫树与渔火相对，愁人难眠。姑苏城外寒山寺，半夜钟声传到客船。",
+                background: "张继落第后途经苏州，夜泊枫桥，羁旅之愁与秋夜之景相合。",
+                features: "月落、乌啼、霜天、渔火、钟声层层叠加，最后以「钟声到客船」收束，愁绪有了声音。"
+            )
+        ),
+        Poem(
+            id: "shan-ju-qiu-ming",
+            title: "山居秋暝",
+            author: "王维",
+            dynasty: "唐",
+            content: "空山新雨后，\n天气晚来秋。\n明月松间照，\n清泉石上流。\n竹喧归浣女，\n莲动下渔舟。\n随意春芳歇，\n王孙自可留。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "新雨过后空山清寂，傍晚已有秋意。明月照进松林，清泉在石上流淌。竹林喧响是浣女归来，莲叶摇动是渔舟顺流。",
+                background: "王维晚年隐居辋川，这首诗写山居秋日傍晚的所见所闻。",
+                features: "「诗中有画」的典型：先静（月照、泉流），后动（竹喧、莲动），把人的活动藏进景物里。"
+            )
+        ),
+        Poem(
+            id: "lu-zhai",
+            title: "鹿柴",
+            author: "王维",
+            dynasty: "唐",
+            content: "空山不见人，\n但闻人语响。\n返景入深林，\n复照青苔上。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "空山里看不见人影，只听见人说话；夕阳返照进深林，又落在青苔上。",
+                background: "辋川别业二十景之一「鹿柴」，写山中一处幽静林谷。",
+                features: "以「不见人」与「闻人语」对写，愈显空寂；再由声转光，用一缕返照收住，静得能听见光落。"
+            )
+        ),
+        Poem(
+            id: "yong-liu",
+            title: "咏柳",
+            author: "贺知章",
+            dynasty: "唐",
+            content: "碧玉妆成一树高，\n万条垂下绿丝绦。\n不知细叶谁裁出，\n二月春风似剪刀。",
+            category: "四季",
+            analysis: PoemAnalysis(
+                translation: "柳树像碧玉装成，万千枝条垂下如绿丝带。不知细叶是谁裁出——原来二月春风就是剪刀。",
+                background: "贺知章晚年归乡时所作，写早春新柳。",
+                features: "通篇用比：先以碧玉、丝绦写柳，再把春风比作剪刀，一问一答，把无形的风写成了手艺。"
+            )
+        ),
+        Poem(
+            id: "chun-xiao",
+            title: "春晓",
+            author: "孟浩然",
+            dynasty: "唐",
+            content: "春眠不觉晓，\n处处闻啼鸟。\n夜来风雨声，\n花落知多少。",
+            category: "四季",
+            analysis: PoemAnalysis(
+                translation: "春夜好眠，不知天已亮，到处听见鸟啼。想起昨夜风雨声，不知道花落了多少。",
+                background: "孟浩然隐居鹿门山时所作，写春日清晨将醒未醒的一刻。",
+                features: "全诗不写景，只写听觉与猜想：鸟声、风雨声、落花数，二十字里藏着整个春天的流逝。"
+            )
+        ),
+        Poem(
+            id: "yu-ge-zi",
+            title: "渔歌子",
+            author: "张志和",
+            dynasty: "唐",
+            content: "西塞山前白鹭飞，\n桃花流水鳜鱼肥。\n青箬笠，\n绿蓑衣，\n斜风细雨不须归。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "西塞山前白鹭飞，桃花映水、鳜鱼正肥。戴青箬笠、披绿蓑衣，斜风细雨里也不必回去。",
+                background: "张志和辞官后隐居江湖，自号烟波钓徒，这首词写渔隐之乐。",
+                features: "色彩极鲜明：白鹭、桃花、青笠、绿蓑铺在水上；末句「不须归」写尽自在。"
+            )
+        ),
+        Poem(
+            id: "ti-xi-lin-bi",
+            title: "题西林壁",
+            author: "苏轼",
+            dynasty: "宋",
+            content: "横看成岭侧成峰，\n远近高低各不同。\n不识庐山真面目，\n只缘身在此山中。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "横看是连绵山岭，侧看是陡峭山峰；远近高低看，样子都不同。认不清庐山真面目，只因身在庐山之中。",
+                background: "元丰七年苏轼由黄州量移汝州，途中游庐山，题于西林寺壁。",
+                features: "前两句写视角，后两句由景入理，说「当局者迷」而不觉说教，是宋诗理趣的代表。"
+            )
+        ),
+        Poem(
+            id: "you-shan-xi-cun",
+            title: "游山西村",
+            author: "陆游",
+            dynasty: "宋",
+            content: "莫笑农家腊酒浑，\n丰年留客足鸡豚。\n山重水复疑无路，\n柳暗花明又一村。",
+            category: "山水",
+            analysis: PoemAnalysis(
+                translation: "别嫌农家腊酒浑浊，丰年待客有鸡有肉。山重水复以为无路，柳暗花明处又见一村。",
+                background: "乾道三年陆游罢官闲居山阴，游山西村时所作。",
+                features: "「山重水复」「柳暗花明」本是写行路，后世移作处境的写照，是流传最广的一联。"
+            )
+        ),
+        Poem(
+            id: "bo-chuan-gua-zhou",
+            title: "泊船瓜洲",
+            author: "王安石",
+            dynasty: "宋",
+            content: "京口瓜洲一水间，\n钟山只隔数重山。\n春风又绿江南岸，\n明月何时照我还。",
+            category: "离愁",
+            analysis: PoemAnalysis(
+                translation: "京口与瓜洲只隔一条江，钟山也不过隔着几重山。春风又吹绿江南岸，明月何时照我回家。",
+                background: "王安石晚年退居金陵，往来瓜洲时作，思归之情寓其中。",
+                features: "「绿」字作动词，是著名的炼字例：据说曾用「到」「过」「入」「满」，终定「绿」，一字而春意满纸。"
+            )
+        ),
     ]
 
     // MARK: - poems.ts：poetryCategories（icon 在 TS 源中均为空串 ""）
