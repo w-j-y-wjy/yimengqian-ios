@@ -20,18 +20,16 @@ struct RootView: View {
         ZStack {
             Theme.paper.ignoresSafeArea()
 
-            // 真骨架：TabView + 每个 tab 一条独立栈。
-            // 系统 tabBar 暂时隐藏 —— 位图里已经画了一条底栏，两条叠着会出现双层；
-            // 等底栏原生化（下一步）时再把系统 tabBar 放出来。
-            TabView(selection: Binding(
-                get: { router.activeTab },
-                set: { router.selectTab($0) }
-            )) {
-                ForEach(AppTab.allCases) { tab in
-                    sceneLayer(for: tab)
-                        .tag(tab)
-                        .toolbar(.hidden, for: .tabBar)
-                }
+            if let top = router.top {
+                HotspotScreenView(
+                    screen: top,
+                    onInit: onInitHandler(for: top.id, store: store),
+                    onExtraTap: top.id == "splash" ? handleSplashTap : nil
+                )
+                .id(top.id + "|" + String(router.stack.count))
+                // 不做转场动画：这是「一屏一张设计稿」的点击原型，从右滑入会把整页图
+                // 像卡片一样推过来，反而暴露它是拼出来的。直接换图更像原生 App。
+                // （用户 2026-10-21 真机验收要求：不要左右推入，直接切换。）
             }
         }
         .overlay(alignment: .bottom) {
@@ -103,25 +101,6 @@ struct RootView: View {
             NativeDetailView(detail: detail, content: content)
         } else {
             EmptyView()
-        }
-    }
-
-    /// 一个 tab 的内容：当前 tab 渲染它自己的栈顶，其余 tab 渲染各自根屏。
-    /// 这样切 tab 不会丢失历史（Router 里每个 tab 一条 `stacks[tab]`）。
-    @ViewBuilder
-    private func sceneLayer(for tab: AppTab) -> some View {
-        let screen: ScreenConfig? = tab == router.activeTab
-            ? router.top
-            : ScreenCatalog.screen(id: tab.rootScreenID)
-        if let screen = screen {
-            HotspotScreenView(
-                screen: screen,
-                onInit: onInitHandler(for: screen.id, store: store),
-                onExtraTap: screen.id == "splash" ? handleSplashTap : nil
-            )
-            // 不做转场动画：设计稿屏直接换图（用户 2026-10-21 真机验收要求）。
-            // 只有原生页（/native/...）走 NavigationStack 的系统推入动画。
-            .id(screen.id + "|" + String(router.stack.count) + "|" + tab.rawValue)
         }
     }
 
