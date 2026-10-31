@@ -57,11 +57,17 @@ struct DreambookLayer: View {
 
     // MARK: - 下半两块：城市足迹「入梦 N 日」/ 相逢古人「相逢 N 次」
 
-    /// 三张卡的文字左缘（x 像素，852 宽设计稿实测：142 / 371 / 586）
-    private let columnLeft: [CGFloat] = [140, 368, 588]
-    /// 城市足迹副行 y 925…968；相逢古人副行 y 1230…1290
-    private let cityRow: (CGFloat, CGFloat) = (925, 968)
-    private let meetRow: (CGFloat, CGFloat) = (1230, 1290)
+    // 坐标全部来自 1:1 裁图 + 左侧文字列投影（x 90…300）实测。
+    // 教训：上一版用 414px 宽的 CI 缩略图 ×2.058 换算，偏差 40–50px，
+    // 结果把「相逢古人」章节标题整条盖掉 —— 缩略图只能"看"，不能"量"。
+    /// 城市足迹副行（「入梦 N 日」）：y 845…872
+    private let cityRow: (CGFloat, CGFloat) = (845, 872)
+    /// 相逢古人副行（「相逢 N 次」）：y 1225…1249
+    private let meetRow: (CGFloat, CGFloat) = (1225, 1249)
+    /// 城市三列文字左缘（三张卡内边距一致）
+    private let cityLeft: [CGFloat] = [98, 333, 568]
+    /// 古人三列文字左缘（位图上是「❀ 相逢 N 次 ❀」，从文字处起擦）
+    private let meetLeft: [CGFloat] = [150, 393, 618]
 
     private let cityIDs = ["bianjing", "linan", "jinling"]
     private let characterIDs = ["sushi", "liqingzhao", "wangwei"]
@@ -82,23 +88,23 @@ struct DreambookLayer: View {
 
     /// 一行三块：先擦掉位图里的假数字，再按各列左缘重画
     @ViewBuilder
-    private func row(_ texts: [String], band: (CGFloat, CGFloat)) -> some View {
+    private func row(_ texts: [String], band: (CGFloat, CGFloat), lefts: [CGFloat]) -> some View {
         ZStack(alignment: .topLeading) {
-            ForEach(Array(columnLeft.enumerated()), id: \.offset) { pair in
+            ForEach(Array(lefts.enumerated()), id: \.offset) { pair in
                 Rectangle()
                     .fill(cardFill)
-                    .frame(width: container.width * 150 / Self.designWidth,
+                    .frame(width: container.width * 168 / Self.designWidth,
                            height: container.height * (band.1 - band.0) / Self.designHeight)
                     .offset(x: container.width * (pair.element - 4) / Self.designWidth,
                             y: container.height * band.0 / Self.designHeight)
             }
-            ForEach(Array(columnLeft.enumerated()), id: \.offset) { pair in
+            ForEach(Array(lefts.enumerated()), id: \.offset) { pair in
                 Text(texts[pair.offset])
                     .font(.custom("SongtiSC-Regular", size: container.height * 0.0172))
                     .foregroundColor(digitInk)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                    .frame(width: container.width * 150 / Self.designWidth,
+                    .frame(width: container.width * 168 / Self.designWidth,
                            height: container.height * (band.1 - band.0) / Self.designHeight,
                            alignment: .leading)
                     .offset(x: container.width * pair.element / Self.designWidth,
@@ -134,11 +140,9 @@ struct DreambookLayer: View {
                             y: container.height * rowTop / Self.designHeight)
             }
 
-            // 下半两块（城市足迹「入梦 N 日」、相逢古人「相逢 N 次」）暂时不画：
-            // 数据侧已经就绪（cityVisits / characterMeets），但它们的文字压在
-            // 照片与章节标题之间，量错 40–50px 就会盖住「城市足迹」标题与诗句，
-            // 属于"宁可先不画，也不留可见错位"。下一轮按 1:1 裁图重新量准后再启用。
-            // 旧值仍留在位图上（入梦 6 日 / 相逢 2 次），已在 README 诚实表登记。
+            // 下半两块：城市足迹「入梦 N 日」、相逢古人「相逢 N 次」
+            row(cityTexts, band: cityRow, lefts: cityLeft)
+            row(meetTexts, band: meetRow, lefts: meetLeft)
         }
         .frame(width: container.width, height: container.height, alignment: .topLeading)
         .allowsHitTesting(false)
