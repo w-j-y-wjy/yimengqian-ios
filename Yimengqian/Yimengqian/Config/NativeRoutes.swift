@@ -19,7 +19,7 @@
 
 import Foundation
 
-enum NativeDetail: Equatable {
+enum NativeDetail: Equatable, Hashable {
     case poem(String)
     case artifact(String)
     case patternElement(String)

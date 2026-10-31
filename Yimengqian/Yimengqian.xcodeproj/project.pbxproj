@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3EF49115FF5066CCA097B146 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC529BC660D7D173884B358 /* RootView.swift */; };
+		43E1CF37A522404AC6592257 /* AppTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */; };
 		4D20F0652E42725F390AC243 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CB6978AE864F036C5520CFB /* BackupService.swift */; };
 		AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */; };
 		5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */; };
@@ -69,6 +70,7 @@
 
 /* Begin PBXFileReference section */
 		0DC529BC660D7D173884B358 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		6CB6978AE864F036C5520CFB /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		817E0A0642A98F4A366BA5B8 /* BakedStatusBarMask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BakedStatusBarMask.swift; sourceTree = "<group>"; };
 		8D48762DADBF02B3E51DC5C0 /* StampRewardLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StampRewardLayer.swift; sourceTree = "<group>"; };
@@ -166,7 +168,8 @@
 			children = (
 				0DC529BC660D7D173884B358 /* RootView.swift */,
 				DA5651D8F516DBDACCA58498 /* YimengqianApp.swift */,
-			);
+							DF9BDB547BF06F8CE6E17BEA /* AppTab.swift */,
+);
 			path = App;
 			sourceTree = "<group>";
 		};
@@ -352,6 +355,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43E1CF37A522404AC6592257 /* AppTab.swift in Sources */,
 				4D20F0652E42725F390AC243 /* BackupService.swift in Sources */,
 				AA7182FFAAD45A7593D4FB8A /* BakedStatusBarMask.swift in Sources */,
 				5630C1C16D7DD0CF7C21FE40 /* StampRewardLayer.swift in Sources */,
@@ -462,7 +466,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -516,7 +520,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -537,7 +541,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Yimengqian/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -562,7 +566,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Yimengqian/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

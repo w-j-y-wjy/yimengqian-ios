@@ -1,6 +1,6 @@
 # 一梦千年 · iOS
 
-25 张设计稿整屏铺底 + 百分比热区引擎 + 原生 SwiftUI 叠层/详情页的古典文化沉浸式 App（SwiftUI，最低 iOS 15）。
+25 张设计稿整屏铺底 + 百分比热区引擎 + 原生 SwiftUI 叠层/详情页的古典文化沉浸式 App（SwiftUI，最低 iOS 16）。
 
 > 热区点得动、跳得对、能落地真实功能；做不了的**如实标注**，不假装。
 
@@ -13,7 +13,7 @@
 | 动作类型 | **18 种**（`Engine/ActionExecutor.swift`） |
 | 原生路由 | **23 类**（`Config/NativeRoutes.swift`），68 个静态目标 |
 | needs | **0**（原江雪播放键已改真朗读） |
-| 最低系统 | **iOS 15.0**，Bundle ID `com.yimeng.qiannian` |
+| 最低系统 | **iOS 16.0**（NavigationStack / scrollDismissesKeyboard 需要 16），Bundle ID `com.yimeng.qiannian` |
 | 代码基线 | `main` @ `09828da`（第 31–32 轮） |
 
 ## 截图

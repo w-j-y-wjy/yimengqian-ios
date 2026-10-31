@@ -20,16 +20,18 @@ struct RootView: View {
         ZStack {
             Theme.paper.ignoresSafeArea()
 
-            if let top = router.top {
-                HotspotScreenView(
-                    screen: top,
-                    onInit: onInitHandler(for: top.id, store: store),
-                    onExtraTap: top.id == "splash" ? handleSplashTap : nil
-                )
-                .id(top.id + "|" + String(router.stack.count))
-                // 不做转场动画：这是「一屏一张设计稿」的点击原型，从右滑入会把整页图
-                // 像卡片一样推过来，反而暴露它是拼出来的。直接换图更像原生 App。
-                // （用户 2026-10-21 真机验收要求：不要左右推入，直接切换。）
+            // 真骨架：TabView + 每个 tab 一条独立栈。
+            // 系统 tabBar 暂时隐藏 —— 位图里已经画了一条底栏，两条叠着会出现双层；
+            // 等底栏原生化（下一步）时再把系统 tabBar 放出来。
+            TabView(selection: Binding(
+                get: { router.activeTab },
+                set: { router.selectTab($0) }
+            )) {
+                ForEach(AppTab.allCases) { tab in
+                    sceneLayer(for: tab)
+                        .tag(tab)
+                        .toolbar(.hidden, for: .tabBar)
+                }
             }
         }
         .overlay(alignment: .bottom) {
@@ -38,55 +40,26 @@ struct RootView: View {
                     .padding(.bottom, 90)
             }
         }
-        // 原生浮层（/native/...）：详情页或列表页，盖在整屏设计稿之上、可交互；
-        // 关闭只清浮层，不动路由栈（避免"在设计稿上点返回误退一屏"）
+        // 原生页（/native/...）：从"自绘浮层 + 手写边缘手势"换成真正的 NavigationStack。
+        // 换的理由：
+        // 1) 系统自带交互式返回（左缘右滑带跟手动画），不必再手写 DragGesture；
+        // 2) 每层页面是真正的 push，标题栏/安全区由系统统一处理；
+        // 3) 以后加 tab 时，一个 tab 一条 path，结构才对得上「真骨架」。
+        // 代价：NavigationStack 需要 iOS 16（本项目最低版本已从 15 提到 16）。
         .overlay {
-            if let detail = router.nativeDetail {
-                Group {
-                    if case .settings = detail {
-                        NativeSettingsView()
-                    } else if case .search = detail {
-                        NativeSearchView()
-                    } else if case .share = detail {
-                        NativeShareView()
-                    } else if case .note = detail {
-                        NativeNoteView()
-                    } else if case .profileEdit = detail {
-                        NativeProfileEditView()
-                    } else if case .photo = detail {
-                        // 结果页那颗「相册」按钮：不自动弹选择器，由用户自己点
-                        ArtifactRecognizeView(source: "manual")
-                    } else if case .recognize(let source) = detail {
-                        ArtifactRecognizeView(source: source)
-                    } else if case .dialogue(let topicID) = detail {
-                        NativeDialogueView(topicID: topicID)
-                    } else if case .favoriteSlot(let index) = detail {
-                        NativeFavoriteSlotView(index: index)
-                    } else if case .list(let listID) = detail {
-                        NativeListView(listID: listID)
-                    } else if case .card(let cardID) = detail {
-                        NativePoetryCardView(cardID: cardID)
-                    } else if case .identity = detail {
-                        NativeIdentityView()
-                    } else if let content = NativeDetailContent.resolve(detail, obtainedStamps: obtainedStamps) {
-                        NativeDetailView(detail: detail, content: content)
+            // 只在有原生页时才挂 NavigationStack：它自带系统背景色，
+            // 常驻会把底下的设计稿整屏盖成白色（CI 实测：25 屏截图全白）。
+            if !router.nativeStack.isEmpty {
+            NavigationStack(path: Binding(
+                get: { router.nativePath },
+                set: { router.nativePath = $0 }
+            )) {
+                Color.clear
+                    .navigationDestination(for: NativeDetail.self) { detail in
+                        nativeDestination(detail)
+                            .navigationBarHidden(true)
                     }
-                }
-                .zIndex(2)
-                // 左缘右滑返回：系统 App 的肌肉记忆。用 simultaneousGesture 而不是在页面上
-                // 盖一层透明手势区 —— 后者会吃掉左边缘（返回键就在那儿）的点击。
-                // 触发条件同时要求「起点在左侧 44pt 内」与「横向位移 > 80 且明显大于纵向」，
-                // 所以不会和页面里的竖向滚动、卡片点击打架。
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 24)
-                        .onEnded { value in
-                            let dx = value.translation.width
-                            let dy = value.translation.height
-                            if value.startLocation.x < 44, dx > 80, abs(dy) < dx * 0.6 {
-                                router.closeNative()
-                            }
-                        }
-                )
+            }
             }
         }
         .alert("重置全部旅程数据？", isPresented: $showResetConfirm) {
@@ -100,6 +73,60 @@ struct RootView: View {
         .environmentObject(store)
         .environmentObject(router)
         .environmentObject(toast)
+    }
+
+    /// 原生页分发：与改造前的 switch 同源，只是从 overlay 内联搬到 navigationDestination。
+    @ViewBuilder
+    private func nativeDestination(_ detail: NativeDetail) -> some View {
+        if case .settings = detail {
+            NativeSettingsView()
+        } else if case .search = detail {
+            NativeSearchView()
+        } else if case .share = detail {
+            NativeShareView()
+        } else if case .note = detail {
+            NativeNoteView()
+        } else if case .profileEdit = detail {
+            NativeProfileEditView()
+        } else if case .photo = detail {
+            // 结果页那颗「相册」按钮：不自动弹选择器，由用户自己点
+            ArtifactRecognizeView(source: "manual")
+        } else if case .recognize(let source) = detail {
+            ArtifactRecognizeView(source: source)
+        } else if case .dialogue(let topicID) = detail {
+            NativeDialogueView(topicID: topicID)
+        } else if case .favoriteSlot(let index) = detail {
+            NativeFavoriteSlotView(index: index)
+        } else if case .list(let listID) = detail {
+            NativeListView(listID: listID)
+        } else if case .card(let cardID) = detail {
+            NativePoetryCardView(cardID: cardID)
+        } else if case .identity = detail {
+            NativeIdentityView()
+        } else if let content = NativeDetailContent.resolve(detail, obtainedStamps: obtainedStamps) {
+            NativeDetailView(detail: detail, content: content)
+        } else {
+            EmptyView()
+        }
+    }
+
+    /// 一个 tab 的内容：当前 tab 渲染它自己的栈顶，其余 tab 渲染各自根屏。
+    /// 这样切 tab 不会丢失历史（Router 里每个 tab 一条 `stacks[tab]`）。
+    @ViewBuilder
+    private func sceneLayer(for tab: AppTab) -> some View {
+        let screen: ScreenConfig? = tab == router.activeTab
+            ? router.top
+            : ScreenCatalog.screen(id: tab.rootScreenID)
+        if let screen = screen {
+            HotspotScreenView(
+                screen: screen,
+                onInit: onInitHandler(for: screen.id, store: store),
+                onExtraTap: screen.id == "splash" ? handleSplashTap : nil
+            )
+            // 不做转场动画：设计稿屏直接换图（用户 2026-10-21 真机验收要求）。
+            // 只有原生页（/native/...）走 NavigationStack 的系统推入动画。
+            .id(screen.id + "|" + String(router.stack.count) + "|" + tab.rawValue)
+        }
     }
 
     /// 已获得的印章 id（印章详情按真实状态显示，而不是编译期常量）
